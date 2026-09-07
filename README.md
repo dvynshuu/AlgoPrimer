@@ -1,34 +1,115 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Forge ⚒️
 
-## Getting Started
+> **The open learning coding platform for everyone — from your first line of code to technical mastery.**
 
-First, run the development server:
+Forge is a free, open-access learning platform engineered from first principles: explain simply, build progressively, and empower anyone — whether a first-year student, self-taught programmer, or career switcher — to master computer science fundamentals, data structures, algorithms, and technical hiring standards.
 
+[![GitHub repository](https://img.shields.io/badge/GitHub-Repository-blue?logo=github)](https://github.com/dvynshuu/Forge.git)
+[![Next.js](https://img.shields.io/badge/Next.js-16.3.4-black?logo=next.js)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue?logo=typescript)](https://www.typescriptlang.org/)
+[![Tests](https://img.shields.io/badge/Tests-Vitest%20Passed-success?logo=vitest)](https://vitest.dev/)
+[![Open Access](https://img.shields.io/badge/License-MIT-green)](LICENSE)
+
+---
+
+## 🌟 Core Pillars
+
+1. **Four Complete Language Tracks**:
+   - **Java**: JVM internals, memory models, primitives vs wrappers, OOP, Collections Framework, garbage collection.
+   - **C++**: Pointers, references, stack vs heap, STL containers, iterators, RAII, memory management.
+   - **Python**: Dynamic typing, references, comprehensions, internal hashing, iteration protocols, big-O overheads.
+   - **JavaScript**: V8 engine, Event Loop, Execution Context, Closures, Promises/Async-Await, Prototypes, ES6+ methods.
+
+2. **20-Topic Pedagogical DSA Roadmap**:
+   - Built to take any learner from basic arrays through graph algorithms, dynamic programming, and system design patterns.
+   - Every topic breaks down the concept into *Why do we need it?*, *Visual intuition*, *How it works step-by-step*, *Common traps*, and *Practical applications*.
+
+3. **Curated Problem Bank (33 High-Frequency Company Problems)**:
+   - Covers 8 core categories: Arrays & Hashing, Two Pointers & Sliding Window, Strings, Linked Lists, Binary Search, Stacks & Queues, Trees & Graphs, and Dynamic Programming.
+   - **Quad-lingual solutions**: Every single problem includes full, runnable implementations in **Java**, **C++**, **Python**, and **JavaScript** for both Brute Force and Optimal approaches.
+   - Verified company tags (**Amazon**, **Microsoft**, **Google**, **Meta**, **TCS**, **Infosys**, **Goldman Sachs**, **Bloomberg**, **Apple**, **Adobe**, **Uber**, **Flipkart**).
+   - Interactive company filter pills and visual step-by-step dry-run tables.
+
+4. **Calm, High-Performance UX**:
+   - Zero marketing fluff, zero paywalls, zero gamified distraction.
+   - Pure CSS tokens, sleek dark mode with tailored visual hierarchy.
+   - Global Cmd+K / Ctrl+K search index with real-time scoring.
+   - LocalStorage progress sync with bookmarking and solve tracking.
+
+---
+
+## 🚀 Tech Stack
+
+- **Framework**: [Next.js 16 (App Router, Turbopack)](https://nextjs.org/)
+- **Language**: [TypeScript](https://www.typescriptlang.org/)
+- **Styling**: Vanilla CSS Modules (custom design tokens)
+- **Validation**: [Zod](https://zod.dev/) for curriculum and problem schema verification
+- **Testing**: [Vitest](https://vitest.dev/) with automated content integrity testing
+- **Icons**: [Lucide React](https://lucide.dev/)
+
+---
+
+## 🛠️ Getting Started
+
+### Prerequisites
+- Node.js 18.x or 20.x+
+- npm, pnpm, or yarn
+
+### Installation
 ```bash
+# Clone the repository
+git clone https://github.com/dvynshuu/Forge.git
+cd Forge
+
+# Install dependencies
+npm install
+
+# Start development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Visit [http://localhost:3000](http://localhost:3000) in your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Quality Assurance & Verification
+```bash
+# Run unit tests and schema integrity assertions
+npm test
 
-## Learn More
+# Run ESLint
+npm run lint
 
-To learn more about Next.js, take a look at the following resources:
+# Build production bundle (SSG / 158+ prerendered static pages)
+npm run build
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 📂 Repository Structure
 
-## Deploy on Vercel
+```
+├── src/
+│   ├── app/                    # Next.js App Router routes
+│   │   ├── dsa/                # 20 DSA topic modules & dynamic lessons
+│   │   ├── languages/          # Java, C++, Python, and JavaScript tracks
+│   │   ├── problems/           # Curated Problem Bank & problem viewers
+│   │   ├── revision/           # Rapid revision cheat sheet cards
+│   │   ├── roadmap/            # Progressive curriculum timeline
+│   │   ├── interview/          # OA rounds & technical interview guides
+│   │   └── search/             # Global search modal and index
+│   ├── components/             # Reusable UI, layout & content components
+│   ├── content/                # Zod-validated curriculum & problem modules
+│   │   ├── languages/          # Java, C++, Python, JavaScript lessons
+│   │   ├── dsa/                # DSA roadmap and topic contents
+│   │   └── problems/           # 33 curated company problems across 8 modules
+│   ├── lib/                    # Progress tracking context & search engine
+│   ├── styles/                 # Global CSS design tokens & utilities
+│   └── types/                  # Zod schemas (ProblemSchema, LessonSchema)
+├── tests/                      # Vitest test suites (content, search, progress)
+└── package.json
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 📄 License
+
+MIT © [Forge Community](https://github.com/dvynshuu/Forge.git)

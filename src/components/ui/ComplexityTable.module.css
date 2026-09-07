@@ -1,0 +1,47 @@
+.container {
+  margin: var(--space-4) 0;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  background-color: var(--bg-surface);
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  margin: 0;
+  border-collapse: collapse;
+  font-size: var(--font-size-sm);
+}
+
+.table th {
+  background-color: var(--bg-subtle);
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-xs);
+  padding: var(--space-2) var(--space-4);
+  border-bottom: 1px solid var(--border-default);
+  text-align: left;
+}
+
+.table td {
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+}
+
+.table tr:last-child td {
+  border-bottom: none;
+}
+
+.complexityVal {
+  font-family: var(--font-mono);
+  color: #60a5fa;
+  font-weight: 500;
+}
+
+.optimalBadge {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-xs);
+  color: var(--success);
+  margin-left: var(--space-2);
+}

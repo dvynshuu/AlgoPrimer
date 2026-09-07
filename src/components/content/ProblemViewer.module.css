@@ -1,0 +1,144 @@
+.container {
+  display: block;
+  width: 100%;
+  max-width: var(--container-max-width);
+  margin: 0 auto;
+  position: relative;
+}
+
+.mainContent {
+  margin-right: var(--toc-width);
+  width: calc(100% - var(--toc-width));
+  min-width: 0;
+  padding: var(--space-8) var(--space-8) var(--space-16);
+}
+
+@media (max-width: 1200px) {
+  .mainContent {
+    margin-right: 0;
+    width: 100%;
+    padding: var(--space-4) var(--space-4) var(--space-12);
+  }
+}
+
+.headerArea {
+  margin-bottom: var(--space-6);
+  border-bottom: 1px solid var(--border-subtle);
+  padding-bottom: var(--space-6);
+}
+
+.titleRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-3);
+}
+
+.title {
+  font-size: var(--font-size-3xl);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-bottom: 0;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.metaRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  margin-top: var(--space-3);
+}
+
+.section {
+  margin-top: var(--space-8);
+  margin-bottom: var(--space-8);
+}
+
+.sectionHeading {
+  font-size: var(--font-size-xl);
+  font-weight: 600;
+  margin-bottom: var(--space-3);
+  padding-bottom: var(--space-2);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.understandBox {
+  background-color: var(--bg-surface);
+  border-left: 3px solid #60a5fa;
+  border-radius: var(--radius-sm);
+  padding: var(--space-4) var(--space-5);
+  font-size: var(--font-size-md);
+  line-height: 1.6;
+  margin: var(--space-4) 0;
+}
+
+.exampleCard {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: var(--space-4);
+  margin-bottom: var(--space-4);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-xs);
+}
+
+.exampleRow {
+  margin-bottom: var(--space-2);
+}
+
+.exampleLabel {
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  display: inline-block;
+  width: 90px;
+}
+
+.approachCard {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  padding: var(--space-5);
+  margin: var(--space-6) 0;
+}
+
+.approachHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-3);
+}
+
+.approachTitle {
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  margin: 0;
+}
+
+.mistakeRow {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: var(--space-4);
+  margin-bottom: var(--space-3);
+}
+
+.companyBadge {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-xs);
+  background-color: var(--bg-subtle);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-subtle);
+  padding: 0.15rem 0.5rem;
+  border-radius: var(--radius-xs);
+  display: inline-flex;
+  align-items: center;
+}

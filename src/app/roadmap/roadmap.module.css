@@ -1,0 +1,145 @@
+.container {
+  width: 100%;
+  max-width: var(--container-max-width);
+  margin: 0 auto;
+  padding: var(--space-8) var(--space-6) var(--space-16);
+}
+
+.header {
+  margin-bottom: var(--space-8);
+  border-bottom: 1px solid var(--border-subtle);
+  padding-bottom: var(--space-6);
+}
+
+.title {
+  font-size: var(--font-size-3xl);
+  margin-bottom: var(--space-2);
+}
+
+.desc {
+  font-size: var(--font-size-md);
+  color: var(--text-secondary);
+  line-height: 1.6;
+  max-width: 780px;
+}
+
+.roadmapTimeline {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  position: relative;
+}
+
+.timelineNode {
+  display: flex;
+  gap: var(--space-6);
+  align-items: flex-start;
+}
+
+@media (max-width: 768px) {
+  .timelineNode {
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+}
+
+.nodeLeft {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 80px;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.stageTag {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  margin-bottom: var(--space-2);
+  white-space: nowrap;
+}
+
+.circleMarker {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 2px solid var(--accent-primary);
+  background-color: var(--bg-canvas);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+
+.connectingLine {
+  position: absolute;
+  top: 55px;
+  bottom: -40px;
+  width: 2px;
+  background-color: var(--border-subtle);
+}
+
+@media (max-width: 768px) {
+  .connectingLine {
+    display: none;
+  }
+  .nodeLeft {
+    flex-direction: row;
+    width: 100%;
+    gap: var(--space-3);
+  }
+}
+
+.nodeCard {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: var(--space-6);
+  flex: 1;
+  min-width: 0;
+}
+
+.nodeHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--space-3);
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.nodeTitle {
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  margin: 0;
+  color: var(--text-primary);
+}
+
+.nodeFocus {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-xs);
+  color: var(--accent-hover);
+  margin-top: 4px;
+}
+
+.nodeDesc {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: var(--space-4);
+}
+
+.criteriaBox {
+  background-color: var(--bg-subtle);
+  border-left: 2px solid var(--success);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-xs);
+  font-size: var(--font-size-xs);
+  color: var(--text-primary);
+  line-height: 1.4;
+}
