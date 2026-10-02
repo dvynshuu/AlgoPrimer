@@ -6,7 +6,8 @@ import { javascriptLessons } from "@/content/languages/javascript";
 import { dsaLessons } from "@/content/dsa/lessons";
 import { dsaTopics } from "@/content/dsa/topics";
 import { problems } from "@/content/problems";
-import { LessonSchema, ProblemSchema } from "@/types/content";
+import { revisionCards } from "@/content/revision";
+import { LessonSchema, ProblemSchema, RevisionCardSchema } from "@/types/content";
 
 describe("Curriculum Content Integrity", () => {
   it("validates all Java lessons against LessonSchema", () => {
@@ -50,22 +51,42 @@ describe("Curriculum Content Integrity", () => {
     }
   });
 
-  it("validates all DSA lessons against LessonSchema", () => {
-    expect(dsaLessons.length).toBeGreaterThanOrEqual(3);
+  it("validates all DSA lessons against LessonSchema with all pedagogical requirements", () => {
+    expect(dsaLessons.length).toBeGreaterThanOrEqual(20);
     for (const lesson of dsaLessons) {
       const parsed = LessonSchema.safeParse(lesson);
       expect(parsed.success, `DSA lesson ${lesson.id} failed validation: ${parsed.error?.message}`).toBe(true);
+      expect(lesson.howItWorks.length).toBeGreaterThan(0);
+      expect(lesson.commonMistakes.length).toBeGreaterThan(0);
+      expect(lesson.quickRevision.length).toBeGreaterThanOrEqual(3);
+      expect(lesson.whyDoWeNeedIt.problem.length).toBeGreaterThan(0);
+      expect(lesson.tryItYourself.solutionSnippet.length).toBeGreaterThan(0);
     }
   });
 
-  it("ensures DSA topics list contains 20 pedagogical topics with unique slugs", () => {
+  it("ensures every topic in the 20-topic DSA roadmap has an implemented lesson", () => {
     expect(dsaTopics.length).toBe(20);
-    const slugs = new Set(dsaTopics.map((t) => t.slug));
-    expect(slugs.size).toBe(20);
+    const lessonSlugs = new Set(dsaLessons.map((l) => l.slug));
+    for (const topic of dsaTopics) {
+      expect(lessonSlugs.has(topic.slug), `Missing DSA lesson for topic slug: ${topic.slug}`).toBe(true);
+    }
   });
 
-  it("validates all 33 curated company problems have Brute Force and Optimal solutions in Java, C++, Python, and JavaScript with company tags", () => {
-    expect(problems.length).toBe(33);
+  it("validates all high-yield revision cards against RevisionCardSchema", () => {
+    expect(revisionCards.length).toBeGreaterThanOrEqual(15);
+    for (const card of revisionCards) {
+      const parsed = RevisionCardSchema.safeParse(card);
+      expect(parsed.success, `Revision card ${card.id} failed validation: ${parsed.error?.message}`).toBe(true);
+      expect(card.rememberPoints.length).toBeGreaterThanOrEqual(3);
+      expect(card.commonMistakes.length).toBeGreaterThanOrEqual(2);
+      expect(card.importantPatterns.length).toBeGreaterThanOrEqual(2);
+    }
+  });
+
+  it("validates all 65 curated company problems have Brute Force and Optimal solutions in Java, C++, Python, and JavaScript with company tags", () => {
+    expect(problems.length).toBe(65);
+
+
 
     for (const prob of problems) {
       const parsed = ProblemSchema.safeParse(prob);

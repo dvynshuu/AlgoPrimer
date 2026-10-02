@@ -678,4 +678,390 @@ public:
     tags: ["Array", "Binary Search"],
     companies: ["Microsoft", "Amazon", "Goldman Sachs", "Bloomberg"],
   },
+  {
+    id: "koko-eating-bananas",
+    slug: "koko-eating-bananas",
+    title: "Koko Eating Bananas",
+    topic: "Binary Search",
+    subtopic: "Search on Answer Space",
+    difficulty: "Medium",
+    progressionLevel: "Level 4: Optimization",
+    statement:
+      "Koko loves to eat bananas. There are `n` piles of bananas, the `i`th pile has `piles[i]` bananas. The guards have gone and will come back in `h` hours. Koko can decide her bananas-per-hour eating speed of `k`. Each hour, she chooses some pile of bananas and eats `k` bananas from that pile. If the pile has less than `k` bananas, she eats all of them instead and will not eat any more bananas during this hour. Return the minimum integer `k` such that she can eat all the bananas within `h` hours.",
+    understandTheProblem:
+      "Find the slowest speed k (bananas/hour) such that Koko can eat every pile within h hours. Since she spends at least 1 hour per pile (even if pile < k), h must be >= number of piles.",
+    constraints: [
+      "1 <= piles.length <= 10^4",
+      "piles.length <= h <= 10^9",
+      "1 <= piles[i] <= 10^9",
+    ],
+    examples: [
+      {
+        input: "piles = [3, 6, 7, 11], h = 8",
+        output: "4",
+        explanation: "At speed 4: ceil(3/4)=1, ceil(6/4)=2, ceil(7/4)=2, ceil(11/4)=3. Total hours = 1+2+2+3 = 8 <= 8. Optimal!",
+      },
+      {
+        input: "piles = [30, 11, 23, 4, 20], h = 5",
+        output: "30",
+        explanation: "Since h == piles.length, she must eat each pile in 1 hour, so speed = max(piles) = 30.",
+      },
+    ],
+    hints: [
+      "What is the smallest conceivable eating speed? 1.",
+      "What is the largest conceivable eating speed? The largest pile in the array (max(piles)).",
+      "If speed X is feasible, any speed > X is also feasible! The decision function is monotonic: [F, F, ..., T, T]. Use Binary Search on the speed range [1, max(piles)]!",
+    ],
+    bruteForce: {
+      title: "Approach 1 — Linear Speed Scan",
+      intuition:
+        "Test speeds 1, 2, 3... up to max(piles). The first speed that allows Koko to finish within h hours is the answer.",
+      code: {
+        java: `public int minEatingSpeed(int[] piles, int h) {
+    int max = 0;
+    for (int p : piles) max = Math.max(max, p);
+
+    for (int speed = 1; speed <= max; speed++) {
+        long totalHours = 0;
+        for (int p : piles) {
+            totalHours += (p + speed - 1) / speed; // ceil division
+        }
+        if (totalHours <= h) return speed;
+    }
+    return max;
+}`,
+        cpp: `int minEatingSpeed(vector<int>& piles, int h) {
+    int maxVal = *max_element(piles.begin(), piles.end());
+    for (int speed = 1; speed <= maxVal; speed++) {
+        long long hours = 0;
+        for (int p : piles) hours += (p + speed - 1) / speed;
+        if (hours <= h) return speed;
+    }
+    return maxVal;
+}`,
+        python: `def minEatingSpeed(piles: list[int], h: int) -> int:
+    max_val = max(piles)
+    for speed in range(1, max_val + 1):
+        hours = sum((p + speed - 1) // speed for p in piles)
+        if hours <= h:
+            return speed
+    return max_val`,
+        javascript: `var minEatingSpeed = function(piles, h) {
+    let max = Math.max(...piles);
+    for (let speed = 1; speed <= max; speed++) {
+        let hours = 0;
+        for (const p of piles) hours += Math.ceil(p / speed);
+        if (hours <= h) return speed;
+    }
+    return max;
+};`,
+      },
+      timeComplexity: "O(N * max(piles))",
+      spaceComplexity: "O(1)",
+      explanation:
+        "When max(piles) = 10^9 and N = 10^4, naive linear testing requires 10^13 operations, which severely times out.",
+    },
+    optimalSolution: {
+      title: "Approach 2 — Binary Search on Answer Space",
+      intuition:
+        "Binary search the speed range `[low = 1, high = max(piles)]`. For midpoint speed `mid`, calculate total hours. If `hours <= h`, speed `mid` works; record it and search for a slower speed by setting `high = mid - 1`. If `hours > h`, speed is too slow; set `low = mid + 1`.",
+      code: {
+        java: `public class KokoEating {
+    public int minEatingSpeed(int[] piles, int h) {
+        int low = 1, high = 0;
+        for (int p : piles) high = Math.max(high, p);
+
+        int bestSpeed = high;
+        while (low <= high) {
+            int mid = low + (high - low) / 2;
+            if (canFinish(piles, h, mid)) {
+                bestSpeed = mid;
+                high = mid - 1; // Try to find a slower speed
+            } else {
+                low = mid + 1;  // Speed is too slow, increase it
+            }
+        }
+        return bestSpeed;
+    }
+
+    private boolean canFinish(int[] piles, int h, int speed) {
+        long totalHours = 0;
+        for (int p : piles) {
+            // Integer ceiling arithmetic without floating point precision issues:
+            totalHours += (p + speed - 1) / speed;
+            if (totalHours > h) return false; // Early exit
+        }
+        return totalHours <= h;
+    }
+}`,
+        cpp: `int minEatingSpeed(vector<int>& piles, int h) {
+    int low = 1, high = *max_element(piles.begin(), piles.end());
+    int bestSpeed = high;
+
+    while (low <= high) {
+        int mid = low + (high - low) / 2;
+        long long hours = 0;
+        for (int p : piles) {
+            hours += (p + mid - 1) / mid;
+        }
+        if (hours <= h) {
+            bestSpeed = mid;
+            high = mid - 1;
+        } else {
+            low = mid + 1;
+        }
+    }
+    return bestSpeed;
+}`,
+        python: `def minEatingSpeed(piles: list[int], h: int) -> int:
+    low, high = 1, max(piles)
+    best_speed = high
+
+    while low <= high:
+        mid = (low + high) // 2
+        hours = sum((p + mid - 1) // mid for p in piles)
+        if hours <= h:
+            best_speed = mid
+            high = mid - 1
+        else:
+            low = mid + 1
+
+    return best_speed`,
+        javascript: `var minEatingSpeed = function(piles, h) {
+    let low = 1, high = Math.max(...piles);
+    let bestSpeed = high;
+
+    while (low <= high) {
+        const mid = low + Math.floor((high - low) / 2);
+        let hours = 0;
+        for (const p of piles) {
+            hours += Math.ceil(p / mid);
+        }
+        if (hours <= h) {
+            bestSpeed = mid;
+            high = mid - 1;
+        } else {
+            low = mid + 1;
+        }
+    }
+    return bestSpeed;
+};`,
+      },
+      timeComplexity: "O(N * log(max(piles)))",
+      spaceComplexity: "O(1) auxiliary memory",
+      whyOptimal:
+        "log2(10^9) is only 30 iterations. 30 * 10^4 = 3 * 10^5 operations, executing in under 5 milliseconds.",
+    },
+    pattern: "Binary Search on Answer",
+    complexitySummary: {
+      time: "O(N * log(max(P)))",
+      space: "O(1)",
+    },
+    dryRun: {
+      sampleInput: "piles = [3, 6, 7, 11], h = 8",
+      steps: [
+        { stepNumber: 1, state: "low = 1, high = 11", action: "mid = 6. hours = 1+1+2+2 = 6 <= 8 (Valid!)", result: "best = 6, high = 5" },
+        { stepNumber: 2, state: "low = 1, high = 5", action: "mid = 3. hours = 1+2+3+4 = 10 > 8 (Too slow!)", result: "low = 4" },
+        { stepNumber: 3, state: "low = 4, high = 5", action: "mid = 4. hours = 1+2+2+3 = 8 <= 8 (Valid!)", result: "best = 4, high = 3" },
+        { stepNumber: 4, state: "low = 4, high = 3", action: "low > high. Terminate.", result: "returns bestSpeed = 4" },
+      ],
+    },
+    commonMistakes: [
+      {
+        mistake: "Using integer division without ceiling: p / speed",
+        why: "If pile is 7 and speed is 4, 7 / 4 = 1 in integer division, but Koko actually requires 2 hours.",
+        fix: "Use `(p + speed - 1) / speed` or `(long) Math.ceil((double) p / speed)`.",
+      },
+      {
+        mistake: "32-bit integer overflow when accumulating totalHours",
+        why: "Summing 10^4 piles with speed 1 can exceed 2^31 - 1 when piles[i] are large.",
+        fix: "Use 64-bit `long` for `totalHours`.",
+      },
+    ],
+    variations: [
+      "Capacity to Ship Packages Within D Days",
+      "Split Array Largest Sum",
+      "Minimum Time to Repair Cars",
+    ],
+    practice: [
+      { title: "Capacity to Ship Packages Within D Days", difficulty: "Medium" },
+      { title: "Split Array Largest Sum", difficulty: "Hard" },
+    ],
+    tags: ["Array", "Binary Search", "Search on Answer"],
+    companies: ["Google", "Amazon", "Meta", "Bloomberg", "Uber"],
+  },
+  {
+    id: "search-a-2d-matrix",
+    slug: "search-a-2d-matrix",
+    title: "Search a 2D Matrix",
+    topic: "Binary Search",
+    subtopic: "Virtual 1D Flattening",
+    difficulty: "Medium",
+    progressionLevel: "Level 3: Pattern Recognition",
+    statement:
+      "You are given an `m x n` integer matrix `matrix` with the following two properties: Each row is sorted in non-decreasing order; the first integer of each row is greater than the last integer of the previous row. Given an integer `target`, return `true` if `target` is in `matrix` or `false` otherwise. You must write a solution in `O(log(m * n))` time complexity.",
+    understandTheProblem:
+      "The matrix rows are glued together into a continuous sorted list. Find if target exists in O(log(m * n)) time.",
+    constraints: [
+      "m == matrix.length",
+      "n == matrix[i].length",
+      "1 <= m, n <= 100",
+      "-10^4 <= matrix[i][j], target <= 10^4",
+    ],
+    examples: [
+      {
+        input: "matrix = [[1, 3, 5, 7], [10, 11, 16, 20], [23, 30, 34, 60]], target = 3",
+        output: "true",
+        explanation: "3 is found at row 0, column 1.",
+      },
+      {
+        input: "matrix = [[1, 3, 5, 7], [10, 11, 16, 20], [23, 30, 34, 60]], target = 13",
+        output: "false",
+        explanation: "13 is not present in the matrix.",
+      },
+    ],
+    hints: [
+      "Because the last element of row i < first element of row i+1, the entire matrix can be treated as a single 1D sorted array of size M * N!",
+      "How do you convert a 1D index `idx` to 2D coordinates `(row, col)`? `row = idx / n`, `col = idx % n`.",
+    ],
+    bruteForce: {
+      title: "Approach 1 — Linear 2D Scan",
+      intuition:
+        "Inspect every cell in the matrix one by one with nested loops.",
+      code: {
+        java: `public boolean searchMatrix(int[][] matrix, int target) {
+    for (int[] row : matrix) {
+        for (int val : row) {
+            if (val == target) return true;
+        }
+    }
+    return false;
+}`,
+        cpp: `bool searchMatrix(vector<vector<int>>& matrix, int target) {
+    for (const auto& row : matrix) {
+        for (int val : row) {
+            if (val == target) return true;
+        }
+    }
+    return false;
+}`,
+        python: `def searchMatrix(matrix: list[list[int]], target: int) -> bool:
+    return any(target in row for row in matrix)`,
+        javascript: `var searchMatrix = function(matrix, target) {
+    for (const row of matrix) {
+        for (const val of row) {
+            if (val === target) return true;
+        }
+    }
+    return false;
+};`,
+      },
+      timeComplexity: "O(m * n)",
+      spaceComplexity: "O(1)",
+      explanation:
+        "Scans all M * N cells, failing to exploit the sorted matrix properties.",
+    },
+    optimalSolution: {
+      title: "Approach 2 — Virtual 1D Binary Search in O(log(m * n))",
+      intuition:
+        "Treat the matrix as a virtual 1D array of length `m * n` from index `0` to `m * n - 1`. Map `mid` to 2D coordinates: `row = mid / n`, `col = mid % n`. Perform canonical binary search.",
+      code: {
+        java: `public class Search2DMatrix {
+    public boolean searchMatrix(int[][] matrix, int target) {
+        if (matrix == null || matrix.length == 0 || matrix[0].length == 0) return false;
+
+        int m = matrix.length, n = matrix[0].length;
+        int low = 0, high = m * n - 1;
+
+        while (low <= high) {
+            int mid = low + (high - low) / 2;
+            int midVal = matrix[mid / n][mid % n]; // 1D to 2D mapping!
+
+            if (midVal == target) {
+                return true;
+            } else if (midVal < target) {
+                low = mid + 1;
+            } else {
+                high = mid - 1;
+            }
+        }
+        return false;
+    }
+}`,
+        cpp: `bool searchMatrix(vector<vector<int>>& matrix, int target) {
+    int m = matrix.size(), n = matrix[0].size();
+    int low = 0, high = m * n - 1;
+
+    while (low <= high) {
+        int mid = low + (high - low) / 2;
+        int midVal = matrix[mid / n][mid % n];
+        if (midVal == target) return true;
+        else if (midVal < target) low = mid + 1;
+        else high = mid - 1;
+    }
+    return false;
+}`,
+        python: `def searchMatrix(matrix: list[list[int]], target: int) -> bool:
+    m, n = len(matrix), len(matrix[0])
+    low, high = 0, m * n - 1
+
+    while low <= high:
+        mid = (low + high) // 2
+        mid_val = matrix[mid // n][mid % n]
+        if mid_val == target:
+            return True
+        elif mid_val < target:
+            low = mid + 1
+        else:
+            high = mid - 1
+    return False`,
+        javascript: `var searchMatrix = function(matrix, target) {
+    const m = matrix.length, n = matrix[0].length;
+    let low = 0, high = m * n - 1;
+
+    while (low <= high) {
+        const mid = low + Math.floor((high - low) / 2);
+        const midVal = matrix[Math.floor(mid / n)][mid % n];
+        if (midVal === target) return true;
+        else if (midVal < target) low = mid + 1;
+        else high = mid - 1;
+    }
+    return false;
+};`,
+      },
+      timeComplexity: "O(log(m * n))",
+      spaceComplexity: "O(1) auxiliary memory",
+      whyOptimal:
+        "Directly satisfies the problem requirement by executing standard binary search over the virtual flattened array.",
+    },
+    pattern: "Binary Search / 2D Matrix Mapping",
+    complexitySummary: {
+      time: "O(log(M * N))",
+      space: "O(1)",
+    },
+    dryRun: {
+      sampleInput: "matrix 3x4, target = 3",
+      steps: [
+        { stepNumber: 1, state: "low = 0, high = 11", action: "mid = 5 -> matrix[5/4][5%4] = matrix[1][1] = 11 > 3", result: "high = 4" },
+        { stepNumber: 2, state: "low = 0, high = 4", action: "mid = 2 -> matrix[2/4][2%4] = matrix[0][2] = 5 > 3", result: "high = 1" },
+        { stepNumber: 3, state: "low = 0, high = 1", action: "mid = 0 -> matrix[0][0] = 1 < 3", result: "low = 1" },
+        { stepNumber: 4, state: "low = 1, high = 1", action: "mid = 1 -> matrix[0][1] = 3 == target", result: "returns true" },
+      ],
+    },
+    commonMistakes: [
+      {
+        mistake: "Dividing by m instead of n in matrix[mid / n][mid % n]",
+        why: "Rows have length n (number of columns), so dividing by n determines the row index.",
+        fix: "Always divide and modulo by `n` (number of columns): `row = mid / n, col = mid % n`.",
+      },
+    ],
+    variations: [
+      "Search a 2D Matrix II (Rows and columns sorted independently - use Saddleback search in O(M + N))",
+    ],
+    practice: [
+      { title: "Search a 2D Matrix II", difficulty: "Medium" },
+    ],
+    tags: ["Array", "Binary Search", "Matrix"],
+    companies: ["Google", "Amazon", "Microsoft", "Meta", "Bloomberg"],
+  },
 ];

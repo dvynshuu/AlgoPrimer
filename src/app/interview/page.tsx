@@ -5,8 +5,8 @@ import { Cpu, Database, Network } from "lucide-react";
 import styles from "./interview.module.css";
 
 export const metadata = {
-  title: "Placement Interview Architecture & Guide — CampusPrep",
-  description: "Comprehensive guide to campus placement rounds: OA, Technical DSA, Core CS, and HR rounds.",
+  title: "Placement Interview Architecture & Guide — Forge",
+  description: "Comprehensive guide to campus placement rounds: OA, Technical DSA, Google SWE rubric, and Core CS.",
 };
 
 export default function InterviewPage() {
@@ -16,15 +16,15 @@ export default function InterviewPage() {
 
       <div className={styles.header}>
         <div style={{ display: "flex", gap: "var(--space-2)", alignItems: "center", marginBottom: "var(--space-2)" }}>
-          <Badge variant="level">PLACEMENT READINESS</Badge>
+          <Badge variant="level">PLACEMENT & FAANG READINESS</Badge>
           <span style={{ fontSize: "var(--font-size-xs)", color: "var(--text-muted)", fontFamily: "var(--font-mono)" }}>
-            Campus Hiring Playbook
+            Google & Tier-1 Hiring Playbook
           </span>
         </div>
-        <h1 className={styles.title}>The Campus Placement Hiring Funnel</h1>
+        <h1 className={styles.title}>The Technical Placement Hiring Funnel</h1>
         <p className={styles.desc}>
-          College campus placement drives follow a consistent 4-round pipeline. Understanding what interviewers
-          look for in each round eliminates surprise and helps you target your preparation effectively.
+          Calibrated against Google SWE (L3/L4/L5) and top-tier campus placement hiring committees.
+          Master the exact scoring rubrics, 5-phase problem solving protocol, and core CS fundamentals.
         </p>
       </div>
 
@@ -94,6 +94,113 @@ export default function InterviewPage() {
           </div>
         </div>
       </div>
+
+      {/* Google Interview Rubric & Protocol */}
+      <section style={{ marginBottom: "var(--space-12)" }}>
+        <div style={{ display: "flex", gap: "var(--space-2)", alignItems: "center", marginBottom: "var(--space-2)" }}>
+          <Badge variant="level">CALIBRATION STANDARD</Badge>
+          <span style={{ fontSize: "var(--font-size-xs)", color: "var(--text-muted)", fontFamily: "var(--font-mono)" }}>
+            Google SWE Hiring Committee Criteria
+          </span>
+        </div>
+        <h2 style={{ fontSize: "var(--font-size-2xl)", marginBottom: "var(--space-3)" }}>
+          The Google Technical Scoring Rubric (4 Pillars)
+        </h2>
+        <p style={{ fontSize: "var(--font-size-sm)", color: "var(--text-secondary)", marginBottom: "var(--space-6)", maxWidth: "800px" }}>
+          Google interviewers grade candidates across four independent dimensions on an internal 1.0 to 4.0 scale. A hire recommendation requires consistent excellence across all four pillars:
+        </p>
+
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "var(--space-4)", marginBottom: "var(--space-8)" }}>
+          <div style={{ background: "var(--bg-surface)", border: "1px solid var(--border-subtle)", borderRadius: "var(--radius-sm)", padding: "var(--space-5)" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)", marginBottom: "var(--space-2)" }}>
+              <span style={{ fontFamily: "var(--font-mono)", fontSize: "var(--font-size-xs)", color: "#60a5fa", fontWeight: 700 }}>PILLAR 01</span>
+              <h3 style={{ fontSize: "var(--font-size-md)", margin: 0 }}>Algorithms & Data Structures</h3>
+            </div>
+            <p style={{ fontSize: "var(--font-size-xs)", color: "var(--text-secondary)", lineHeight: 1.5, margin: "0 0 var(--space-3) 0" }}>
+              Ability to model abstract problems with optimal data structures, identify mathematical invariants, and rigorously prove Big-O time and auxiliary space bounds.
+            </p>
+            <div style={{ fontSize: "11px", fontFamily: "var(--font-mono)", color: "var(--text-muted)" }}>
+              Target: Identifies optimal asymptotic bound and explains trade-offs.
+            </div>
+          </div>
+
+          <div style={{ background: "var(--bg-surface)", border: "1px solid var(--border-subtle)", borderRadius: "var(--radius-sm)", padding: "var(--space-5)" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)", marginBottom: "var(--space-2)" }}>
+              <span style={{ fontFamily: "var(--font-mono)", fontSize: "var(--font-size-xs)", color: "#34d399", fontWeight: 700 }}>PILLAR 02</span>
+              <h3 style={{ fontSize: "var(--font-size-md)", margin: 0 }}>Coding Craftsmanship</h3>
+            </div>
+            <p style={{ fontSize: "var(--font-size-xs)", color: "var(--text-secondary)", lineHeight: 1.5, margin: "0 0 var(--space-3) 0" }}>
+              Writing clean, modular, production-ready code. Clean variable naming, early return guard clauses, modular helper functions, and zero hacky workarounds.
+            </p>
+            <div style={{ fontSize: "11px", fontFamily: "var(--font-mono)", color: "var(--text-muted)" }}>
+              Target: Bug-free code that could be merged directly into Google&apos;s monorepo.
+            </div>
+          </div>
+
+          <div style={{ background: "var(--bg-surface)", border: "1px solid var(--border-subtle)", borderRadius: "var(--radius-sm)", padding: "var(--space-5)" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)", marginBottom: "var(--space-2)" }}>
+              <span style={{ fontFamily: "var(--font-mono)", fontSize: "var(--font-size-xs)", color: "#c084fc", fontWeight: 700 }}>PILLAR 03</span>
+              <h3 style={{ fontSize: "var(--font-size-md)", margin: 0 }}>Communication & Scoping</h3>
+            </div>
+            <p style={{ fontSize: "var(--font-size-xs)", color: "var(--text-secondary)", lineHeight: 1.5, margin: "0 0 var(--space-3) 0" }}>
+              Clarifying underspecified problem constraints, asking proactive questions, thinking out loud during design, and collaborating receptively on hints.
+            </p>
+            <div style={{ fontSize: "11px", fontFamily: "var(--font-mono)", color: "var(--text-muted)" }}>
+              Target: Clear partner dialogue without monologue or defensive pushback.
+            </div>
+          </div>
+
+          <div style={{ background: "var(--bg-surface)", border: "1px solid var(--border-subtle)", borderRadius: "var(--radius-sm)", padding: "var(--space-5)" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)", marginBottom: "var(--space-2)" }}>
+              <span style={{ fontFamily: "var(--font-mono)", fontSize: "var(--font-size-xs)", color: "#f87171", fontWeight: 700 }}>PILLAR 04</span>
+              <h3 style={{ fontSize: "var(--font-size-md)", margin: 0 }}>Verification & Edge Cases</h3>
+            </div>
+            <p style={{ fontSize: "var(--font-size-xs)", color: "var(--text-secondary)", lineHeight: 1.5, margin: "0 0 var(--space-3) 0" }}>
+              Conducting systematic dry runs with an input trace table before announcing completion. Testing boundary cases: empty, null, single element, duplicates, overflow.
+            </p>
+            <div style={{ fontSize: "11px", fontFamily: "var(--font-mono)", color: "var(--text-muted)" }}>
+              Target: Finds and fixes subtle off-by-one errors independently.
+            </div>
+          </div>
+        </div>
+
+        {/* 5-Step Execution Protocol */}
+        <div style={{ background: "var(--bg-surface-2, #151923)", border: "1px solid var(--border-default)", borderRadius: "var(--radius-sm)", padding: "var(--space-6)" }}>
+          <h3 style={{ fontSize: "var(--font-size-lg)", marginBottom: "var(--space-2)" }}>
+            The 5-Step Coding Interview Protocol (45-Minute Breakdown)
+          </h3>
+          <p style={{ fontSize: "var(--font-size-xs)", color: "var(--text-secondary)", marginBottom: "var(--space-4)" }}>
+            Follow this chronological timeline to prevent premature coding and avoid failing on edge cases:
+          </p>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "var(--space-3)" }}>
+            <div style={{ padding: "var(--space-3)", background: "var(--bg-canvas)", borderRadius: "var(--radius-sm)", border: "1px solid var(--border-subtle)" }}>
+              <div style={{ fontFamily: "var(--font-mono)", fontSize: "var(--font-size-xs)", color: "#60a5fa" }}>00 - 05 Mins</div>
+              <h4 style={{ fontSize: "var(--font-size-sm)", margin: "4px 0" }}>1. Clarify & Scope</h4>
+              <p style={{ fontSize: "11px", color: "var(--text-secondary)", margin: 0 }}>Ask about duplicates, empty inputs, negative numbers, and scale N.</p>
+            </div>
+            <div style={{ padding: "var(--space-3)", background: "var(--bg-canvas)", borderRadius: "var(--radius-sm)", border: "1px solid var(--border-subtle)" }}>
+              <div style={{ fontFamily: "var(--font-mono)", fontSize: "var(--font-size-xs)", color: "#34d399" }}>05 - 10 Mins</div>
+              <h4 style={{ fontSize: "var(--font-size-sm)", margin: "4px 0" }}>2. Propose & Agree</h4>
+              <p style={{ fontSize: "11px", color: "var(--text-secondary)", margin: 0 }}>State brute force, identify bottleneck, propose optimal approach and Big-O.</p>
+            </div>
+            <div style={{ padding: "var(--space-3)", background: "var(--bg-canvas)", borderRadius: "var(--radius-sm)", border: "1px solid var(--border-subtle)" }}>
+              <div style={{ fontFamily: "var(--font-mono)", fontSize: "var(--font-size-xs)", color: "#c084fc" }}>10 - 30 Mins</div>
+              <h4 style={{ fontSize: "var(--font-size-sm)", margin: "4px 0" }}>3. Modular Code</h4>
+              <p style={{ fontSize: "11px", color: "var(--text-secondary)", margin: 0 }}>Write production-grade code with guard clauses and descriptive variable names.</p>
+            </div>
+            <div style={{ padding: "var(--space-3)", background: "var(--bg-canvas)", borderRadius: "var(--radius-sm)", border: "1px solid var(--border-subtle)" }}>
+              <div style={{ fontFamily: "var(--font-mono)", fontSize: "var(--font-size-xs)", color: "#f87171" }}>30 - 40 Mins</div>
+              <h4 style={{ fontSize: "var(--font-size-sm)", margin: "4px 0" }}>4. Dry Run & Verify</h4>
+              <p style={{ fontSize: "11px", color: "var(--text-secondary)", margin: 0 }}>Trace execution pointer by pointer on a sample input before saying you&apos;re done.</p>
+            </div>
+            <div style={{ padding: "var(--space-3)", background: "var(--bg-canvas)", borderRadius: "var(--radius-sm)", border: "1px solid var(--border-subtle)" }}>
+              <div style={{ fontFamily: "var(--font-mono)", fontSize: "var(--font-size-xs)", color: "#fbbf24" }}>40 - 45 Mins</div>
+              <h4 style={{ fontSize: "var(--font-size-sm)", margin: "4px 0" }}>5. Scale Follow-Ups</h4>
+              <p style={{ fontSize: "11px", color: "var(--text-secondary)", margin: 0 }}>Discuss concurrency, distributed memory limits, and streaming data.</p>
+            </div>
+          </div>
+        </div>
+      </section>
 
       <section className={styles.coreCSSection}>
         <h2 style={{ fontSize: "var(--font-size-xl)", marginBottom: "var(--space-4)" }}>

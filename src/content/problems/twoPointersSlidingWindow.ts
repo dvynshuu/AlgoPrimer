@@ -789,4 +789,663 @@ public:
     tags: ["Sliding Window", "Hash Table", "String"],
     companies: ["Amazon", "Microsoft", "Meta", "Bloomberg", "TCS"],
   },
+  {
+    id: "minimum-window-substring",
+    slug: "minimum-window-substring",
+    title: "Minimum Window Substring",
+    topic: "Two Pointers & Sliding Window",
+    subtopic: "Variable Window with Frequency Matching",
+    difficulty: "Hard",
+    progressionLevel: "Level 4: Optimization",
+    statement:
+      "Given two strings s and t of lengths m and n respectively, return the minimum window substring of s such that every character in t (including duplicates) is included in the window. If there is no such substring, return the empty string \"\".",
+    understandTheProblem:
+      "We want to find the shortest continuous substring in `s` that contains all characters of `t` with frequencies at least as large as in `t`. If multiple valid substrings exist, return the shortest one. Expand right to satisfy constraints, then contract left to minimize length.",
+    constraints: [
+      "m == s.length, n == t.length",
+      "1 <= m, n <= 10^5",
+      "s and t consist of uppercase and lowercase English letters.",
+    ],
+    examples: [
+      {
+        input: 's = "ADOBECODEBANC", t = "ABC"',
+        output: '"BANC"',
+        explanation: 'The minimum window substring "BANC" includes \'A\', \'B\', and \'C\' from string t.',
+      },
+      {
+        input: 's = "a", t = "a"',
+        output: '"a"',
+        explanation: 'The entire string s is the minimum window.',
+      },
+      {
+        input: 's = "a", t = "aa"',
+        output: '""',
+        explanation: 'Both \'a\'s from t must be included in the window. Since the largest window of s only has one \'a\', return empty string.',
+      },
+    ],
+    hints: [
+      "Use two frequency tables: `targetMap` for characters in t, and `windowMap` for characters in current window of s.",
+      "Keep track of `have` (number of distinct characters with sufficient count) and `need` (total distinct characters in t).",
+      "Advance `right`. When `have == need`, contract `left` while maintaining `have == need` to capture minimum window bounds.",
+    ],
+    bruteForce: {
+      title: "Approach 1 — All Substrings Generation",
+      intuition:
+        "Check every possible substring `s[i...j]`. For each substring, count frequencies and verify whether all characters of `t` are present.",
+      code: {
+        java: `import java.util.HashMap;
+import java.util.Map;
+
+class Solution {
+    public String minWindow(String s, String t) {
+        if (s.length() < t.length()) return "";
+        Map<Character, Integer> target = new HashMap<>();
+        for (char c : t.toCharArray()) target.put(c, target.getOrDefault(c, 0) + 1);
+
+        String best = "";
+        for (int i = 0; i < s.length(); i++) {
+            Map<Character, Integer> window = new HashMap<>();
+            for (int j = i; j < s.length(); j++) {
+                char c = s.charAt(j);
+                window.put(c, window.getOrDefault(c, 0) + 1);
+                if (isValid(window, target)) {
+                    String candidate = s.substring(i, j + 1);
+                    if (best.isEmpty() || candidate.length() < best.length()) {
+                        best = candidate;
+                    }
+                    break;
+                }
+            }
+        }
+        return best;
+    }
+
+    private boolean isValid(Map<Character, Integer> win, Map<Character, Integer> target) {
+        for (Map.Entry<Character, Integer> entry : target.entrySet()) {
+            if (win.getOrDefault(entry.getKey(), 0) < entry.getValue()) return false;
+        }
+        return true;
+    }
+}`,
+        cpp: `#include <string>
+#include <unordered_map>
+using namespace std;
+
+class Solution {
+public:
+    string minWindow(string s, string t) {
+        if (s.size() < t.size()) return "";
+        unordered_map<char, int> target;
+        for (char c : t) target[c]++;
+
+        string best = "";
+        for (int i = 0; i < (int)s.size(); i++) {
+            unordered_map<char, int> win;
+            for (int j = i; j < (int)s.size(); j++) {
+                win[s[j]]++;
+                bool valid = true;
+                for (auto& [ch, cnt] : target) {
+                    if (win[ch] < cnt) { valid = false; break; }
+                }
+                if (valid) {
+                    string sub = s.substr(i, j - i + 1);
+                    if (best.empty() || sub.size() < best.size()) best = sub;
+                    break;
+                }
+            }
+        }
+        return best;
+    }
+};`,
+        python: `class Solution:
+    def minWindow(self, s: str, t: str) -> str:
+        if len(s) < len(t):
+            return ""
+        from collections import Counter
+        target = Counter(t)
+        best = ""
+        for i in range(len(s)):
+            win = {}
+            for j in range(i, len(s)):
+                win[s[j]] = win.get(s[j], 0) + 1
+                if all(win.get(ch, 0) >= cnt for ch, cnt in target.items()):
+                    candidate = s[i:j + 1]
+                    if not best or len(candidate) < len(best):
+                        best = candidate
+                    break
+        return best`,
+        javascript: `var minWindow = function(s, t) {
+    if (s.length < t.length) return "";
+    const target = {};
+    for (const c of t) target[c] = (target[c] || 0) + 1;
+    let best = "";
+
+    for (let i = 0; i < s.length; i++) {
+        const win = {};
+        for (let j = i; j < s.length; j++) {
+            win[s[j]] = (win[s[j]] || 0) + 1;
+            let valid = true;
+            for (const ch in target) {
+                if ((win[ch] || 0) < target[ch]) { valid = false; break; }
+            }
+            if (valid) {
+                const sub = s.slice(i, j + 1);
+                if (!best || sub.length < best.length) best = sub;
+                break;
+            }
+        }
+    }
+    return best;
+};`,
+      },
+      timeComplexity: "O(M^2 * |Sigma|) — O(M^2) substrings with alphabet validation check.",
+      spaceComplexity: "O(|Sigma|) — Maps for character counts.",
+      explanation: "Scans all possible substring combinations and verifies validity against the target map.",
+    },
+    optimalSolution: {
+      title: "Approach 2 — Sliding Window with Frequency Counting",
+      intuition:
+        "Maintain frequency table of `t` and count of satisfied distinct characters (`have`). Expand `right` pointer until `have == need`. Once all conditions are satisfied, advance `left` pointer to shrink the window, updating the minimum window length until the condition is violated. Repeat until `right` reaches the end.",
+      code: {
+        java: `class Solution {
+    public String minWindow(String s, String t) {
+        if (s.length() < t.length()) return "";
+
+        int[] target = new int[128];
+        int distinct = 0;
+        for (char c : t.toCharArray()) {
+            if (target[c] == 0) distinct++;
+            target[c]++;
+        }
+
+        int[] window = new int[128];
+        int have = 0, need = distinct;
+        int minLen = Integer.MAX_VALUE, startIdx = 0;
+        int left = 0;
+
+        for (int right = 0; right < s.length(); right++) {
+            char rChar = s.charAt(right);
+            window[rChar]++;
+
+            if (target[rChar] > 0 && window[rChar] == target[rChar]) {
+                have++;
+            }
+
+            while (have == need) {
+                if (right - left + 1 < minLen) {
+                    minLen = right - left + 1;
+                    startIdx = left;
+                }
+
+                char lChar = s.charAt(left);
+                window[lChar]--;
+                if (target[lChar] > 0 && window[lChar] < target[lChar]) {
+                    have--;
+                }
+                left++;
+            }
+        }
+
+        return minLen == Integer.MAX_VALUE ? "" : s.substring(startIdx, startIdx + minLen);
+    }
+}`,
+        cpp: `#include <string>
+#include <vector>
+#include <climits>
+using namespace std;
+
+class Solution {
+public:
+    string minWindow(string s, string t) {
+        if (s.size() < t.size()) return "";
+
+        vector<int> target(128, 0);
+        int distinct = 0;
+        for (char c : t) {
+            if (target[c] == 0) distinct++;
+            target[c]++;
+        }
+
+        vector<int> window(128, 0);
+        int have = 0, need = distinct;
+        int minLen = INT_MAX, startIdx = 0;
+        int left = 0;
+
+        for (int right = 0; right < (int)s.size(); right++) {
+            char rChar = s[right];
+            window[rChar]++;
+
+            if (target[rChar] > 0 && window[rChar] == target[rChar]) {
+                have++;
+            }
+
+            while (have == need) {
+                if (right - left + 1 < minLen) {
+                    minLen = right - left + 1;
+                    startIdx = left;
+                }
+
+                char lChar = s[left];
+                window[lChar]--;
+                if (target[lChar] > 0 && window[lChar] < target[lChar]) {
+                    have--;
+                }
+                left++;
+            }
+        }
+
+        return minLen == INT_MAX ? "" : s.substr(startIdx, minLen);
+    }
+};`,
+        python: `class Solution:
+    def minWindow(self, s: str, t: str) -> str:
+        if len(s) < len(t):
+            return ""
+
+        from collections import Counter
+        target = Counter(t)
+        window = {}
+        have, need = 0, len(target)
+        min_len = float("inf")
+        res = [-1, -1]
+        left = 0
+
+        for right, char in enumerate(s):
+            window[char] = window.get(char, 0) + 1
+
+            if char in target and window[char] == target[char]:
+                have += 1
+
+            while have == need:
+                if (right - left + 1) < min_len:
+                    min_len = right - left + 1
+                    res = [left, right]
+
+                window[s[left]] -= 1
+                if s[left] in target and window[s[left]] < target[s[left]]:
+                    have -= 1
+                left += 1
+
+        return s[res[0]:res[1] + 1] if min_len != float("inf") else ""`,
+        javascript: `var minWindow = function(s, t) {
+    if (s.length < t.length) return "";
+
+    const target = new Int32Array(128);
+    let distinct = 0;
+    for (let i = 0; i < t.length; i++) {
+        const code = t.charCodeAt(i);
+        if (target[code] === 0) distinct++;
+        target[code]++;
+    }
+
+    const window = new Int32Array(128);
+    let have = 0, need = distinct;
+    let minLen = Infinity, startIdx = 0;
+    let left = 0;
+
+    for (let right = 0; right < s.length; right++) {
+        const rCode = s.charCodeAt(right);
+        window[rCode]++;
+
+        if (target[rCode] > 0 && window[rCode] === target[rCode]) {
+            have++;
+        }
+
+        while (have === need) {
+            if (right - left + 1 < minLen) {
+                minLen = right - left + 1;
+                startIdx = left;
+            }
+
+            const lCode = s.charCodeAt(left);
+            window[lCode]--;
+            if (target[lCode] > 0 && window[lCode] < target[lCode]) {
+                have--;
+            }
+            left++;
+        }
+    }
+
+    return minLen === Infinity ? "" : s.substring(startIdx, startIdx + minLen);
+};`,
+      },
+      timeComplexity: "O(M + N) — Each character in s is visited at most twice (once by right, once by left).",
+      spaceComplexity: "O(1) — Fixed-size 128 integer array for ASCII table.",
+      explanation: "Both pointers sweep across string s monotonically, testing windows in strict linear time.",
+      whyOptimal: "Guarantees optimal O(M + N) runtime without allocating string slices inside the inner loop.",
+    },
+    pattern: "Sliding Window / Two Pointers / Frequency Matching",
+    complexitySummary: {
+      time: "O(M + N)",
+      space: "O(1)",
+    },
+    dryRun: {
+      sampleInput: 's = "ADOBECODEBANC", t = "ABC"',
+      steps: [
+        {
+          stepNumber: 1,
+          state: "right expands to index 5 ('C')",
+          action: "Window 'ADOBEC' contains A:1, B:1, C:1. have == need (3 == 3).",
+          result: "First valid window found: length 6 ('ADOBEC').",
+        },
+        {
+          stepNumber: 2,
+          state: "left contracts to 1",
+          action: "'A' removed -> have drops to 2. Stop contracting.",
+          result: "minLen remains 6.",
+        },
+        {
+          stepNumber: 3,
+          state: "right expands to index 12 ('C')",
+          action: "Window contains 'CODEBANC'. have == 3. Contract left past 'CODE'.",
+          result: "Contract left to index 9: 'BANC' has len 4.",
+        },
+        {
+          stepNumber: 4,
+          state: "left contracts past 'B'",
+          action: "have drops to 2. End of string reached.",
+          result: "Final minimum window is 'BANC' (length 4).",
+        },
+      ],
+    },
+    commonMistakes: [
+      {
+        mistake: "Checking target match with full map iteration on every step",
+        fix: "Tracking the scalar count `have` vs `need` enables O(1) condition checking on every pointer step instead of O(|Sigma|).",
+      },
+      {
+        mistake: "Slicing substrings inside the inner while loop",
+        fix: "Only update indices `startIdx` and `minLen` inside the loop; extract the substring once at the end.",
+      },
+    ],
+    variations: [
+      "Permutation in String",
+      "Find All Anagrams in a String",
+      "Substring with Concatenation of All Words",
+    ],
+    practice: [
+      { title: "Permutation in String", difficulty: "Medium" },
+      { title: "Find All Anagrams in a String", difficulty: "Medium" },
+    ],
+    tags: ["Hash Table", "String", "Sliding Window"],
+    companies: ["Google", "Meta", "Amazon", "Microsoft", "LinkedIn", "Apple"],
+  },
+  {
+    id: "longest-repeating-character-replacement",
+    slug: "longest-repeating-character-replacement",
+    title: "Longest Repeating Character Replacement",
+    topic: "Two Pointers & Sliding Window",
+    subtopic: "Frequency Invariant Window",
+    difficulty: "Medium",
+    progressionLevel: "Level 3: Pattern Recognition",
+    statement:
+      "You are given a string s and an integer k. You can choose any character of the string and change it to any other uppercase English character. You can perform this operation at most k times. Return the length of the longest substring containing the same letter you can get after performing the above operations.",
+    understandTheProblem:
+      "For any candidate window `[left...right]` of length `len = right - left + 1`, the minimum number of replacements needed to make all characters identical is `len - maxFrequency`. The window is valid if `len - maxFrequency <= k`. We want the maximum valid window length.",
+    constraints: [
+      "1 <= s.length <= 10^5",
+      "s consists of only uppercase English letters.",
+      "0 <= k <= s.length",
+    ],
+    examples: [
+      {
+        input: 's = "ABAB", k = 2',
+        output: "4",
+        explanation: 'Replace the two \'A\'s with two \'B\'s or vice versa to get "BBBB" or "AAAA".',
+      },
+      {
+        input: 's = "AABABBA", k = 1',
+        output: "4",
+        explanation: 'Replace the one \'A\' in the middle with \'B\' and form "AABBBBA". The substring "BBBB" has length 4.',
+      },
+    ],
+    hints: [
+      "What makes a substring valid? Substring length minus the frequency of the most common character must be <= k.",
+      "As the window expands, maintain the maximum frequency of any character seen so far.",
+      "Do we need to decrement `maxFreq` when shrinking? No! A smaller `maxFreq` will never yield a longer valid window than what we have already seen.",
+    ],
+    bruteForce: {
+      title: "Approach 1 — All Substrings Checking",
+      intuition:
+        "Check all pairs `(i, j)`. For each substring, count frequencies of all 26 uppercase letters, find the maximum frequency, and check if `(j - i + 1) - maxFreq <= k`.",
+      code: {
+        java: `class Solution {
+    public int characterReplacement(String s, int k) {
+        int maxLen = 0;
+        for (int i = 0; i < s.length(); i++) {
+            int[] counts = new int[26];
+            int maxFreq = 0;
+            for (int j = i; j < s.length(); j++) {
+                counts[s.charAt(j) - 'A']++;
+                maxFreq = Math.max(maxFreq, counts[s.charAt(j) - 'A']);
+                int len = j - i + 1;
+                if (len - maxFreq <= k) {
+                    maxLen = Math.max(maxLen, len);
+                }
+            }
+        }
+        return maxLen;
+    }
+}`,
+        cpp: `#include <string>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+class Solution {
+public:
+    int characterReplacement(string s, int k) {
+        int maxLen = 0;
+        int n = s.size();
+        for (int i = 0; i < n; i++) {
+            vector<int> counts(26, 0);
+            int maxFreq = 0;
+            for (int j = i; j < n; j++) {
+                counts[s[j] - 'A']++;
+                maxFreq = max(maxFreq, counts[s[j] - 'A']);
+                int len = j - i + 1;
+                if (len - maxFreq <= k) {
+                    maxLen = max(maxLen, len);
+                }
+            }
+        }
+        return maxLen;
+    }
+};`,
+        python: `class Solution:
+    def characterReplacement(self, s: str, k: int) -> int:
+        max_len = 0
+        n = len(s)
+        for i in range(n):
+            counts = [0] * 26
+            max_freq = 0
+            for j in range(i, n):
+                idx = ord(s[j]) - ord('A')
+                counts[idx] += 1
+                max_freq = max(max_freq, counts[idx])
+                if (j - i + 1) - max_freq <= k:
+                    max_len = max(max_len, j - i + 1)
+        return max_len`,
+        javascript: `var characterReplacement = function(s, k) {
+    let maxLen = 0;
+    const n = s.length;
+    for (let i = 0; i < n; i++) {
+        const counts = new Int32Array(26);
+        let maxFreq = 0;
+        for (let j = i; j < n; j++) {
+            const idx = s.charCodeAt(j) - 65;
+            counts[idx]++;
+            maxFreq = Math.max(maxFreq, counts[idx]);
+            const len = j - i + 1;
+            if (len - maxFreq <= k) {
+                maxLen = Math.max(maxLen, len);
+            }
+        }
+    }
+    return maxLen;
+};`,
+      },
+      timeComplexity: "O(N^2) — Double loop checking every substring.",
+      spaceComplexity: "O(1) — Constant size array of 26 integers.",
+      explanation: "Iterates through all possible substrings, calculating replacement requirements individually.",
+    },
+    optimalSolution: {
+      title: "Approach 2 — Sliding Window with Non-Shrinking Invariant",
+      intuition:
+        "Expand `right` and update `counts[s[right]]` and `maxFreq = max(maxFreq, counts[s[right]])`. If `(right - left + 1) - maxFreq > k`, advance `left` by 1 and decrement `counts[s[left]]`. Notice we never need to decrease `maxFreq` because only a window with a strictly higher `maxFreq` can exceed the current max window size.",
+      code: {
+        java: `class Solution {
+    public int characterReplacement(String s, int k) {
+        int[] counts = new int[26];
+        int maxFreq = 0;
+        int left = 0;
+        int maxLen = 0;
+
+        for (int right = 0; right < s.length(); right++) {
+            int rIdx = s.charAt(right) - 'A';
+            counts[rIdx]++;
+            maxFreq = Math.max(maxFreq, counts[rIdx]);
+
+            while ((right - left + 1) - maxFreq > k) {
+                counts[s.charAt(left) - 'A']--;
+                left++;
+            }
+
+            maxLen = Math.max(maxLen, right - left + 1);
+        }
+
+        return maxLen;
+    }
+}`,
+        cpp: `#include <string>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+class Solution {
+public:
+    int characterReplacement(string s, int k) {
+        vector<int> counts(26, 0);
+        int maxFreq = 0;
+        int left = 0;
+        int maxLen = 0;
+
+        for (int right = 0; right < (int)s.size(); right++) {
+            int rIdx = s[right] - 'A';
+            counts[rIdx]++;
+            maxFreq = max(maxFreq, counts[rIdx]);
+
+            while ((right - left + 1) - maxFreq > k) {
+                counts[s[left] - 'A']--;
+                left++;
+            }
+
+            maxLen = max(maxLen, right - left + 1);
+        }
+
+        return maxLen;
+    }
+};`,
+        python: `class Solution:
+    def characterReplacement(self, s: str, k: int) -> int:
+        counts = [0] * 26
+        max_freq = 0
+        left = 0
+        max_len = 0
+
+        for right, char in enumerate(s):
+            idx = ord(char) - ord('A')
+            counts[idx] += 1
+            max_freq = max(max_freq, counts[idx])
+
+            while (right - left + 1) - max_freq > k:
+                counts[ord(s[left]) - ord('A')] -= 1
+                left += 1
+
+            max_len = max(max_len, right - left + 1)
+
+        return max_len`,
+        javascript: `var characterReplacement = function(s, k) {
+    const counts = new Int32Array(26);
+    let maxFreq = 0;
+    let left = 0;
+    let maxLen = 0;
+
+    for (let right = 0; right < s.length; right++) {
+        const rIdx = s.charCodeAt(right) - 65;
+        counts[rIdx]++;
+        maxFreq = Math.max(maxFreq, counts[rIdx]);
+
+        while ((right - left + 1) - maxFreq > k) {
+            counts[s.charCodeAt(left) - 65]--;
+            left++;
+        }
+
+        maxLen = Math.max(maxLen, right - left + 1);
+    }
+
+    return maxLen;
+};`,
+      },
+      timeComplexity: "O(N) — Single pass where right and left pointers only increment forward.",
+      spaceComplexity: "O(1) — Array of 26 integers for uppercase Latin alphabet.",
+      explanation: "Maintains a sliding window where at most k characters need replacement to match the most frequent character.",
+      whyOptimal: "Runs in optimal linear O(N) time with minimal O(1) space overhead.",
+    },
+    pattern: "Sliding Window / Frequency Invariant",
+    complexitySummary: {
+      time: "O(N)",
+      space: "O(1)",
+    },
+    dryRun: {
+      sampleInput: 's = "AABABBA", k = 1',
+      steps: [
+        {
+          stepNumber: 1,
+          state: "right = 0..2 ('AAB')",
+          action: "counts={'A':2, 'B':1}, maxFreq=2. window=3. len - maxFreq = 3 - 2 = 1 <= 1 (valid).",
+          result: "maxLen = 3.",
+        },
+        {
+          stepNumber: 2,
+          state: "right = 3 ('A')",
+          action: "counts={'A':3, 'B':1}, maxFreq=3. window=4. 4 - 3 = 1 <= 1 (valid).",
+          result: "maxLen = 4.",
+        },
+        {
+          stepNumber: 3,
+          state: "right = 4 ('B')",
+          action: "counts={'A':3, 'B':2}, maxFreq=3. window=5. 5 - 3 = 2 > 1 (invalid). Contract left by 1.",
+          result: "left advances to 1.",
+        },
+        {
+          stepNumber: 4,
+          state: "right = 6 ('A')",
+          action: "Remaining window maintains maxLen=4.",
+          result: "Final answer is 4.",
+        },
+      ],
+    },
+    commonMistakes: [
+      {
+        mistake: "Trying to recalculate the entire maxFreq array every time left advances",
+        fix: "You do not need to decrease `maxFreq` when shrinking because an older, slightly overstated `maxFreq` will not falsely declare a larger new window valid.",
+      },
+      {
+        mistake: "Off-by-one error when calculating replacement budget",
+        fix: "Remember the budget condition is `windowLength - maxFreq <= k`.",
+      },
+    ],
+    variations: [
+      "Max Consecutive Ones III (binary version with k flips)",
+      "Longest Substring with At Most K Distinct Characters",
+    ],
+    practice: [
+      { title: "Max Consecutive Ones III", difficulty: "Medium" },
+      { title: "Longest Substring with At Most Two Distinct Characters", difficulty: "Medium" },
+    ],
+    tags: ["Hash Table", "String", "Sliding Window"],
+    companies: ["Google", "Amazon", "Meta", "Bloomberg", "Uber"],
+  },
 ];
+

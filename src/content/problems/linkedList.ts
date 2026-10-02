@@ -1033,4 +1033,787 @@ public:
     tags: ["Linked List", "Two Pointers"],
     companies: ["Amazon", "Meta", "Microsoft", "Google", "TCS"],
   },
+  {
+    id: "reorder-list",
+    slug: "reorder-list",
+    title: "Reorder List",
+    topic: "Linked Lists",
+    subtopic: "Multi-Pointer Composition",
+    difficulty: "Medium",
+    progressionLevel: "Level 3: Pattern Recognition",
+    statement:
+      "You are given the head of a singly linked-list: L0 -> L1 -> ... -> Ln-1 -> Ln. Reorder the list to be: L0 -> Ln -> L1 -> Ln-1 -> L2 -> Ln-2 -> ... You may not modify the values in the list's nodes. Only nodes themselves may be changed.",
+    understandTheProblem:
+      "The problem asks us to interleave the first half of the linked list with the second half in reverse order. For example, 1->2->3->4->5 becomes 1->5->2->4->3. Notice that the elements from the back appear every second node in decreasing order.",
+    constraints: [
+      "The number of nodes in the list is in the range [1, 5 * 10^4].",
+      "1 <= Node.val <= 1000",
+    ],
+    examples: [
+      {
+        input: "head = [1,2,3,4]",
+        output: "[1,4,2,3]",
+        explanation: "The first half is 1->2, second half reversed is 4->3. Merging them produces 1->4->2->3.",
+      },
+      {
+        input: "head = [1,2,3,4,5]",
+        output: "[1,5,2,4,3]",
+        explanation: "First half: 1->2->3, second half reversed: 5->4. Interleaved: 1->5->2->4->3.",
+      },
+    ],
+    hints: [
+      "Notice that the second half of the list is visited in reverse order. Can you reverse the second half of the list in place?",
+      "To find where the second half begins, use the Tortoise and Hare (slow/fast pointer) algorithm.",
+      "Once you reverse the second half, you have two lists: head1 and head2. Merge them node by node.",
+    ],
+    bruteForce: {
+      title: "Approach 1 — Array / List Buffer",
+      intuition:
+        "Copy all node references into an array or list. Then use two pointers (left at 0, right at n-1) to re-link nodes in alternating order.",
+      code: {
+        java: `import java.util.ArrayList;
+import java.util.List;
+
+class Solution {
+    public void reorderList(ListNode head) {
+        if (head == null || head.next == null) return;
+        List<ListNode> nodes = new ArrayList<>();
+        ListNode curr = head;
+        while (curr != null) {
+            nodes.add(curr);
+            curr = curr.next;
+        }
+        int left = 0, right = nodes.size() - 1;
+        while (left < right) {
+            nodes.get(left).next = nodes.get(right);
+            left++;
+            if (left >= right) break;
+            nodes.get(right).next = nodes.get(left);
+            right--;
+        }
+        nodes.get(left).next = null;
+    }
+}`,
+        cpp: `#include <vector>
+using namespace std;
+
+class Solution {
+public:
+    void reorderList(ListNode* head) {
+        if (!head || !head->next) return;
+        vector<ListNode*> nodes;
+        ListNode* curr = head;
+        while (curr) {
+            nodes.push_back(curr);
+            curr = curr->next;
+        }
+        int left = 0, right = (int)nodes.size() - 1;
+        while (left < right) {
+            nodes[left]->next = nodes[right];
+            left++;
+            if (left >= right) break;
+            nodes[right]->next = nodes[left];
+            right--;
+        }
+        nodes[left]->next = nullptr;
+    }
+};`,
+        python: `class Solution:
+    def reorderList(self, head: Optional[ListNode]) -> None:
+        if not head or not head.next:
+            return
+        nodes = []
+        curr = head
+        while curr:
+            nodes.append(curr)
+            curr = curr.next
+        left, right = 0, len(nodes) - 1
+        while left < right:
+            nodes[left].next = nodes[right]
+            left += 1
+            if left >= right:
+                break
+            nodes[right].next = nodes[left]
+            right -= 1
+        nodes[left].next = None`,
+        javascript: `var reorderList = function(head) {
+    if (!head || !head.next) return;
+    const nodes = [];
+    let curr = head;
+    while (curr) {
+        nodes.push(curr);
+        curr = curr.next;
+    }
+    let left = 0, right = nodes.length - 1;
+    while (left < right) {
+        nodes[left].next = nodes[right];
+        left++;
+        if (left >= right) break;
+        nodes[right].next = nodes[left];
+        right--;
+    }
+    nodes[left].next = null;
+};`,
+      },
+      timeComplexity: "O(N) — One pass to record nodes, one pass to reconnect pointers.",
+      spaceComplexity: "O(N) — Array to store references to all N nodes.",
+      explanation: "Stores node references in an indexed array so we can access from both ends directly.",
+    },
+    optimalSolution: {
+      title: "Approach 2 — Find Midpoint, Reverse Second Half, and Weave in O(1) Space",
+      intuition:
+        "Decompose into 3 canonical sub-algorithms: 1) Find the midpoint using slow and fast pointers; 2) Reverse the list starting from mid.next; 3) Splice nodes alternating between the first half and the reversed second half.",
+      code: {
+        java: `class Solution {
+    public void reorderList(ListNode head) {
+        if (head == null || head.next == null) return;
+
+        // Step 1: Find middle node (slow will point to end of first half)
+        ListNode slow = head, fast = head;
+        while (fast.next != null && fast.next.next != null) {
+            slow = slow.next;
+            fast = fast.next.next;
+        }
+
+        // Step 2: Reverse second half
+        ListNode prev = null, curr = slow.next;
+        slow.next = null; // Split lists
+        while (curr != null) {
+            ListNode nextTemp = curr.next;
+            curr.next = prev;
+            prev = curr;
+            curr = nextTemp;
+        }
+
+        // Step 3: Weave the two halves together
+        ListNode p1 = head, p2 = prev;
+        while (p2 != null) {
+            ListNode t1 = p1.next;
+            ListNode t2 = p2.next;
+            p1.next = p2;
+            p2.next = t1;
+            p1 = t1;
+            p2 = t2;
+        }
+    }
+}`,
+        cpp: `class Solution {
+public:
+    void reorderList(ListNode* head) {
+        if (!head || !head->next) return;
+
+        // Step 1: Find middle
+        ListNode *slow = head, *fast = head;
+        while (fast->next && fast->next->next) {
+            slow = slow->next;
+            fast = fast->next->next;
+        }
+
+        // Step 2: Reverse second half
+        ListNode *prev = nullptr, *curr = slow->next;
+        slow->next = nullptr;
+        while (curr) {
+            ListNode* nextTemp = curr->next;
+            curr->next = prev;
+            prev = curr;
+            curr = nextTemp;
+        }
+
+        // Step 3: Interleave
+        ListNode *p1 = head, *p2 = prev;
+        while (p2) {
+            ListNode *t1 = p1->next;
+            ListNode *t2 = p2->next;
+            p1->next = p2;
+            p2->next = t1;
+            p1 = t1;
+            p2 = t2;
+        }
+    }
+};`,
+        python: `class Solution:
+    def reorderList(self, head: Optional[ListNode]) -> None:
+        if not head or not head.next:
+            return
+
+        # Step 1: Find middle
+        slow, fast = head, head
+        while fast.next and fast.next.next:
+            slow = slow.next
+            fast = fast.next.next
+
+        # Step 2: Reverse second half
+        prev, curr = None, slow.next
+        slow.next = None
+        while curr:
+            next_temp = curr.next
+            curr.next = prev
+            prev = curr
+            curr = next_temp
+
+        # Step 3: Interleave
+        p1, p2 = head, prev
+        while p2:
+            t1, t2 = p1.next, p2.next
+            p1.next = p2
+            p2.next = t1
+            p1, p2 = t1, t2`,
+        javascript: `var reorderList = function(head) {
+    if (!head || !head.next) return;
+
+    // Step 1: Find middle
+    let slow = head, fast = head;
+    while (fast.next && fast.next.next) {
+        slow = slow.next;
+        fast = fast.next.next;
+    }
+
+    // Step 2: Reverse second half
+    let prev = null, curr = slow.next;
+    slow.next = null;
+    while (curr) {
+        const nextTemp = curr.next;
+        curr.next = prev;
+        prev = curr;
+        curr = nextTemp;
+    }
+
+    // Step 3: Weave lists
+    let p1 = head, p2 = prev;
+    while (p2) {
+        const t1 = p1.next;
+        const t2 = p2.next;
+        p1.next = p2;
+        p2.next = t1;
+        p1 = t1;
+        p2 = t2;
+    }
+};`,
+      },
+      timeComplexity: "O(N) — O(N) to find mid, O(N) to reverse, O(N) to merge. Overall linear time.",
+      spaceComplexity: "O(1) — In-place pointer updates with zero heap allocation.",
+      explanation: "Splits the list at the median, reverses the right half in place, then links alternate nodes using temporary next pointers.",
+      whyOptimal: "Runs in strictly O(N) time and requires zero additional memory beyond pointers.",
+    },
+    pattern: "Slow & Fast Pointer + In-Place Reverse + List Merge",
+    complexitySummary: {
+      time: "O(N)",
+      space: "O(1)",
+    },
+    dryRun: {
+      sampleInput: "head = [1, 2, 3, 4, 5]",
+      steps: [
+        {
+          stepNumber: 1,
+          state: "head = [1, 2, 3, 4, 5]",
+          action: "Slow/fast pointers find mid node 3. Disconnect slow.next -> null.",
+          result: "First half: 1->2->3, Second half unreversed: 4->5.",
+        },
+        {
+          stepNumber: 2,
+          state: "curr = 4",
+          action: "Reverse second half in place.",
+          result: "Second half reversed: 5->4.",
+        },
+        {
+          stepNumber: 3,
+          state: "p1 = 1, p2 = 5",
+          action: "Interleave p1 (1) and p2 (5).",
+          result: "1 -> 5 -> 2.",
+        },
+        {
+          stepNumber: 4,
+          state: "p1 = 2, p2 = 4",
+          action: "Interleave p1 (2) and p2 (4).",
+          result: "1 -> 5 -> 2 -> 4 -> 3 -> null. Finished.",
+        },
+      ],
+    },
+    commonMistakes: [
+      {
+        mistake: "Forgetting to disconnect the end of first half (`slow.next = null`)",
+        fix: "If you don't null-terminate the first half, cycles will be introduced during weaving.",
+      },
+      {
+        mistake: "Using `fast != null && fast.next != null` condition instead of checking `fast.next != null && fast.next.next != null`",
+        fix: "Using `fast.next != null && fast.next.next != null` guarantees slow lands on the exact tail of the first half for both even and odd lengths.",
+      },
+    ],
+    variations: [
+      "Palindrome Linked List (find mid and reverse second half, then compare)",
+      "Split Linked List in Parts",
+    ],
+    practice: [
+      { title: "Palindrome Linked List", difficulty: "Easy" },
+      { title: "Rotate List", difficulty: "Medium" },
+    ],
+    tags: ["Linked List", "Two Pointers", "Stack"],
+    companies: ["Meta", "Amazon", "Microsoft", "Google"],
+  },
+  {
+    id: "lru-cache",
+    slug: "lru-cache",
+    title: "LRU Cache",
+    topic: "Linked Lists",
+    subtopic: "Doubly Linked List & Hash Map",
+    difficulty: "Medium",
+    progressionLevel: "Level 4: Optimization",
+    statement:
+      "Design a data structure that follows the constraints of a Least Recently Used (LRU) cache. Implement the `LRUCache` class: `LRUCache(int capacity)` initializes the LRU cache with positive size `capacity`; `int get(int key)` returns the value of the `key` if it exists, otherwise `-1`; `void put(int key, int value)` updates the value of the `key` if it exists, or adds the `key-value` pair. If the number of keys exceeds `capacity`, evict the least recently used key. Both `get` and `put` must run in O(1) average time complexity.",
+    understandTheProblem:
+      "An LRU cache maintains an ordered sequence of accessed items. Accessing or inserting a key marks it as most recently used. When capacity is exceeded during an insertion, the item that has gone the longest without being accessed or modified (the least recently used item) is evicted. Both get and put operations must achieve O(1) complexity.",
+    constraints: [
+      "1 <= capacity <= 3000",
+      "0 <= key <= 10^4",
+      "0 <= value <= 10^5",
+      "At most 2 * 10^5 calls will be made to get and put.",
+    ],
+    examples: [
+      {
+        input: '["LRUCache", "put", "put", "get", "put", "get", "put", "get", "get", "get"]\\n[[2], [1, 1], [2, 2], [1], [3, 3], [2], [4, 4], [1], [3], [4]]',
+        output: "[null, null, null, 1, null, -1, null, -1, 3, 4]",
+        explanation: "LRUCache lRUCache = new LRUCache(2); lRUCache.put(1, 1); lRUCache.put(2, 2); lRUCache.get(1); // returns 1\\nlRUCache.put(3, 3); // evicts key 2\\nlRUCache.get(2); // returns -1 (not found)\\nlRUCache.put(4, 4); // evicts key 1\\nlRUCache.get(1); // returns -1\\nlRUCache.get(3); // returns 3\\nlRUCache.get(4); // returns 4",
+      },
+    ],
+    hints: [
+      "What data structure allows O(1) key lookup? A Hash Map.",
+      "What data structure allows O(1) removal and re-insertion at arbitrary positions? A Doubly Linked List.",
+      "By combining a Hash Map (mapping key -> node pointer) with a Doubly Linked List (maintaining recency order with pseudo-head and pseudo-tail), both operations become strictly O(1).",
+    ],
+    bruteForce: {
+      title: "Approach 1 — Array / List of Pairs with Linear Search",
+      intuition:
+        "Store pairs in an array or vector. For `get(key)`, iterate through the array to find the key and move it to the end. For `put(key, value)`, search if the key exists to update it; otherwise if full, remove index 0 and append.",
+      code: {
+        java: `import java.util.ArrayList;
+import java.util.List;
+
+class LRUCache {
+    private static class Entry {
+        int key, val;
+        Entry(int k, int v) { key = k; val = v; }
+    }
+    private int capacity;
+    private List<Entry> list;
+
+    public LRUCache(int capacity) {
+        this.capacity = capacity;
+        this.list = new ArrayList<>();
+    }
+
+    public int get(int key) {
+        for (int i = 0; i < list.size(); i++) {
+            if (list.get(i).key == key) {
+                Entry e = list.remove(i);
+                list.add(e);
+                return e.val;
+            }
+        }
+        return -1;
+    }
+
+    public void put(int key, int value) {
+        for (int i = 0; i < list.size(); i++) {
+            if (list.get(i).key == key) {
+                list.remove(i);
+                list.add(new Entry(key, value));
+                return;
+            }
+        }
+        if (list.size() == capacity) {
+            list.remove(0);
+        }
+        list.add(new Entry(key, value));
+    }
+}`,
+        cpp: `#include <vector>
+using namespace std;
+
+class LRUCache {
+    struct Entry { int key; int val; };
+    int cap;
+    vector<Entry> list;
+public:
+    LRUCache(int capacity) : cap(capacity) {}
+
+    int get(int key) {
+        for (int i = 0; i < (int)list.size(); i++) {
+            if (list[i].key == key) {
+                Entry e = list[i];
+                list.erase(list.begin() + i);
+                list.push_back(e);
+                return e.val;
+            }
+        }
+        return -1;
+    }
+
+    void put(int key, int value) {
+        for (int i = 0; i < (int)list.size(); i++) {
+            if (list[i].key == key) {
+                list.erase(list.begin() + i);
+                list.push_back({key, value});
+                return;
+            }
+        }
+        if ((int)list.size() == cap) {
+            list.erase(list.begin());
+        }
+        list.push_back({key, value});
+    }
+};`,
+        python: `class LRUCache:
+    def __init__(self, capacity: int):
+        self.capacity = capacity
+        self.items = [] # list of [key, value]
+
+    def get(self, key: int) -> int:
+        for i, (k, v) in enumerate(self.items):
+            if k == key:
+                val = self.items.pop(i)[1]
+                self.items.append((k, val))
+                return val
+        return -1
+
+    def put(self, key: int, value: int) -> None:
+        for i, (k, v) in enumerate(self.items):
+            if k == key:
+                self.items.pop(i)
+                self.items.append((key, value))
+                return
+        if len(self.items) == self.capacity:
+            self.items.pop(0)
+        self.items.append((key, value))`,
+        javascript: `var LRUCache = function(capacity) {
+    this.capacity = capacity;
+    this.items = [];
+};
+
+LRUCache.prototype.get = function(key) {
+    for (let i = 0; i < this.items.length; i++) {
+        if (this.items[i].key === key) {
+            const item = this.items.splice(i, 1)[0];
+            this.items.push(item);
+            return item.value;
+        }
+    }
+    return -1;
+};
+
+LRUCache.prototype.put = function(key, value) {
+    for (let i = 0; i < this.items.length; i++) {
+        if (this.items[i].key === key) {
+            this.items.splice(i, 1);
+            this.items.push({ key, value });
+            return;
+        }
+    }
+    if (this.items.length === this.capacity) {
+        this.items.shift();
+    }
+    this.items.push({ key, value });
+};`,
+      },
+      timeComplexity: "O(capacity) per get and put — Linear scan required to locate elements.",
+      spaceComplexity: "O(capacity) — Storage for up to capacity entries.",
+      explanation: "Iterates across dynamic array to find entries, incurring O(N) shift cost on every eviction or recency promotion.",
+    },
+    optimalSolution: {
+      title: "Approach 2 — Hash Map + Doubly Linked List with Sentinel Nodes",
+      intuition:
+        "Maintain a Hash Map mapping `key -> Node` and a Doubly Linked List with dummy head (MRU) and dummy tail (LRU). When a node is accessed or modified, detach it in O(1) time and splice it right after dummy head. When capacity overflows, remove the node preceding dummy tail and delete it from the map.",
+      code: {
+        java: `import java.util.HashMap;
+import java.util.Map;
+
+class LRUCache {
+    private static class Node {
+        int key, val;
+        Node prev, next;
+        Node(int k, int v) { key = k; val = v; }
+    }
+
+    private final int capacity;
+    private final Map<Integer, Node> map;
+    private final Node head, tail;
+
+    public LRUCache(int capacity) {
+        this.capacity = capacity;
+        this.map = new HashMap<>();
+        this.head = new Node(0, 0);
+        this.tail = new Node(0, 0);
+        head.next = tail;
+        tail.prev = head;
+    }
+
+    private void remove(Node node) {
+        node.prev.next = node.next;
+        node.next.prev = node.prev;
+    }
+
+    private void insertAtHead(Node node) {
+        node.next = head.next;
+        node.prev = head;
+        head.next.prev = node;
+        head.next = node;
+    }
+
+    public int get(int key) {
+        Node node = map.get(key);
+        if (node == null) return -1;
+        remove(node);
+        insertAtHead(node);
+        return node.val;
+    }
+
+    public void put(int key, int value) {
+        Node node = map.get(key);
+        if (node != null) {
+            node.val = value;
+            remove(node);
+            insertAtHead(node);
+        } else {
+            if (map.size() >= capacity) {
+                Node lru = tail.prev;
+                remove(lru);
+                map.remove(lru.key);
+            }
+            Node newNode = new Node(key, value);
+            insertAtHead(newNode);
+            map.put(key, newNode);
+        }
+    }
+}`,
+        cpp: `#include <unordered_map>
+using namespace std;
+
+class LRUCache {
+    struct Node {
+        int key, val;
+        Node* prev;
+        Node* next;
+        Node(int k, int v) : key(k), val(v), prev(nullptr), next(nullptr) {}
+    };
+
+    int capacity;
+    unordered_map<int, Node*> map;
+    Node *head, *tail;
+
+    void remove(Node* node) {
+        node->prev->next = node->next;
+        node->next->prev = node->prev;
+    }
+
+    void insertAtHead(Node* node) {
+        node->next = head->next;
+        node->prev = head;
+        head->next->prev = node;
+        head->next = node;
+    }
+
+public:
+    LRUCache(int cap) : capacity(cap) {
+        head = new Node(0, 0);
+        tail = new Node(0, 0);
+        head->next = tail;
+        tail->prev = head;
+    }
+
+    int get(int key) {
+        auto it = map.find(key);
+        if (it == map.end()) return -1;
+        Node* node = it->second;
+        remove(node);
+        insertAtHead(node);
+        return node->val;
+    }
+
+    void put(int key, int value) {
+        auto it = map.find(key);
+        if (it != map.end()) {
+            Node* node = it->second;
+            node->val = value;
+            remove(node);
+            insertAtHead(node);
+        } else {
+            if ((int)map.size() >= capacity) {
+                Node* lru = tail->prev;
+                remove(lru);
+                map.erase(lru->key);
+                delete lru;
+            }
+            Node* newNode = new Node(key, value);
+            insertAtHead(newNode);
+            map[key] = newNode;
+        }
+    }
+};`,
+        python: `class Node:
+    def __init__(self, key: int = 0, val: int = 0):
+        self.key = key
+        self.val = val
+        self.prev = None
+        self.next = None
+
+class LRUCache:
+    def __init__(self, capacity: int):
+        self.capacity = capacity
+        self.map = {}
+        self.head = Node()
+        self.tail = Node()
+        self.head.next = self.tail
+        self.tail.prev = self.head
+
+    def _remove(self, node: Node) -> None:
+        node.prev.next = node.next
+        node.next.prev = node.prev
+
+    def _insert_head(self, node: Node) -> None:
+        node.next = self.head.next
+        node.prev = self.head
+        self.head.next.prev = node
+        self.head.next = node
+
+    def get(self, key: int) -> int:
+        if key not in self.map:
+            return -1
+        node = self.map[key]
+        self._remove(node)
+        self._insert_head(node)
+        return node.val
+
+    def put(self, key: int, value: int) -> None:
+        if key in self.map:
+            node = self.map[key]
+            node.val = value
+            self._remove(node)
+            self._insert_head(node)
+        else:
+            if len(self.map) >= self.capacity:
+                lru = self.tail.prev
+                self._remove(lru)
+                del self.map[lru.key]
+            new_node = Node(key, value)
+            self._insert_head(new_node)
+            self.map[key] = new_node`,
+        javascript: `class Node {
+    constructor(key = 0, val = 0) {
+        this.key = key;
+        this.val = val;
+        this.prev = null;
+        this.next = null;
+    }
+}
+
+class LRUCache {
+    constructor(capacity) {
+        this.capacity = capacity;
+        this.map = new Map();
+        this.head = new Node();
+        this.tail = new Node();
+        this.head.next = this.tail;
+        this.tail.prev = this.head;
+    }
+
+    _remove(node) {
+        node.prev.next = node.next;
+        node.next.prev = node.prev;
+    }
+
+    _insertHead(node) {
+        node.next = this.head.next;
+        node.prev = this.head;
+        this.head.next.prev = node;
+        this.head.next = node;
+    }
+
+    get(key) {
+        if (!this.map.has(key)) return -1;
+        const node = this.map.get(key);
+        this._remove(node);
+        this._insertHead(node);
+        return node.val;
+    }
+
+    put(key, value) {
+        if (this.map.has(key)) {
+            const node = this.map.get(key);
+            node.val = value;
+            this._remove(node);
+            this._insertHead(node);
+        } else {
+            if (this.map.size >= this.capacity) {
+                const lru = this.tail.prev;
+                this._remove(lru);
+                this.map.delete(lru.key);
+            }
+            const newNode = new Node(key, value);
+            this._insertHead(newNode);
+            this.map.set(key, newNode);
+        }
+    }
+}`,
+      },
+      timeComplexity: "O(1) amortized for both get and put — HashMap provides O(1) node lookup and Doubly Linked List provides O(1) splice/delete.",
+      spaceComplexity: "O(capacity) — HashMap and Doubly Linked List hold at most capacity items.",
+      explanation: "Sentinel dummy head and dummy tail remove all edge cases for empty list and single-item updates.",
+      whyOptimal: "Guarantees strict O(1) constant time bound for every operation without resizing penalties.",
+    },
+    pattern: "Hash Map + Doubly Linked List (Sentinel Nodes)",
+    complexitySummary: {
+      time: "O(1)",
+      space: "O(capacity)",
+    },
+    dryRun: {
+      sampleInput: "capacity = 2, put(1, 1), put(2, 2), get(1), put(3, 3), get(2)",
+      steps: [
+        {
+          stepNumber: 1,
+          state: "head <-> tail, map={}",
+          action: "put(1, 1) and put(2, 2)",
+          result: "head <-> [2:2] <-> [1:1] <-> tail, map={1, 2}.",
+        },
+        {
+          stepNumber: 2,
+          state: "head <-> [2:2] <-> [1:1] <-> tail",
+          action: "get(1): extract node 1, move to head.",
+          result: "head <-> [1:1] <-> [2:2] <-> tail. Returns 1.",
+        },
+        {
+          stepNumber: 3,
+          state: "Capacity full (2/2)",
+          action: "put(3, 3): evict tail.prev (node 2). Insert node 3 at head.",
+          result: "head <-> [3:3] <-> [1:1] <-> tail. Node 2 removed from map.",
+        },
+        {
+          stepNumber: 4,
+          state: "map={1, 3}",
+          action: "get(2): key 2 not in map.",
+          result: "Returns -1.",
+        },
+      ],
+    },
+    commonMistakes: [
+      {
+        mistake: "Forgetting to store the key inside the Doubly Linked Node",
+        fix: "When evicting the LRU node from the tail, you must remove it from the HashMap (`map.remove(lru.key)`). If the node does not store its key, you cannot look up what to delete in O(1).",
+      },
+      {
+        mistake: "Null pointer exceptions when inserting or deleting from empty list",
+        fix: "Always use dummy head and dummy tail sentinel nodes connected to each other at initialization.",
+      },
+    ],
+    variations: [
+      "LFU Cache (Least Frequently Used with frequency buckets)",
+      "Design In-Memory File System",
+      "All O`one Data Structure",
+    ],
+    practice: [
+      { title: "LFU Cache", difficulty: "Hard" },
+      { title: "Design In-Memory File System", difficulty: "Hard" },
+    ],
+    tags: ["Linked List", "Hash Table", "Design", "Doubly-Linked List"],
+    companies: ["Google", "Meta", "Amazon", "Microsoft", "Apple", "Bloomberg"],
+  },
 ];
+

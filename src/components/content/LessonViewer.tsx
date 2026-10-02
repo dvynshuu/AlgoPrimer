@@ -1,24 +1,27 @@
 "use client";
 
 import React, { useState } from "react";
-import { Lesson } from "@/types/content";
+import { Lesson, Problem } from "@/types/content";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { Button } from "@/components/ui/Button";
+import { Badge } from "@/components/ui/Badge";
 import { Callout } from "@/components/ui/Callout";
 import { CodeBlock } from "@/components/ui/CodeBlock";
 import { TableOfContents, TocItem } from "@/components/layout/TableOfContents";
 import { useProgress } from "@/lib/progress/ProgressContext";
-import { CheckCircle2, Bookmark, Clock } from "lucide-react";
+import { CheckCircle2, Bookmark, Clock, ArrowRight } from "lucide-react";
 import styles from "./LessonViewer.module.css";
 
 interface LessonViewerProps {
   lesson: Lesson;
   breadcrumbItems: { label: string; href?: string }[];
+  relatedProblems?: Problem[];
 }
 
 export const LessonViewer: React.FC<LessonViewerProps> = ({
   lesson,
   breadcrumbItems,
+  relatedProblems,
 }) => {
   const { isLessonCompleted, toggleLessonCompleted, isBookmarked, toggleBookmark } = useProgress();
   const [showSolution, setShowSolution] = useState(false);
@@ -36,6 +39,7 @@ export const LessonViewer: React.FC<LessonViewerProps> = ({
     { id: "try-it-yourself", label: "Try it yourself" },
     { id: "placement-connection", label: "Placement Connection" },
     { id: "quick-revision", label: "Quick Revision" },
+    ...(relatedProblems && relatedProblems.length > 0 ? [{ id: "related-problems", label: "Practice Problems" }] : []),
   ];
 
   return (
@@ -227,6 +231,64 @@ export const LessonViewer: React.FC<LessonViewerProps> = ({
             ))}
           </ul>
         </section>
+
+        {/* Related Practice Problems */}
+        {relatedProblems && relatedProblems.length > 0 && (
+          <section id="related-problems" className={styles.section}>
+            <h2 className={styles.sectionHeading}>Curated Company Practice Problems</h2>
+            <p style={{ fontSize: "var(--font-size-sm)", color: "var(--text-secondary)", marginBottom: "var(--space-4)" }}>
+              Test your understanding of {lesson.title} with high-frequency technical interview problems asked at top companies.
+            </p>
+            <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
+              {relatedProblems.map((prob) => (
+                <div
+                  key={prob.id}
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    padding: "var(--space-4)",
+                    backgroundColor: "var(--bg-surface-2, #151923)",
+                    border: "1px solid var(--border-default, rgba(255, 255, 255, 0.10))",
+                    borderRadius: "8px",
+                  }}
+                >
+                  <div>
+                    <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)", marginBottom: "4px" }}>
+                      <Badge variant={prob.difficulty === "Easy" ? "easy" : prob.difficulty === "Medium" ? "medium" : "hard"}>
+                        {prob.difficulty}
+                      </Badge>
+                      <span style={{ fontSize: "var(--font-size-xs)", fontFamily: "var(--font-mono)", color: "var(--text-muted)" }}>
+                        Pattern: {prob.pattern}
+                      </span>
+                      {prob.companies && prob.companies.slice(0, 3).map((comp) => (
+                        <span
+                          key={comp}
+                          style={{
+                            fontSize: "11px",
+                            fontFamily: "var(--font-mono)",
+                            padding: "2px 6px",
+                            borderRadius: "4px",
+                            background: "rgba(255, 255, 255, 0.05)",
+                            color: "var(--text-secondary)",
+                          }}
+                        >
+                          {comp}
+                        </span>
+                      ))}
+                    </div>
+                    <div style={{ fontSize: "var(--font-size-md)", fontWeight: 600, color: "var(--text-primary)" }}>
+                      {prob.title}
+                    </div>
+                  </div>
+                  <Button href={`/problems/${prob.slug}`} variant="primary" size="sm" icon={<ArrowRight size={13} />}>
+                    Solve Problem
+                  </Button>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
       </main>
 
       <TableOfContents items={tocItems} />

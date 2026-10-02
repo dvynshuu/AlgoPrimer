@@ -32,6 +32,62 @@ export default async function DSATopicPage({ params }: PageProps) {
     },
   ];
 
+  // Find related problems with semantic topic matching
+  const relatedProblems = problems.filter((p) => {
+    const pTopic = p.topic.toLowerCase();
+    const pSubtopic = p.subtopic.toLowerCase();
+    const pPattern = p.pattern.toLowerCase();
+    const slug = topicSlug.toLowerCase();
+
+    if (slug === "arrays" || slug === "two-pointers") {
+      return pTopic.includes("array") || pTopic.includes("pointer") || pSubtopic.includes("array");
+    }
+    if (slug === "strings") {
+      return pTopic.includes("string") || pSubtopic.includes("string");
+    }
+    if (slug === "searching" || slug === "binary-search") {
+      return pTopic.includes("binary search") || pPattern.includes("binary search");
+    }
+    if (slug === "sorting") {
+      return pTopic.includes("sort") || pPattern.includes("sort") || pSubtopic.includes("sort");
+    }
+    if (slug === "hashing") {
+      return pSubtopic.includes("hash") || pPattern.includes("hash") || pTopic.includes("hash");
+    }
+    if (slug === "linked-list") {
+      return pTopic.includes("linked list") || pSubtopic.includes("linked list");
+    }
+    if (slug === "stack" || slug === "queue") {
+      return pTopic.includes("stack") || pTopic.includes("queue") || pSubtopic.includes("stack");
+    }
+    if (slug === "trees" || slug === "bst") {
+      return pTopic.includes("tree") || pSubtopic.includes("tree") || pPattern.includes("tree");
+    }
+    if (slug === "heap") {
+      return pTopic.includes("heap") || pSubtopic.includes("heap") || pPattern.includes("heap");
+    }
+    if (slug === "graphs") {
+      return pTopic.includes("graph") || pSubtopic.includes("graph") || pPattern.includes("graph");
+    }
+    if (slug === "dynamic-programming") {
+      return pTopic.includes("dynamic programming") || pTopic.includes("dp") || pSubtopic.includes("dp");
+    }
+    if (slug === "greedy") {
+      return pPattern.includes("greedy") || pSubtopic.includes("greedy");
+    }
+    if (slug === "backtracking") {
+      return pPattern.includes("backtracking") || pSubtopic.includes("backtracking");
+    }
+    if (slug === "bit-manipulation") {
+      return pPattern.includes("bit") || pSubtopic.includes("bit");
+    }
+    if (slug === "advanced-patterns") {
+      return pPattern.includes("trie") || pPattern.includes("segment") || pPattern.includes("union");
+    }
+
+    return pTopic.includes(slug) || slug.includes(pTopic);
+  });
+
   if (directLesson) {
     const breadcrumbs = [
       { label: "Home", href: "/" },
@@ -42,7 +98,7 @@ export default async function DSATopicPage({ params }: PageProps) {
     return (
       <div style={{ minHeight: "calc(100vh - var(--header-height))", width: "100%", position: "relative" }}>
         <TopicSidebar sections={sidebarSections} />
-        <LessonViewer lesson={directLesson} breadcrumbItems={breadcrumbs} />
+        <LessonViewer lesson={directLesson} breadcrumbItems={breadcrumbs} relatedProblems={relatedProblems} />
       </div>
     );
   }
@@ -50,11 +106,6 @@ export default async function DSATopicPage({ params }: PageProps) {
   // Otherwise find in dsaTopics
   const topicMeta = dsaTopics.find((t) => t.slug === topicSlug);
   if (!topicMeta) notFound();
-
-  // Find related problems
-  const relatedProblems = problems.filter(
-    (p) => p.topic.toLowerCase().includes(topicSlug) || topicSlug.includes(p.topic.toLowerCase())
-  );
 
   return (
     <div style={{ minHeight: "calc(100vh - var(--header-height))", width: "100%", position: "relative" }}>

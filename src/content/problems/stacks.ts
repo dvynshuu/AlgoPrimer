@@ -764,4 +764,398 @@ public:
     tags: ["Array", "Stack", "Monotonic Stack"],
     companies: ["Amazon", "Meta", "Google", "Uber"],
   },
+  {
+    id: "sliding-window-maximum",
+    slug: "sliding-window-maximum",
+    title: "Sliding Window Maximum",
+    topic: "Stacks & Queues",
+    subtopic: "Monotonic Decreasing Deque",
+    difficulty: "Hard",
+    progressionLevel: "Level 4: Optimization",
+    statement:
+      "You are given an array of integers `nums`, there is a sliding window of size `k` which is moving from the very left of the array to the very right. You can only see the `k` numbers in the window. Each time the sliding window moves right by one position. Return the max sliding window.",
+    understandTheProblem:
+      "Find the maximum value in every window of size k as the window slides from index 0 to n - k across the array.",
+    constraints: [
+      "1 <= nums.length <= 10^5",
+      "-10^4 <= nums[i] <= 10^4",
+      "1 <= k <= nums.length",
+    ],
+    examples: [
+      {
+        input: "nums = [1, 3, -1, -3, 5, 3, 6, 7], k = 3",
+        output: "[3, 3, 5, 5, 6, 7]",
+        explanation: "Window [1, 3, -1] -> 3; [3, -1, -3] -> 3; [-1, -3, 5] -> 5; [-3, 5, 3] -> 5; [5, 3, 6] -> 6; [3, 6, 7] -> 7.",
+      },
+      {
+        input: "nums = [1], k = 1",
+        output: "[1]",
+        explanation: "Single window with value 1.",
+      },
+    ],
+    hints: [
+      "Brute force scans all K elements in every window: O(N * K). For N = 10^5, K = 5 * 10^4, this takes 5 * 10^9 operations and times out.",
+      "If a new element arr[i] arrives and is GREATER than an older element arr[j] in the window, arr[j] can NEVER be the maximum again! Evict it from the back.",
+      "A Monotonic Decreasing Deque keeps candidate indices in decreasing order of value. The front of the deque is always the maximum!",
+    ],
+    bruteForce: {
+      title: "Approach 1 — Naive Scanning Each Window",
+      intuition:
+        "For each starting index i from 0 to n - k, iterate through i to i + k - 1 and find the maximum.",
+      code: {
+        java: `public int[] maxSlidingWindow(int[] nums, int k) {
+    int n = nums.length;
+    int[] res = new int[n - k + 1];
+    for (int i = 0; i <= n - k; i++) {
+        int max = nums[i];
+        for (int j = i; j < i + k; j++) {
+            max = Math.max(max, nums[j]);
+        }
+        res[i] = max;
+    }
+    return res;
+}`,
+        cpp: `vector<int> maxSlidingWindow(vector<int>& nums, int k) {
+    int n = nums.size();
+    vector<int> res(n - k + 1);
+    for (int i = 0; i <= n - k; i++) {
+        int maxVal = nums[i];
+        for (int j = i; j < i + k; j++) maxVal = max(maxVal, nums[j]);
+        res[i] = maxVal;
+    }
+    return res;
+}`,
+        python: `def maxSlidingWindow(nums: list[int], k: int) -> list[int]:
+    n = len(nums)
+    return [max(nums[i:i + k]) for i in range(n - k + 1)]`,
+        javascript: `var maxSlidingWindow = function(nums, k) {
+    const n = nums.length;
+    const res = [];
+    for (let i = 0; i <= n - k; i++) {
+        let max = nums[i];
+        for (let j = i; j < i + k; j++) {
+            max = Math.max(max, nums[j]);
+        }
+        res.push(max);
+    }
+    return res;
+};`,
+      },
+      timeComplexity: "O(N * K)",
+      spaceComplexity: "O(1) auxiliary",
+      explanation:
+        "Evaluates N - K + 1 windows of size K, leading to quadratic time when K is large.",
+    },
+    optimalSolution: {
+      title: "Approach 2 — Monotonic Decreasing Deque in O(N) Time",
+      intuition:
+        "Maintain a Double-Ended Queue (Deque) of indices with values in strictly decreasing order. 1. Pop front if element is out of the active window (`deque.peekFirst() < i - k + 1`). 2. Pop back while incoming `nums[i] >= nums[deque.peekLast()]` (they will never be maximums). 3. Add `i` to back. 4. If `i >= k - 1`, record `nums[deque.peekFirst()]`.",
+      code: {
+        java: `public class SlidingWindowMax {
+    public int[] maxSlidingWindow(int[] nums, int k) {
+        int n = nums.length;
+        int[] result = new int[n - k + 1];
+        int ri = 0;
+
+        // Stores indices in decreasing order of corresponding values
+        Deque<Integer> deque = new ArrayDeque<>();
+
+        for (int i = 0; i < n; i++) {
+            // 1. Evict elements outside active window
+            while (!deque.isEmpty() && deque.peekFirst() < i - k + 1) {
+                deque.pollFirst();
+            }
+
+            // 2. Evict smaller elements from the back
+            while (!deque.isEmpty() && nums[deque.peekLast()] < nums[i]) {
+                deque.pollLast();
+            }
+
+            // 3. Push current element's index
+            deque.offerLast(i);
+
+            // 4. Record maximum once window is complete
+            if (i >= k - 1) {
+                result[ri++] = nums[deque.peekFirst()];
+            }
+        }
+        return result;
+    }
+}`,
+        cpp: `vector<int> maxSlidingWindow(vector<int>& nums, int k) {
+    int n = nums.size();
+    vector<int> result;
+    deque<int> dq;
+
+    for (int i = 0; i < n; i++) {
+        while (!dq.empty() && dq.front() < i - k + 1) dq.pop_front();
+        while (!dq.empty() && nums[dq.back()] < nums[i]) dq.pop_back();
+        dq.push_back(i);
+        if (i >= k - 1) result.push_back(nums[dq.front()]);
+    }
+    return result;
+}`,
+        python: `from collections import deque
+
+def maxSlidingWindow(nums: list[int], k: int) -> list[int]:
+    dq = deque()
+    result = []
+
+    for i in range(len(nums)):
+        while dq and dq[0] < i - k + 1:
+            dq.popleft()
+        while dq and nums[dq[-1]] < nums[i]:
+            dq.pop()
+        dq.append(i)
+        if i >= k - 1:
+            result.append(nums[dq[0]])
+
+    return result`,
+        javascript: `var maxSlidingWindow = function(nums, k) {
+    const deque = []; // Store indices
+    const result = [];
+
+    for (let i = 0; i < nums.length; i++) {
+        while (deque.length > 0 && deque[0] < i - k + 1) {
+            deque.shift();
+        }
+        while (deque.length > 0 && nums[deque[deque.length - 1]] < nums[i]) {
+            deque.pop();
+        }
+        deque.push(i);
+        if (i >= k - 1) {
+            result.push(nums[deque[0]]);
+        }
+    }
+    return result;
+};`,
+      },
+      timeComplexity: "O(N) single pass",
+      spaceComplexity: "O(K) auxiliary memory for deque",
+      whyOptimal:
+        "Every index enters and exits the deque at most once, guaranteeing strictly linear 2N operations.",
+    },
+    pattern: "Monotonic Queue / Deque",
+    complexitySummary: {
+      time: "O(N)",
+      space: "O(K)",
+    },
+    dryRun: {
+      sampleInput: "nums = [1, 3, -1, -3, 5], k = 3",
+      steps: [
+        { stepNumber: 1, state: "i=0 (1)", action: "dq = [0]", result: "window not ready" },
+        { stepNumber: 2, state: "i=1 (3)", action: "3 > 1 -> pop 0; dq = [1]", result: "window not ready" },
+        { stepNumber: 3, state: "i=2 (-1)", action: "push 2; dq = [1, 2]", result: "window 1: nums[dq[0]] = 3" },
+        { stepNumber: 4, state: "i=3 (-3)", action: "push 3; dq = [1, 2, 3]", result: "window 2: nums[dq[0]] = 3" },
+        { stepNumber: 5, state: "i=4 (5)", action: "5 > -3,-1,3 -> pop all; dq = [4]", result: "window 3: nums[dq[0]] = 5" },
+      ],
+    },
+    commonMistakes: [
+      {
+        mistake: "Storing values instead of indices in the deque",
+        why: "Storing raw values prevents checking whether the front element has slid out of the active window.",
+        fix: "Always store array indices in the deque.",
+      },
+    ],
+    variations: [
+      "Sliding Window Minimum",
+      "Shortest Subarray with Sum at Least K",
+    ],
+    practice: [
+      { title: "Shortest Subarray with Sum at Least K", difficulty: "Hard" },
+      { title: "Constrained Subsequence Sum", difficulty: "Hard" },
+    ],
+    tags: ["Array", "Queue", "Sliding Window", "Monotonic Queue"],
+    companies: ["Google", "Amazon", "Meta", "Microsoft", "Citadel"],
+  },
+  {
+    id: "largest-rectangle-in-histogram",
+    slug: "largest-rectangle-in-histogram",
+    title: "Largest Rectangle in Histogram",
+    topic: "Stacks & Queues",
+    subtopic: "Monotonic Increasing Stack",
+    difficulty: "Hard",
+    progressionLevel: "Level 4: Optimization",
+    statement:
+      "Given an array of integers `heights` representing the histogram's bar height where the width of each bar is 1, return the area of the largest rectangle in the histogram.",
+    understandTheProblem:
+      "A rectangle can span multiple contiguous bars. The height of the rectangle is constrained by the shortest bar in that range. Find the maximum area (height * width) across all possible contiguous spans.",
+    constraints: [
+      "1 <= heights.length <= 10^5",
+      "0 <= heights[i] <= 10^4",
+    ],
+    examples: [
+      {
+        input: "heights = [2, 1, 5, 6, 2, 3]",
+        output: "10",
+        explanation: "The largest rectangle is formed by bars at index 2 and 3 (heights 5 and 6), with min height 5 and width 2: area = 5 * 2 = 10.",
+      },
+      {
+        input: "heights = [2, 4]",
+        output: "4",
+        explanation: "The largest rectangle is height 4, width 1, area = 4.",
+      },
+    ],
+    hints: [
+      "For each bar i, what is the widest rectangle with height heights[i]? It extends to the left until the first smaller bar, and to the right until the first smaller bar!",
+      "A Monotonic Increasing Stack efficiently identifies both the left and right smaller boundaries in a single pass.",
+    ],
+    bruteForce: {
+      title: "Approach 1 — Expanding Left and Right for Every Bar",
+      intuition:
+        "For each bar i, expand a left pointer while heights[left] >= heights[i], and a right pointer while heights[right] >= heights[i]. Compute area = heights[i] * (right - left + 1).",
+      code: {
+        java: `public int largestRectangleArea(int[] heights) {
+    int maxArea = 0, n = heights.length;
+    for (int i = 0; i < n; i++) {
+        int l = i, r = i;
+        while (l >= 0 && heights[l] >= heights[i]) l--;
+        while (r < n && heights[r] >= heights[i]) r++;
+        maxArea = Math.max(maxArea, heights[i] * (r - l - 1));
+    }
+    return maxArea;
+}`,
+        cpp: `int largestRectangleArea(vector<int>& heights) {
+    int maxArea = 0, n = heights.size();
+    for (int i = 0; i < n; i++) {
+        int l = i, r = i;
+        while (l >= 0 && heights[l] >= heights[i]) l--;
+        while (r < n && heights[r] >= heights[i]) r++;
+        maxArea = max(maxArea, heights[i] * (r - l - 1));
+    }
+    return maxArea;
+}`,
+        python: `def largestRectangleArea(heights: list[int]) -> int:
+    max_area = 0
+    n = len(heights)
+    for i in range(n):
+        l, r = i, i
+        while l >= 0 and heights[l] >= heights[i]: l -= 1
+        while r < n and heights[r] >= heights[i]: r += 1
+        max_area = max(max_area, heights[i] * (r - l - 1))
+    return max_area`,
+        javascript: `var largestRectangleArea = function(heights) {
+    let maxArea = 0, n = heights.length;
+    for (let i = 0; i < n; i++) {
+        let l = i, r = i;
+        while (l >= 0 && heights[l] >= heights[i]) l--;
+        while (r < n && heights[r] >= heights[i]) r++;
+        maxArea = Math.max(maxArea, heights[i] * (r - l - 1));
+    }
+    return maxArea;
+};`,
+      },
+      timeComplexity: "O(N^2)",
+      spaceComplexity: "O(1)",
+      explanation:
+        "Expanding left and right for every bar takes O(N) per bar, leading to O(N^2) total runtime.",
+    },
+    optimalSolution: {
+      title: "Approach 2 — Monotonic Increasing Stack in O(N) Time",
+      intuition:
+        "Maintain a stack of indices with strictly increasing heights. When `heights[i] < heights[stack.peek()]`, the bar at `stack.pop()` has found its right boundary (`i`) and left boundary (`stack.peek()`). Its maximal rectangle area is `height * (i - stack.peek() - 1)`. Append a dummy height 0 at the end to flush all remaining bars.",
+      code: {
+        java: `public class LargestRectangleHistogram {
+    public int largestRectangleArea(int[] heights) {
+        Deque<Integer> stack = new ArrayDeque<>();
+        int maxArea = 0, n = heights.length;
+
+        for (int i = 0; i <= n; i++) {
+            // Sentinel 0 height at index n forces stack flushing
+            int currentHeight = (i == n) ? 0 : heights[i];
+
+            while (!stack.isEmpty() && currentHeight < heights[stack.peek()]) {
+                int height = heights[stack.pop()];
+                int width = stack.isEmpty() ? i : i - stack.peek() - 1;
+                maxArea = Math.max(maxArea, height * width);
+            }
+            stack.push(i);
+        }
+        return maxArea;
+    }
+}`,
+        cpp: `int largestRectangleArea(vector<int>& heights) {
+    stack<int> s;
+    int maxArea = 0, n = heights.size();
+
+    for (int i = 0; i <= n; i++) {
+        int h = (i == n) ? 0 : heights[i];
+        while (!s.empty() && h < heights[s.top()]) {
+            int height = heights[s.top()];
+            s.pop();
+            int width = s.empty() ? i : i - s.top() - 1;
+            maxArea = max(maxArea, height * width);
+        }
+        s.push(i);
+    }
+    return maxArea;
+}`,
+        python: `def largestRectangleArea(heights: list[int]) -> int:
+    stack = []
+    max_area = 0
+    heights.append(0) # Sentinel flush
+
+    for i, h in enumerate(heights):
+        while stack and h < heights[stack[-1]]:
+            height = heights[stack.pop()]
+            width = i if not stack else i - stack[-1] - 1
+            max_area = max(max_area, height * width)
+        stack.append(i)
+
+    heights.pop() # Restore
+    return max_area`,
+        javascript: `var largestRectangleArea = function(heights) {
+    const stack = [];
+    let maxArea = 0;
+    const n = heights.length;
+
+    for (let i = 0; i <= n; i++) {
+        const h = (i === n) ? 0 : heights[i];
+        while (stack.length > 0 && h < heights[stack[stack.length - 1]]) {
+            const height = heights[stack.pop()];
+            const width = stack.length === 0 ? i : i - stack[stack.length - 1] - 1;
+            maxArea = Math.max(maxArea, height * width);
+        }
+        stack.push(i);
+    }
+    return maxArea;
+};`,
+      },
+      timeComplexity: "O(N) single pass",
+      spaceComplexity: "O(N) for monotonic stack",
+      whyOptimal:
+        "Every bar is pushed onto the stack once and popped once. Total operations <= 2N, achieving optimal linear time.",
+    },
+    pattern: "Monotonic Stack / Histogram",
+    complexitySummary: {
+      time: "O(N)",
+      space: "O(N)",
+    },
+    dryRun: {
+      sampleInput: "heights = [2, 1, 5, 6, 2, 3]",
+      steps: [
+        { stepNumber: 1, state: "i=0 (2)", action: "stack = [0]", result: "maxArea = 0" },
+        { stepNumber: 2, state: "i=1 (1)", action: "1 < 2 -> pop 0: h=2, w=1 -> area=2. push 1", result: "stack = [1], maxArea = 2" },
+        { stepNumber: 3, state: "i=2 (5), i=3 (6)", action: "push 2, push 3", result: "stack = [1, 2, 3]" },
+        { stepNumber: 4, state: "i=4 (2)", action: "2 < 6 -> pop 3: h=6, w=1 -> area=6. 2 < 5 -> pop 2: h=5, w=2 -> area=10!", result: "maxArea = 10" },
+      ],
+    },
+    commonMistakes: [
+      {
+        mistake: "Computing width as `i - poppedIndex` instead of `i - stack.peek() - 1`",
+        why: "The popped bar could have extended further to the left across all bars taller than itself that were previously popped.",
+        fix: "Width must be computed using the current top of stack: `stack.isEmpty() ? i : i - stack.peek() - 1`.",
+      },
+    ],
+    variations: [
+      "Maximal Rectangle in 2D Binary Matrix",
+      "Trapping Rain Water",
+    ],
+    practice: [
+      { title: "Maximal Rectangle", difficulty: "Hard" },
+      { title: "Trapping Rain Water", difficulty: "Hard" },
+    ],
+    tags: ["Array", "Stack", "Monotonic Stack"],
+    companies: ["Google", "Amazon", "Apple", "Meta", "Microsoft"],
+  },
 ];
