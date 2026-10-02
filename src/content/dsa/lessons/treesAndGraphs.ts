@@ -3,7 +3,7 @@ import { Lesson } from "@/types/content";
 export const treesAndGraphsLessons: Lesson[] = [
   {
     id: "dsa-recursion-lesson",
-    slug: "recursion",
+    slug: "call-stack-and-trees",
     title: "Recursion & Call Stack: Base Cases, Recursion Trees & Master Theorem",
     track: "dsa",
     topicSlug: "recursion",
@@ -143,7 +143,7 @@ public ReturnType solve(State state) {
   },
   {
     id: "dsa-trees-lesson",
-    slug: "trees",
+    slug: "traversals-and-lca",
     title: "Binary Trees: Traversals, Tree Properties & Lowest Common Ancestor (LCA)",
     track: "dsa",
     topicSlug: "trees",
@@ -299,7 +299,7 @@ private int checkHeight(TreeNode node) {
   },
   {
     id: "dsa-bst-lesson",
-    slug: "bst",
+    slug: "invariants-and-validation",
     title: "Binary Search Trees (BST): Invariants, Validations & In-Order Properties",
     track: "dsa",
     topicSlug: "bst",
@@ -441,7 +441,7 @@ return -1;`,
   },
   {
     id: "dsa-heap-lesson",
-    slug: "heap",
+    slug: "complete-trees-and-heapify",
     title: "Heap & Priority Queue: Complete Binary Trees, Heapify & Top-K",
     track: "dsa",
     topicSlug: "heap",
@@ -595,7 +595,7 @@ return minHeap.peek();`,
   },
   {
     id: "dsa-graphs-lesson",
-    slug: "graphs",
+    slug: "traversals-and-shortest-paths",
     title: "Graphs: Representations, BFS/DFS, Topological Sort & Dijkstra",
     track: "dsa",
     topicSlug: "graphs",

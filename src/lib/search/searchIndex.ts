@@ -6,29 +6,55 @@ import { dsaLessons } from "@/content/dsa/lessons";
 import { dsaTopics } from "@/content/dsa/topics";
 import { problems } from "@/content/problems";
 import { revisionCards } from "@/content/revision";
+import {
+  getLanguageLessonPath,
+  getDsaTopicPath,
+  getDsaLessonPath,
+  getProblemPath,
+  getRevisionPath,
+  getInterviewPath,
+} from "@/lib/routes";
+
+export type SearchCategory =
+  | "Language"
+  | "DSA Topic"
+  | "DSA Lesson"
+  | "Problem"
+  | "Revision"
+  | "Interview";
 
 export interface SearchResultItem {
   id: string;
   title: string;
-  category: "Language" | "DSA Topic" | "DSA Lesson" | "Problem" | "Revision" | "Interview";
+  description: string;
+  category: SearchCategory;
   context: string;
   url: string;
-  matchedTags?: string[];
+  tags: string[];
   relevanceScore?: number;
 }
 
-export function buildSearchIndex(): SearchResultItem[] {
+let cachedIndex: SearchResultItem[] | null = null;
+
+/**
+ * Builds the lightweight search index ONCE.
+ * Does not include code bodies, dry runs, or large curriculum objects.
+ */
+export function getSearchIndex(): SearchResultItem[] {
+  if (cachedIndex) return cachedIndex;
+
   const items: SearchResultItem[] = [];
 
-  // 1. Language Lessons
+  // 1. Language Programming Lessons
   for (const lesson of javaLessons) {
     items.push({
       id: lesson.id,
       title: lesson.title,
+      description: lesson.oneSentence,
       category: "Language",
-      context: `Java Foundations: ${lesson.oneSentence}`,
-      url: `/languages/java/${lesson.slug}`,
-      matchedTags: ["java", "programming", lesson.slug, "primitives"],
+      context: `Java Track: ${lesson.oneSentence}`,
+      url: getLanguageLessonPath("java", lesson.slug),
+      tags: ["java", "programming", lesson.slug, "oop", "jvm"],
     });
   }
 
@@ -36,10 +62,11 @@ export function buildSearchIndex(): SearchResultItem[] {
     items.push({
       id: lesson.id,
       title: lesson.title,
+      description: lesson.oneSentence,
       category: "Language",
-      context: `C++ Foundations: ${lesson.oneSentence}`,
-      url: `/languages/cpp/${lesson.slug}`,
-      matchedTags: ["cpp", "c++", "memory", "pointers", "references"],
+      context: `C++ Track: ${lesson.oneSentence}`,
+      url: getLanguageLessonPath("cpp", lesson.slug),
+      tags: ["cpp", "c++", "memory", "pointers", "stl", lesson.slug],
     });
   }
 
@@ -47,10 +74,11 @@ export function buildSearchIndex(): SearchResultItem[] {
     items.push({
       id: lesson.id,
       title: lesson.title,
+      description: lesson.oneSentence,
       category: "Language",
-      context: `Python Foundations: ${lesson.oneSentence}`,
-      url: `/languages/python/${lesson.slug}`,
-      matchedTags: ["python", "dynamic", "iteration", "comprehensions"],
+      context: `Python Track: ${lesson.oneSentence}`,
+      url: getLanguageLessonPath("python", lesson.slug),
+      tags: ["python", "dynamic", "iteration", "comprehensions", lesson.slug],
     });
   }
 
@@ -58,10 +86,11 @@ export function buildSearchIndex(): SearchResultItem[] {
     items.push({
       id: lesson.id,
       title: lesson.title,
+      description: lesson.oneSentence,
       category: "Language",
-      context: `JavaScript Mastery: ${lesson.oneSentence}`,
-      url: `/languages/javascript/${lesson.slug}`,
-      matchedTags: ["javascript", "js", "v8", "event-loop", "async", "promises", "closures", lesson.slug],
+      context: `JavaScript Track: ${lesson.oneSentence}`,
+      url: getLanguageLessonPath("javascript", lesson.slug),
+      tags: ["javascript", "js", "v8", "event-loop", "async", "promises", "closures", lesson.slug],
     });
   }
 
@@ -70,42 +99,46 @@ export function buildSearchIndex(): SearchResultItem[] {
     items.push({
       id: topic.id,
       title: topic.title,
+      description: topic.description,
       category: "DSA Topic",
       context: `Roadmap Topic #${topic.order}: ${topic.description}`,
-      url: `/dsa/${topic.slug}`,
-      matchedTags: [topic.slug, "roadmap", "topic"],
+      url: getDsaTopicPath(topic.slug),
+      tags: [topic.slug, "roadmap", "topic", "data structures", "algorithms"],
     });
   }
 
-  // 3. DSA Lessons
+  // 3. DSA Lessons (canonical /dsa/[topic]/[lesson])
   for (const lesson of dsaLessons) {
     items.push({
       id: lesson.id,
       title: lesson.title,
+      description: lesson.oneSentence,
       category: "DSA Lesson",
-      context: `DSA: ${lesson.oneSentence}`,
-      url: `/dsa/${lesson.slug}`,
-      matchedTags: [lesson.slug, "algorithm", "complexity"],
+      context: `DSA ${lesson.topicTitle}: ${lesson.oneSentence}`,
+      url: getDsaLessonPath(lesson.topicSlug, lesson.slug),
+      tags: [lesson.slug, lesson.topicSlug, "algorithm", "complexity", "pattern"],
     });
   }
 
   // 4. Problems
   for (const prob of problems) {
-    const companyStr = prob.companies && prob.companies.length > 0 ? ` • ${prob.companies.slice(0, 3).join(", ")}` : "";
+    const companyStr =
+      prob.companies && prob.companies.length > 0 ? ` • ${prob.companies.slice(0, 3).join(", ")}` : "";
     items.push({
       id: prob.id,
       title: prob.title,
+      description: prob.understandTheProblem,
       category: "Problem",
       context: `[${prob.difficulty}] Pattern: ${prob.pattern} (${prob.topic})${companyStr}`,
-      url: `/problems/${prob.slug}`,
-      matchedTags: [
+      url: getProblemPath(prob.slug),
+      tags: [
         ...prob.tags,
         prob.pattern.toLowerCase(),
         prob.difficulty.toLowerCase(),
         prob.topic.toLowerCase(),
+        prob.topicSlug,
         prob.subtopic.toLowerCase(),
         ...(prob.companies ? prob.companies.map((c) => c.toLowerCase()) : []),
-        ...(prob.companies || []),
       ],
     });
   }
@@ -115,58 +148,77 @@ export function buildSearchIndex(): SearchResultItem[] {
     items.push({
       id: card.id,
       title: `${card.title} Cheat Sheet`,
+      description: `Key takeaways, common pitfalls, and patterns for ${card.topic}.`,
       category: "Revision",
       context: `Revision card: Key takeaways, common pitfalls, and patterns for ${card.topic}.`,
-      url: `/revision#${card.id}`,
-      matchedTags: [card.topic.toLowerCase(), "revision", "cheat sheet"],
+      url: getRevisionPath(card.id),
+      tags: [card.topic.toLowerCase(), "revision", "cheat sheet"],
     });
   }
 
   // 6. Interview Hub
   items.push({
     id: "interview-prep-guide",
-    title: "Placement Interview Roadmap & Rounds",
+    title: "Interview Rounds & Placement Guide",
+    description: "Comprehensive guide to Online Assessments (OA), technical interviews, and core CS subjects.",
     category: "Interview",
     context: "Comprehensive breakdown of OA rounds, technical interviews, and core CS subjects.",
-    url: "/interview",
-    matchedTags: ["interview", "placement", "oa", "hr", "rounds"],
+    url: getInterviewPath(),
+    tags: ["interview", "placement", "oa", "hr", "rounds", "cs subjects"],
   });
 
-  return items;
+  cachedIndex = items;
+  return cachedIndex;
 }
 
-export function searchContent(query: string): SearchResultItem[] {
+export function buildSearchIndex(): SearchResultItem[] {
+  return getSearchIndex();
+}
+
+/**
+ * Searches the lightweight index with word-boundary and relevance scoring.
+ */
+export function searchContent(query: string, category?: string): SearchResultItem[] {
   const trimmed = query.trim().toLowerCase();
   if (!trimmed) return [];
 
-  const index = buildSearchIndex();
-  const words = trimmed.split(/\s+/);
+  const index = getSearchIndex();
+  const words = trimmed.split(/\s+/).filter(Boolean);
 
-  const scored = index.map((item) => {
-    let score = 0;
+  const matched: SearchResultItem[] = [];
+
+  for (const item of index) {
+    if (category && category !== "All" && item.category !== category) {
+      continue;
+    }
+
     const titleLower = item.title.toLowerCase();
     const contextLower = item.context.toLowerCase();
+    const descLower = item.description.toLowerCase();
+
+    let score = 0;
 
     // Exact title match gets highest score
     if (titleLower === trimmed) {
-      score += 100;
+      score += 120;
+    } else if (titleLower.startsWith(trimmed)) {
+      score += 70;
     } else if (titleLower.includes(trimmed)) {
       score += 50;
     }
 
-    // Word matches in title
+    // Tokenized word matching
     for (const word of words) {
-      if (titleLower.includes(word)) score += 20;
+      if (titleLower.includes(word)) score += 25;
+      if (item.tags.some((t) => t.includes(word))) score += 15;
+      if (descLower.includes(word)) score += 8;
       if (contextLower.includes(word)) score += 5;
-      if (item.matchedTags?.some((t) => t.toLowerCase().includes(word))) {
-        score += 15;
-      }
     }
 
-    return { ...item, relevanceScore: score };
-  });
+    if (score > 0) {
+      matched.push({ ...item, relevanceScore: score });
+    }
+  }
 
-  return scored
-    .filter((item) => (item.relevanceScore ?? 0) > 0)
-    .sort((a, b) => (b.relevanceScore ?? 0) - (a.relevanceScore ?? 0));
+  return matched.sort((a, b) => (b.relevanceScore ?? 0) - (a.relevanceScore ?? 0));
 }

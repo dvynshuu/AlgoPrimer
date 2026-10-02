@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { Problem } from "@/types/content";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { Badge } from "@/components/ui/Badge";
@@ -11,6 +11,7 @@ import { ComplexityTable, ComplexityRow } from "@/components/ui/ComplexityTable"
 import { DryRunTable } from "@/components/ui/DryRunTable";
 import { TableOfContents, TocItem } from "@/components/layout/TableOfContents";
 import { useProgress } from "@/lib/progress/ProgressContext";
+import { getHomePath, getProblemsPath, getDsaTopicPath, getProblemPath } from "@/lib/routes";
 import { CheckCircle2, Bookmark, Building2 } from "lucide-react";
 import styles from "./ProblemViewer.module.css";
 
@@ -19,15 +20,25 @@ interface ProblemViewerProps {
 }
 
 export const ProblemViewer: React.FC<ProblemViewerProps> = ({ problem }) => {
-  const { isProblemSolved, markProblemSolved, isBookmarked, toggleBookmark } = useProgress();
+  const {
+    isProblemSolved,
+    markProblemSolved,
+    isBookmarked,
+    toggleBookmark,
+    recordVisit,
+  } = useProgress();
+
+  useEffect(() => {
+    recordVisit(problem.title, getProblemPath(problem.slug));
+  }, [problem.title, problem.slug, recordVisit]);
 
   const solved = isProblemSolved(problem.id);
   const bookmarked = isBookmarked(problem.id);
 
   const breadcrumbs = [
-    { label: "Home", href: "/" },
-    { label: "Problems", href: "/problems" },
-    { label: problem.topic, href: `/dsa/${problem.topic.toLowerCase()}` },
+    { label: "Home", href: getHomePath() },
+    { label: "Problems", href: getProblemsPath() },
+    { label: problem.topic, href: getDsaTopicPath(problem.topicSlug) },
     { label: problem.title },
   ];
 

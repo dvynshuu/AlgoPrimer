@@ -1,25 +1,62 @@
 import React from "react";
-import { notFound } from "next/navigation";
-import { LessonViewer } from "@/components/content/LessonViewer";
+import Link from "next/link";
+import { notFound, redirect, RedirectType } from "next/navigation";
 import { TopicSidebar, SidebarSection } from "@/components/layout/TopicSidebar";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
-import { dsaLessons } from "@/content/dsa/lessons";
 import { dsaTopics } from "@/content/dsa/topics";
-import { problems } from "@/content/problems";
-import { ArrowRight } from "lucide-react";
+import {
+  getDsaTopicBySlug,
+  getDsaLessonsForTopic,
+  getProblemsForDsaTopic,
+  getDsaLessonPath,
+  getDsaTopicBreadcrumbs,
+  resolveLegacyDsaPath,
+  getProblemPath,
+  getProblemsPath,
+  getDsaTopicPath,
+} from "@/lib/routes";
+import { createDsaTopicMetadata, createBreadcrumbJsonLd } from "@/lib/seo";
+import { ArrowRight, Clock } from "lucide-react";
 import styles from "./topicPage.module.css";
 
 interface PageProps {
   params: Promise<{ topic: string }>;
 }
 
-export default async function DSATopicPage({ params }: PageProps) {
-  const { topic: topicSlug } = await params;
+export async function generateStaticParams() {
+  return dsaTopics.map((t) => ({
+    topic: t.slug,
+  }));
+}
 
-  // Check if topic is a direct lesson
-  const directLesson = dsaLessons.find((l) => l.slug === topicSlug);
+export async function generateMetadata({ params }: PageProps) {
+  const { topic: topicSlug } = await params;
+  const topic = getDsaTopicBySlug(topicSlug);
+  if (!topic) return {};
+  return createDsaTopicMetadata(topic);
+}
+
+export default async function DSATopicPage({ params }: PageProps) {
+  const { topic: rawTopicSlug } = await params;
+  const topicSlug = rawTopicSlug.toLowerCase();
+
+  // Legacy route check: If this was an old direct lesson route (e.g. /dsa/two-pointers), redirect permanently
+  const legacyTarget = resolveLegacyDsaPath(topicSlug);
+  if (legacyTarget) {
+    redirect(legacyTarget, RedirectType.replace);
+  }
+
+  const topicMeta = getDsaTopicBySlug(topicSlug);
+  if (!topicMeta) {
+    notFound();
+  }
+
+  const lessons = getDsaLessonsForTopic(topicMeta.slug);
+  const relatedProblems = getProblemsForDsaTopic(topicMeta.slug);
+  const breadcrumbs = getDsaTopicBreadcrumbs(topicMeta);
+  const breadcrumbJsonLd = createBreadcrumbJsonLd(breadcrumbs);
 
   const sidebarSections: SidebarSection[] = [
     {
@@ -27,120 +64,101 @@ export default async function DSATopicPage({ params }: PageProps) {
       items: dsaTopics.map((t) => ({
         id: t.id,
         title: `${t.order}. ${t.title}`,
-        href: `/dsa/${t.slug}`,
+        href: getDsaTopicPath(t.slug),
       })),
     },
   ];
 
-  // Find related problems with semantic topic matching
-  const relatedProblems = problems.filter((p) => {
-    const pTopic = p.topic.toLowerCase();
-    const pSubtopic = p.subtopic.toLowerCase();
-    const pPattern = p.pattern.toLowerCase();
-    const slug = topicSlug.toLowerCase();
-
-    if (slug === "arrays" || slug === "two-pointers") {
-      return pTopic.includes("array") || pTopic.includes("pointer") || pSubtopic.includes("array");
-    }
-    if (slug === "strings") {
-      return pTopic.includes("string") || pSubtopic.includes("string");
-    }
-    if (slug === "searching" || slug === "binary-search") {
-      return pTopic.includes("binary search") || pPattern.includes("binary search");
-    }
-    if (slug === "sorting") {
-      return pTopic.includes("sort") || pPattern.includes("sort") || pSubtopic.includes("sort");
-    }
-    if (slug === "hashing") {
-      return pSubtopic.includes("hash") || pPattern.includes("hash") || pTopic.includes("hash");
-    }
-    if (slug === "linked-list") {
-      return pTopic.includes("linked list") || pSubtopic.includes("linked list");
-    }
-    if (slug === "stack" || slug === "queue") {
-      return pTopic.includes("stack") || pTopic.includes("queue") || pSubtopic.includes("stack");
-    }
-    if (slug === "trees" || slug === "bst") {
-      return pTopic.includes("tree") || pSubtopic.includes("tree") || pPattern.includes("tree");
-    }
-    if (slug === "heap") {
-      return pTopic.includes("heap") || pSubtopic.includes("heap") || pPattern.includes("heap");
-    }
-    if (slug === "graphs") {
-      return pTopic.includes("graph") || pSubtopic.includes("graph") || pPattern.includes("graph");
-    }
-    if (slug === "dynamic-programming") {
-      return pTopic.includes("dynamic programming") || pTopic.includes("dp") || pSubtopic.includes("dp");
-    }
-    if (slug === "greedy") {
-      return pPattern.includes("greedy") || pSubtopic.includes("greedy");
-    }
-    if (slug === "backtracking") {
-      return pPattern.includes("backtracking") || pSubtopic.includes("backtracking");
-    }
-    if (slug === "bit-manipulation") {
-      return pPattern.includes("bit") || pSubtopic.includes("bit");
-    }
-    if (slug === "advanced-patterns") {
-      return pPattern.includes("trie") || pPattern.includes("segment") || pPattern.includes("union");
-    }
-
-    return pTopic.includes(slug) || slug.includes(pTopic);
-  });
-
-  if (directLesson) {
-    const breadcrumbs = [
-      { label: "Home", href: "/" },
-      { label: "DSA", href: "/dsa" },
-      { label: directLesson.title },
-    ];
-
-    return (
-      <div style={{ minHeight: "calc(100vh - var(--header-height))", width: "100%", position: "relative" }}>
-        <TopicSidebar sections={sidebarSections} />
-        <LessonViewer lesson={directLesson} breadcrumbItems={breadcrumbs} relatedProblems={relatedProblems} />
-      </div>
-    );
-  }
-
-  // Otherwise find in dsaTopics
-  const topicMeta = dsaTopics.find((t) => t.slug === topicSlug);
-  if (!topicMeta) notFound();
-
   return (
     <div style={{ minHeight: "calc(100vh - var(--header-height))", width: "100%", position: "relative" }}>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
       <TopicSidebar sections={sidebarSections} />
       <main className={styles.mainArea}>
-        <Breadcrumbs
-          items={[
-            { label: "Home", href: "/" },
-            { label: "DSA", href: "/dsa" },
-            { label: topicMeta.title },
-          ]}
-        />
+        <Breadcrumbs items={breadcrumbs} />
 
-        <div className={styles.header}>
+        <header className={styles.header}>
           <div style={{ display: "flex", gap: "var(--space-2)", alignItems: "center", marginBottom: "var(--space-2)" }}>
             <Badge variant="level">TOPIC #{topicMeta.order}</Badge>
             <span style={{ fontSize: "var(--font-size-xs)", fontFamily: "var(--font-mono)", color: "var(--text-muted)" }}>
-              Estimated: ~{topicMeta.estimatedHours} hours
+              Estimated: ~{topicMeta.estimatedHours} hours &bull; {lessons.length} Lesson{lessons.length > 1 ? "s" : ""}
             </span>
           </div>
           <h1 className={styles.title}>{topicMeta.title}</h1>
           <p className={styles.desc}>{topicMeta.description}</p>
-        </div>
+        </header>
 
+        {/* Prerequisites */}
         <section className={styles.section}>
           <h2 className={styles.sectionTitle}>Prerequisites</h2>
           <div style={{ display: "flex", gap: "var(--space-2)", flexWrap: "wrap", margin: "var(--space-2) 0" }}>
-            {topicMeta.prerequisites.map((p) => (
-              <span key={p} className={styles.prereqBadge}>{p}</span>
+            {topicMeta.prerequisites.map((p) => {
+              const matchedTopic = dsaTopics.find(
+                (t) => t.title.toLowerCase().includes(p.toLowerCase()) || p.toLowerCase().includes(t.title.toLowerCase())
+              );
+              if (matchedTopic) {
+                return (
+                  <Link
+                    key={p}
+                    href={getDsaTopicPath(matchedTopic.slug)}
+                    className={styles.prereqBadge}
+                    style={{ textDecoration: "none" }}
+                  >
+                    {p} &rarr;
+                  </Link>
+                );
+              }
+              return (
+                <span key={p} className={styles.prereqBadge}>
+                  {p}
+                </span>
+              );
+            })}
+          </div>
+        </section>
+
+        {/* Lessons in this Topic */}
+        <section className={styles.section}>
+          <h2 className={styles.sectionTitle}>Topic Curriculum & Lessons</h2>
+          <p className={styles.desc} style={{ marginBottom: "var(--space-4)" }}>
+            Each lesson builds mental models, provides multi-language code implementations, highlights common pitfalls, and connects directly to technical interview patterns.
+          </p>
+
+          <div className={styles.lessonGrid}>
+            {lessons.map((lesson, idx) => (
+              <Link
+                key={lesson.id}
+                href={getDsaLessonPath(topicMeta.slug, lesson.slug)}
+                className={styles.lessonCard}
+              >
+                <div>
+                  <div className={styles.lessonMeta}>
+                    <Badge variant="pattern">Lesson {idx + 1}</Badge>
+                    <span className={styles.lessonTime}>
+                      <Clock size={12} /> {lesson.estimatedMinutes} mins
+                    </span>
+                  </div>
+                  <h3 className={styles.lessonTitle}>{lesson.title}</h3>
+                  <p className={styles.lessonDesc}>{lesson.oneSentence}</p>
+                </div>
+                <Button
+                  href={getDsaLessonPath(topicMeta.slug, lesson.slug)}
+                  variant="primary"
+                  size="sm"
+                  icon={<ArrowRight size={13} />}
+                >
+                  Start Lesson
+                </Button>
+              </Link>
             ))}
           </div>
         </section>
 
+        {/* 5-Level Progression Structure */}
         <section className={styles.section}>
-          <h2 className={styles.sectionTitle}>5-Level Progression Structure</h2>
+          <h2 className={styles.sectionTitle}>5-Level Problem Progression</h2>
           <div className={styles.levelGrid}>
             <div className={styles.levelBox}>
               <span className={styles.levelNum}>Level 1</span>
@@ -170,8 +188,17 @@ export default async function DSATopicPage({ params }: PageProps) {
           </div>
         </section>
 
+        {/* Topic Practice Problems */}
         <section className={styles.section}>
-          <h2 className={styles.sectionTitle}>Topic Problems & Practice</h2>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: "var(--space-2)" }}>
+            <h2 className={styles.sectionTitle} style={{ border: "none", margin: 0, padding: 0 }}>
+              Curated Interview Problems ({relatedProblems.length})
+            </h2>
+            <Link href={getProblemsPath()} style={{ fontSize: "var(--font-size-xs)", fontFamily: "var(--font-mono)" }}>
+              View all problems &rarr;
+            </Link>
+          </div>
+
           {relatedProblems.length > 0 ? (
             <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-3)", margin: "var(--space-3) 0" }}>
               {relatedProblems.map((prob) => (
@@ -180,14 +207,14 @@ export default async function DSATopicPage({ params }: PageProps) {
                     <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)", marginBottom: "4px" }}>
                       <Badge variant={prob.difficulty === "Easy" ? "easy" : "medium"}>{prob.difficulty}</Badge>
                       <span style={{ fontSize: "var(--font-size-xs)", fontFamily: "var(--font-mono)", color: "var(--text-muted)" }}>
-                        Pattern: {prob.pattern}
+                        Pattern: {prob.pattern} &bull; {prob.subtopic}
                       </span>
                     </div>
                     <div style={{ fontSize: "var(--font-size-md)", fontWeight: 600, color: "var(--text-primary)" }}>
                       {prob.title}
                     </div>
                   </div>
-                  <Button href={`/problems/${prob.slug}`} variant="primary" size="sm" icon={<ArrowRight size={13} />}>
+                  <Button href={getProblemPath(prob.slug)} variant="primary" size="sm" icon={<ArrowRight size={13} />}>
                     Solve Problem
                   </Button>
                 </div>
@@ -196,7 +223,7 @@ export default async function DSATopicPage({ params }: PageProps) {
           ) : (
             <div className={styles.emptyNote}>
               <p>Practice problems for {topicMeta.title} are being curated following our 5-level progression system.</p>
-              <Button href="/problems" variant="secondary" size="sm">
+              <Button href={getProblemsPath()} variant="secondary" size="sm">
                 Browse Full Problem Bank
               </Button>
             </div>

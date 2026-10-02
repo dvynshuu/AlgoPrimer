@@ -1,6 +1,7 @@
 import React from "react";
 import { Button } from "@/components/ui/Button";
 import { ArrowLeft } from "lucide-react";
+import { getHomePath, getDsaPath } from "@/lib/routes";
 
 export default function NotFound() {
   return (
@@ -43,10 +44,10 @@ export default function NotFound() {
         It may be planned for an upcoming release or the URL may have a typo.
       </p>
       <div style={{ display: "flex", gap: "var(--space-3)" }}>
-        <Button href="/" variant="primary" icon={<ArrowLeft size={14} />}>
+        <Button href={getHomePath()} variant="primary" icon={<ArrowLeft size={14} />}>
           Return Home
         </Button>
-        <Button href="/dsa" variant="secondary">
+        <Button href={getDsaPath()} variant="secondary">
           Explore DSA Roadmap
         </Button>
       </div>

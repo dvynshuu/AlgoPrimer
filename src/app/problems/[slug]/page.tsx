@@ -1,7 +1,10 @@
 import React from "react";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ProblemViewer } from "@/components/content/ProblemViewer";
 import { problems } from "@/content/problems";
+import { createProblemMetadata, createBreadcrumbJsonLd } from "@/lib/seo";
+import { getProblemBreadcrumbs, getDsaTopicBySlug } from "@/lib/routes";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -13,15 +16,12 @@ export async function generateStaticParams() {
   }));
 }
 
-export async function generateMetadata({ params }: PageProps) {
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
   const problem = problems.find((p) => p.slug === slug);
   if (!problem) return {};
 
-  return {
-    title: `${problem.title} — CampusPrep Problem Bank`,
-    description: `3-tier solution (Brute Force, Better, Optimal) in Java, C++, and Python for ${problem.title}.`,
-  };
+  return createProblemMetadata(problem);
 }
 
 export default async function ProblemDetailPage({ params }: PageProps) {
@@ -32,5 +32,17 @@ export default async function ProblemDetailPage({ params }: PageProps) {
     notFound();
   }
 
-  return <ProblemViewer problem={problem} />;
+  const topicMeta = getDsaTopicBySlug(problem.topicSlug);
+  const breadcrumbItems = getProblemBreadcrumbs(problem, topicMeta);
+  const breadcrumbJsonLd = createBreadcrumbJsonLd(breadcrumbItems);
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
+      <ProblemViewer problem={problem} />
+    </>
+  );
 }

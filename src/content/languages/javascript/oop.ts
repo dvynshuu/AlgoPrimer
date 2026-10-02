@@ -170,7 +170,7 @@ const [ first, second, ...remaining ] = numbers;`,
     personal: {
         fullName: "Aarav Sharma",
         contact: {
-            email: "aarav@campusprep.com"
+            email: "aarav@algoprimer.com"
         }
     },
     scores: [95, 88, 92, 84, 90]
@@ -552,7 +552,7 @@ structuredClone(obj):
       title: "Comparing JSON serialization quirks against native structuredClone",
       language: "javascript",
       code: `const original = {
-    title: "CampusPrep Guide",
+    title: "AlgoPrimer Guide",
     createdAt: new Date(),
     tags: new Set(["JS", "Interview"]),
     metadata: {

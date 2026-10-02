@@ -9,24 +9,48 @@ import { javaLessons } from "@/content/languages/java";
 import { cppLessons } from "@/content/languages/cpp";
 import { pythonLessons } from "@/content/languages/python";
 import { javascriptLessons } from "@/content/languages/javascript";
+import {
+  getHomePath,
+  getLanguagesPath,
+  getLanguagePath,
+  getLanguageLessonPath,
+} from "@/lib/routes";
+import { createPageMetadata, createBreadcrumbJsonLd } from "@/lib/seo";
 
-export const metadata = {
-  title: "Programming Languages — CampusPrep",
-  description: "Comprehensive, student-first language tracks for Java, C++, Python, and JavaScript.",
-};
+export const metadata = createPageMetadata({
+  title: "Programming Language Tracks — Java, C++, Python, JavaScript",
+  description:
+    "Comprehensive, student-first language tracks for Java, C++, Python, and JavaScript covering memory models, syntax, OOP, standard libraries, and interview patterns.",
+  path: getLanguagesPath(),
+  keywords: [
+    "programming languages",
+    "Java track",
+    "C++ track",
+    "Python track",
+    "JavaScript track",
+    "coding interview languages",
+  ],
+});
 
 export default function LanguagesPage() {
+  const breadcrumbs = [{ label: "Home", href: getHomePath() }, { label: "Languages" }];
+  const breadcrumbJsonLd = createBreadcrumbJsonLd(breadcrumbs);
+
   return (
     <div className={styles.container}>
-      <Breadcrumbs items={[{ label: "Home", href: "/" }, { label: "Languages" }]} />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
+      <Breadcrumbs items={breadcrumbs} />
 
-      <div className={styles.header}>
+      <header className={styles.header}>
         <h1 className={styles.title}>Programming Language Tracks</h1>
         <p className={styles.desc}>
-          Master language syntax, execution model, memory layout, and standard collections.
+          Master language syntax, execution models, memory layouts, and standard collections.
           Choose the language you plan to use for your coding rounds and technical interviews.
         </p>
-      </div>
+      </header>
 
       <div className={styles.trackList}>
         {/* Java Track */}
@@ -39,7 +63,7 @@ export default function LanguagesPage() {
               </div>
               <h2 className={styles.trackTitle}>Java Track</h2>
             </div>
-            <Button href="/languages/java" variant="primary" size="sm" icon={<ArrowRight size={14} />}>
+            <Button href={getLanguagePath("java")} variant="primary" size="sm" icon={<ArrowRight size={14} />}>
               Open Java Track
             </Button>
           </div>
@@ -47,10 +71,10 @@ export default function LanguagesPage() {
             Covers JVM architecture (JDK/JRE/JVM), stack vs heap memory models, object-oriented design invariants (Encapsulation, Polymorphism, Interfaces), and the Java Collections Framework (ArrayList, HashMap, HashSet).
           </p>
           <div className={styles.lessonPreview}>
-            <strong>Phase 1 Lessons:</strong>
+            <strong>Curriculum Modules:</strong>
             <div className={styles.previewLinks}>
               {javaLessons.map((l) => (
-                <Link key={l.id} href={`/languages/java/${l.slug}`}>
+                <Link key={l.id} href={getLanguageLessonPath("java", l.slug)}>
                   {l.title} &rarr;
                 </Link>
               ))}
@@ -68,7 +92,7 @@ export default function LanguagesPage() {
               </div>
               <h2 className={styles.trackTitle}>C++ Track</h2>
             </div>
-            <Button href="/languages/cpp" variant="primary" size="sm" icon={<ArrowRight size={14} />}>
+            <Button href={getLanguagePath("cpp")} variant="primary" size="sm" icon={<ArrowRight size={14} />}>
               Open C++ Track
             </Button>
           </div>
@@ -76,10 +100,10 @@ export default function LanguagesPage() {
             Covers direct memory layouts, pointers vs references (`&`), pass-by-value vs pass-by-reference semantics, memory management, and deep coverage of the Standard Template Library (vector, map, set, algorithms).
           </p>
           <div className={styles.lessonPreview}>
-            <strong>Phase 1 Lessons:</strong>
+            <strong>Curriculum Modules:</strong>
             <div className={styles.previewLinks}>
               {cppLessons.map((l) => (
-                <Link key={l.id} href={`/languages/cpp/${l.slug}`}>
+                <Link key={l.id} href={getLanguageLessonPath("cpp", l.slug)}>
                   {l.title} &rarr;
                 </Link>
               ))}
@@ -97,7 +121,7 @@ export default function LanguagesPage() {
               </div>
               <h2 className={styles.trackTitle}>Python Track</h2>
             </div>
-            <Button href="/languages/python" variant="primary" size="sm" icon={<ArrowRight size={14} />}>
+            <Button href={getLanguagePath("python")} variant="primary" size="sm" icon={<ArrowRight size={14} />}>
               Open Python Track
             </Button>
           </div>
@@ -108,7 +132,7 @@ export default function LanguagesPage() {
             <strong>Curriculum Modules:</strong>
             <div className={styles.previewLinks}>
               {pythonLessons.map((l) => (
-                <Link key={l.id} href={`/languages/python/${l.slug}`}>
+                <Link key={l.id} href={getLanguageLessonPath("python", l.slug)}>
                   {l.title} &rarr;
                 </Link>
               ))}
@@ -126,7 +150,7 @@ export default function LanguagesPage() {
               </div>
               <h2 className={styles.trackTitle}>JavaScript Track</h2>
             </div>
-            <Button href="/languages/javascript" variant="primary" size="sm" icon={<ArrowRight size={14} />}>
+            <Button href={getLanguagePath("javascript")} variant="primary" size="sm" icon={<ArrowRight size={14} />}>
               Open JavaScript Track
             </Button>
           </div>
@@ -137,7 +161,7 @@ export default function LanguagesPage() {
             <strong>Curriculum Modules:</strong>
             <div className={styles.previewLinks}>
               {javascriptLessons.map((l) => (
-                <Link key={l.id} href={`/languages/javascript/${l.slug}`}>
+                <Link key={l.id} href={getLanguageLessonPath("javascript", l.slug)}>
                   {l.title} &rarr;
                 </Link>
               ))}

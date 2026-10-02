@@ -10,6 +10,7 @@ export const dsaTopics: TopicMetadata[] = [
     estimatedHours: 4,
     levelCount: 5,
     prerequisites: ["Programming Fundamentals", "Loops"],
+    lessons: ["asymptotic-analysis"],
   },
   {
     id: "dsa-arrays",
@@ -20,6 +21,7 @@ export const dsaTopics: TopicMetadata[] = [
     estimatedHours: 12,
     levelCount: 5,
     prerequisites: ["Time & Space Complexity"],
+    lessons: ["fundamentals", "two-pointers"],
   },
   {
     id: "dsa-strings",
@@ -30,6 +32,7 @@ export const dsaTopics: TopicMetadata[] = [
     estimatedHours: 8,
     levelCount: 5,
     prerequisites: ["Arrays & Dynamic Arrays"],
+    lessons: ["immutability-and-matching"],
   },
   {
     id: "dsa-searching",
@@ -40,6 +43,7 @@ export const dsaTopics: TopicMetadata[] = [
     estimatedHours: 8,
     levelCount: 5,
     prerequisites: ["Arrays & Dynamic Arrays"],
+    lessons: ["linear-and-binary-search"],
   },
   {
     id: "dsa-sorting",
@@ -50,6 +54,7 @@ export const dsaTopics: TopicMetadata[] = [
     estimatedHours: 8,
     levelCount: 5,
     prerequisites: ["Time & Space Complexity"],
+    lessons: ["fundamentals"],
   },
   {
     id: "dsa-hashing",
@@ -60,6 +65,7 @@ export const dsaTopics: TopicMetadata[] = [
     estimatedHours: 10,
     levelCount: 5,
     prerequisites: ["Arrays & Dynamic Arrays"],
+    lessons: ["hash-tables"],
   },
   {
     id: "dsa-linked-list",
@@ -70,6 +76,7 @@ export const dsaTopics: TopicMetadata[] = [
     estimatedHours: 10,
     levelCount: 5,
     prerequisites: ["Pointers / Object References"],
+    lessons: ["reversal"],
   },
   {
     id: "dsa-stack",
@@ -80,6 +87,7 @@ export const dsaTopics: TopicMetadata[] = [
     estimatedHours: 8,
     levelCount: 5,
     prerequisites: ["Arrays & Dynamic Arrays", "Linked Lists"],
+    lessons: ["monotonic-stack"],
   },
   {
     id: "dsa-queue",
@@ -90,6 +98,7 @@ export const dsaTopics: TopicMetadata[] = [
     estimatedHours: 6,
     levelCount: 5,
     prerequisites: ["Arrays & Dynamic Arrays"],
+    lessons: ["fifo-and-deques"],
   },
   {
     id: "dsa-recursion",
@@ -100,6 +109,7 @@ export const dsaTopics: TopicMetadata[] = [
     estimatedHours: 10,
     levelCount: 5,
     prerequisites: ["Stack Data Structure"],
+    lessons: ["call-stack-and-trees"],
   },
   {
     id: "dsa-binary-search",
@@ -110,6 +120,7 @@ export const dsaTopics: TopicMetadata[] = [
     estimatedHours: 10,
     levelCount: 5,
     prerequisites: ["Linear & Binary Search"],
+    lessons: ["patterns"],
   },
   {
     id: "dsa-trees",
@@ -120,6 +131,7 @@ export const dsaTopics: TopicMetadata[] = [
     estimatedHours: 14,
     levelCount: 5,
     prerequisites: ["Recursion & Call Stack", "Queue & Deque"],
+    lessons: ["traversals-and-lca"],
   },
   {
     id: "dsa-bst",
@@ -130,6 +142,7 @@ export const dsaTopics: TopicMetadata[] = [
     estimatedHours: 8,
     levelCount: 5,
     prerequisites: ["Binary Trees"],
+    lessons: ["invariants-and-validation"],
   },
   {
     id: "dsa-heap",
@@ -140,6 +153,7 @@ export const dsaTopics: TopicMetadata[] = [
     estimatedHours: 8,
     levelCount: 5,
     prerequisites: ["Binary Trees"],
+    lessons: ["complete-trees-and-heapify"],
   },
   {
     id: "dsa-greedy",
@@ -150,6 +164,7 @@ export const dsaTopics: TopicMetadata[] = [
     estimatedHours: 8,
     levelCount: 5,
     prerequisites: ["Sorting Fundamentals"],
+    lessons: ["exchange-arguments"],
   },
   {
     id: "dsa-backtracking",
@@ -160,6 +175,7 @@ export const dsaTopics: TopicMetadata[] = [
     estimatedHours: 12,
     levelCount: 5,
     prerequisites: ["Recursion & Call Stack"],
+    lessons: ["state-space-trees"],
   },
   {
     id: "dsa-graphs",
@@ -170,6 +186,7 @@ export const dsaTopics: TopicMetadata[] = [
     estimatedHours: 16,
     levelCount: 5,
     prerequisites: ["Queue & Deque", "Recursion & Call Stack"],
+    lessons: ["traversals-and-shortest-paths"],
   },
   {
     id: "dsa-dynamic-programming",
@@ -180,6 +197,7 @@ export const dsaTopics: TopicMetadata[] = [
     estimatedHours: 20,
     levelCount: 5,
     prerequisites: ["Recursion & Call Stack"],
+    lessons: ["memoization-and-tabulation"],
   },
   {
     id: "dsa-bit-manipulation",
@@ -190,6 +208,7 @@ export const dsaTopics: TopicMetadata[] = [
     estimatedHours: 6,
     levelCount: 5,
     prerequisites: ["Programming Fundamentals"],
+    lessons: ["binary-arithmetic-and-masks"],
   },
   {
     id: "dsa-advanced-patterns",
@@ -200,5 +219,6 @@ export const dsaTopics: TopicMetadata[] = [
     estimatedHours: 12,
     levelCount: 5,
     prerequisites: ["Trees", "Bit Manipulation"],
+    lessons: ["tries-and-segment-trees"],
   },
 ];

@@ -3,6 +3,12 @@ import "@/styles/globals.css";
 import { ProgressProvider } from "@/lib/progress/ProgressContext";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import {
+  SITE_NAME,
+  SITE_TAGLINE,
+  DEFAULT_DESCRIPTION,
+  SITE_URL,
+} from "@/lib/seo";
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -10,29 +16,53 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "Forge — Open Learning Coding Platform for Everyone",
-  description:
-    "A free, open learning platform engineered from first principles. Master programming fundamentals, deep computer science, data structures, algorithms, and technical interviews.",
+  title: {
+    default: `${SITE_NAME} — ${SITE_TAGLINE}`,
+    template: `%s | ${SITE_NAME}`,
+  },
+  description: DEFAULT_DESCRIPTION,
   keywords: [
-    "open learning",
-    "coding platform",
-    "learn programming",
-    "computer science",
+    "programming",
     "data structures",
     "algorithms",
+    "coding interview",
+    "DSA roadmap",
+    "software engineer",
     "Java",
     "C++",
     "Python",
     "JavaScript",
-    "technical interview",
     "problem solving",
-    "forge",
+    "algoprimer",
   ],
-  authors: [{ name: "Forge Community" }],
+  authors: [{ name: `${SITE_NAME} Editorial Team` }],
+  creator: SITE_NAME,
+  publisher: SITE_NAME,
+  metadataBase: new URL(SITE_URL),
+  alternates: {
+    canonical: SITE_URL,
+  },
   openGraph: {
-    title: "Forge — Open Learning Coding Platform for Everyone",
-    description: "From your first line of code to algorithmic mastery. Free, open, and built for everyone.",
+    title: `${SITE_NAME} — ${SITE_TAGLINE}`,
+    description: DEFAULT_DESCRIPTION,
+    url: SITE_URL,
+    siteName: SITE_NAME,
+    locale: "en_US",
     type: "website",
+    images: [
+      {
+        url: `${SITE_URL}/og-image.png`,
+        width: 1200,
+        height: 630,
+        alt: `${SITE_NAME} — ${SITE_TAGLINE}`,
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: `${SITE_NAME} — ${SITE_TAGLINE}`,
+    description: DEFAULT_DESCRIPTION,
+    images: [`${SITE_URL}/og-image.png`],
   },
 };
 

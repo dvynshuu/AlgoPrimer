@@ -1,4 +1,5 @@
 import React from "react";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { LessonViewer } from "@/components/content/LessonViewer";
 import { TopicSidebar, SidebarSection } from "@/components/layout/TopicSidebar";
@@ -7,9 +8,45 @@ import { cppLessons } from "@/content/languages/cpp";
 import { pythonLessons } from "@/content/languages/python";
 import { javascriptLessons } from "@/content/languages/javascript";
 import { Lesson } from "@/types/content";
+import {
+  getLanguageLessonBreadcrumbs,
+  getLanguageLessonPath,
+} from "@/lib/routes";
+import {
+  createLanguageLessonMetadata,
+  createBreadcrumbJsonLd,
+  createTechArticleJsonLd,
+} from "@/lib/seo";
 
 interface PageProps {
   params: Promise<{ lang: string; lesson: string }>;
+}
+
+const LANG_NAMES: Record<string, string> = {
+  java: "Java",
+  cpp: "C++",
+  python: "Python",
+  javascript: "JavaScript",
+};
+
+function getLessonsForLang(lang: string): Lesson[] | null {
+  if (lang === "java") return javaLessons;
+  if (lang === "cpp") return cppLessons;
+  if (lang === "python") return pythonLessons;
+  if (lang === "javascript") return javascriptLessons;
+  return null;
+}
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { lang, lesson: lessonSlug } = await params;
+  const allLessons = getLessonsForLang(lang);
+  if (!allLessons) return {};
+
+  const lesson = allLessons.find((l) => l.slug === lessonSlug);
+  if (!lesson) return {};
+
+  const langName = LANG_NAMES[lang] || lang.toUpperCase();
+  return createLanguageLessonMetadata(langName, lang, lesson);
 }
 
 export function generateStaticParams() {
@@ -31,15 +68,13 @@ export function generateStaticParams() {
 export default async function LanguageLessonPage({ params }: PageProps) {
   const { lang, lesson: lessonSlug } = await params;
 
-  let allLessons: Lesson[] = [];
-  if (lang === "java") allLessons = javaLessons;
-  else if (lang === "cpp") allLessons = cppLessons;
-  else if (lang === "python") allLessons = pythonLessons;
-  else if (lang === "javascript") allLessons = javascriptLessons;
-  else notFound();
+  const allLessons = getLessonsForLang(lang);
+  if (!allLessons) notFound();
 
   const currentLesson = allLessons.find((l) => l.slug === lessonSlug);
   if (!currentLesson) notFound();
+
+  const langName = LANG_NAMES[lang] || lang.toUpperCase();
 
   // Group lessons by module topicTitle
   const sectionMap = new Map<string, Lesson[]>();
@@ -55,22 +90,33 @@ export default async function LanguageLessonPage({ params }: PageProps) {
       items: items.map((l) => ({
         id: l.id,
         title: l.title,
-        href: `/languages/${lang}/${l.slug}`,
+        href: getLanguageLessonPath(lang, l.slug),
       })),
     })
   );
 
-  const breadcrumbItems = [
-    { label: "Home", href: "/" },
-    { label: "Languages", href: "/languages" },
-    { label: lang.toUpperCase(), href: `/languages/${lang}` },
-    { label: currentLesson.title },
-  ];
+  const breadcrumbItems = getLanguageLessonBreadcrumbs(langName, lang, currentLesson.title);
+  const breadcrumbJsonLd = createBreadcrumbJsonLd(breadcrumbItems);
+  const articleJsonLd = createTechArticleJsonLd({
+    headline: `${currentLesson.title} — ${langName}`,
+    description: currentLesson.oneSentence,
+    path: getLanguageLessonPath(lang, currentLesson.slug),
+  });
 
   return (
-    <div style={{ minHeight: "calc(100vh - var(--header-height))", width: "100%", position: "relative" }}>
-      <TopicSidebar sections={sidebarSections} />
-      <LessonViewer lesson={currentLesson} breadcrumbItems={breadcrumbItems} />
-    </div>
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
+      />
+      <div style={{ minHeight: "calc(100vh - var(--header-height))", width: "100%", position: "relative" }}>
+        <TopicSidebar sections={sidebarSections} />
+        <LessonViewer lesson={currentLesson} breadcrumbItems={breadcrumbItems} />
+      </div>
+    </>
   );
 }

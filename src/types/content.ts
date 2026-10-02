@@ -77,6 +77,7 @@ export const ProblemSchema = z.object({
   slug: z.string(),
   title: z.string(),
   topic: z.string(),
+  topicSlug: z.string(),
   subtopic: z.string(),
   difficulty: z.enum(["Easy", "Medium", "Hard"]),
   progressionLevel: z.enum([
@@ -157,4 +158,6 @@ export interface TopicMetadata {
   estimatedHours: number;
   levelCount: number;
   prerequisites: string[];
+  lessons: string[];
 }
+

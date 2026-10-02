@@ -110,3 +110,59 @@
   color: var(--text-secondary);
   font-size: var(--font-size-sm);
 }
+
+.lessonGrid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin: var(--space-4) 0;
+}
+
+.lessonCard {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: var(--space-4) var(--space-5);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  text-decoration: none;
+  color: inherit;
+  transition: border-color var(--transition-fast), background-color var(--transition-fast);
+  gap: var(--space-4);
+}
+
+.lessonCard:hover {
+  border-color: var(--border-hover);
+  background-color: var(--bg-subtle);
+}
+
+.lessonMeta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-1);
+}
+
+.lessonTime {
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.lessonTitle {
+  font-size: var(--font-size-md);
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 var(--space-1) 0;
+}
+
+.lessonDesc {
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin: 0;
+}

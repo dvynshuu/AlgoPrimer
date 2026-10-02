@@ -439,7 +439,7 @@ Primitive: int y = 42 (Back to raw stack value)`,
     example: {
       title: "Encapsulating internal data with private modifiers",
       language: "java",
-      code: `package com.campusprep.model;
+      code: `package com.algoprimer.model;
 
 public class BankAccount {
     // Private field: cannot be modified directly from outside

@@ -156,7 +156,7 @@ If not found at top level: ReferenceError!`,
     example: {
       title: "Demonstrating the Execution Context Call Stack and Lexical Scope lookup",
       language: "javascript",
-      code: `const platform = "CampusPrep";
+      code: `const platform = "AlgoPrimer";
 
 function first() {
     const level = "Beginner";
@@ -567,7 +567,7 @@ const toLower = str => str.toLowerCase();
 const wrapTag = str => "<p>" + str + "</p>";
 
 const formatText = pipe(trim, toLower, wrapTag);
-console.log("Formatted output:", formatText("   CampusPrep Educational Platform   "));`,
+console.log("Formatted output:", formatText("   AlgoPrimer Educational Platform   "));`,
       explanation:
         "`curry()` transforms a function of $N$ arguments into a chain of $N$ single-argument functions. `pipe()` passes the output of each function as the input to the next, creating readable functional transformation pipelines.",
     },

@@ -64,11 +64,32 @@ describe("Curriculum Content Integrity", () => {
     }
   });
 
-  it("ensures every topic in the 20-topic DSA roadmap has an implemented lesson", () => {
+  it("ensures every topic in the 20-topic DSA roadmap has implemented lessons and no topic/lesson collisions", () => {
     expect(dsaTopics.length).toBe(20);
-    const lessonSlugs = new Set(dsaLessons.map((l) => l.slug));
+    const validTopicSlugs = new Set(dsaTopics.map((t) => t.slug));
+
     for (const topic of dsaTopics) {
-      expect(lessonSlugs.has(topic.slug), `Missing DSA lesson for topic slug: ${topic.slug}`).toBe(true);
+      expect(topic.lessons.length, `Topic ${topic.slug} must have at least one lesson`).toBeGreaterThan(0);
+      for (const lessonSlug of topic.lessons) {
+        expect(lessonSlug, `Topic ${topic.slug} has collision with lesson slug`).not.toBe(topic.slug);
+        const found = dsaLessons.find((l) => l.topicSlug === topic.slug && l.slug === lessonSlug);
+        expect(found, `Missing DSA lesson: topic=${topic.slug}, lesson=${lessonSlug}`).toBeDefined();
+      }
+    }
+
+    for (const lesson of dsaLessons) {
+      expect(validTopicSlugs.has(lesson.topicSlug), `Lesson ${lesson.id} has invalid topicSlug: ${lesson.topicSlug}`).toBe(true);
+      expect(lesson.slug, `Lesson ${lesson.id} slug collides with topicSlug`).not.toBe(lesson.topicSlug);
+    }
+  });
+
+  it("ensures every problem maps to a valid canonical DSA topicSlug", () => {
+    expect(problems.length).toBe(65);
+    const validTopicSlugs = new Set(dsaTopics.map((t) => t.slug));
+
+    for (const prob of problems) {
+      expect(prob.topicSlug, `Problem ${prob.id} is missing topicSlug`).toBeDefined();
+      expect(validTopicSlugs.has(prob.topicSlug), `Problem ${prob.id} has invalid topicSlug: ${prob.topicSlug}`).toBe(true);
     }
   });
 

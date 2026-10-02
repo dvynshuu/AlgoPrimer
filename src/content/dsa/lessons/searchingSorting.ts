@@ -3,7 +3,7 @@ import { Lesson } from "@/types/content";
 export const searchingSortingLessons: Lesson[] = [
   {
     id: "dsa-searching-lesson",
-    slug: "searching",
+    slug: "linear-and-binary-search",
     title: "Linear & Binary Search: Invariants, Predicates & Search Space",
     track: "dsa",
     topicSlug: "searching",
@@ -173,7 +173,7 @@ return low; // 'low' is the exact insertion index!`,
   },
   {
     id: "dsa-sorting-lesson",
-    slug: "sorting",
+    slug: "fundamentals",
     title: "Sorting Fundamentals: Merge Sort, Quick Sort & Stability",
     track: "dsa",
     topicSlug: "sorting",
@@ -329,7 +329,7 @@ while (mid <= high) {
   },
   {
     id: "dsa-binary-search-lesson",
-    slug: "binary-search",
+    slug: "patterns",
     title: "Advanced Binary Search: Answer Spaces, Rotated Arrays & 2D Matrices",
     track: "dsa",
     topicSlug: "binary-search",

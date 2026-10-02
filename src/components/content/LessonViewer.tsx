@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Lesson, Problem } from "@/types/content";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { Button } from "@/components/ui/Button";
@@ -9,6 +9,7 @@ import { Callout } from "@/components/ui/Callout";
 import { CodeBlock } from "@/components/ui/CodeBlock";
 import { TableOfContents, TocItem } from "@/components/layout/TableOfContents";
 import { useProgress } from "@/lib/progress/ProgressContext";
+import { getDsaLessonPath, getLanguageLessonPath } from "@/lib/routes";
 import { CheckCircle2, Bookmark, Clock, ArrowRight } from "lucide-react";
 import styles from "./LessonViewer.module.css";
 
@@ -23,8 +24,22 @@ export const LessonViewer: React.FC<LessonViewerProps> = ({
   breadcrumbItems,
   relatedProblems,
 }) => {
-  const { isLessonCompleted, toggleLessonCompleted, isBookmarked, toggleBookmark } = useProgress();
+  const {
+    isLessonCompleted,
+    toggleLessonCompleted,
+    isBookmarked,
+    toggleBookmark,
+    recordVisit,
+  } = useProgress();
   const [showSolution, setShowSolution] = useState(false);
+
+  useEffect(() => {
+    const url =
+      lesson.track === "dsa"
+        ? getDsaLessonPath(lesson.topicSlug, lesson.slug)
+        : getLanguageLessonPath(lesson.track, lesson.slug);
+    recordVisit(lesson.title, url);
+  }, [lesson.title, lesson.track, lesson.topicSlug, lesson.slug, recordVisit]);
 
   const completed = isLessonCompleted(lesson.id);
   const bookmarked = isBookmarked(lesson.id);

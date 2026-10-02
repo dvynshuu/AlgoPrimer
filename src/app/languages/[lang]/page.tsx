@@ -8,6 +8,11 @@ import { cppLessons } from "@/content/languages/cpp";
 import { pythonLessons } from "@/content/languages/python";
 import { javascriptLessons } from "@/content/languages/javascript";
 import { Lesson } from "@/types/content";
+import {
+  getLanguageLessonPath,
+  getLanguageBreadcrumbs,
+} from "@/lib/routes";
+import { createLanguageMetadata, createBreadcrumbJsonLd } from "@/lib/seo";
 import { ArrowRight, Clock, BookOpen } from "lucide-react";
 import styles from "./langHub.module.css";
 
@@ -19,32 +24,59 @@ export function generateStaticParams() {
   return [{ lang: "java" }, { lang: "cpp" }, { lang: "python" }, { lang: "javascript" }];
 }
 
-export default async function LanguageHubPage({ params }: PageProps) {
-  const { lang } = await params;
-
-  let title = "";
-  let description = "";
-  let lessons: Lesson[] = javaLessons;
-
+function getLangData(lang: string) {
   if (lang === "java") {
-    title = "Java Programming Curriculum";
-    description = "From JVM architecture and primitive types to Collections, Concurrency, and placement-focused concepts.";
-    lessons = javaLessons;
-  } else if (lang === "cpp") {
-    title = "C++ Programming Curriculum";
-    description = "From direct memory, pointers, and RAII to the Standard Template Library (STL) and modern move semantics.";
-    lessons = cppLessons;
-  } else if (lang === "python") {
-    title = "Python Programming Curriculum";
-    description = "From object references, dynamic typing, and collections to heapq, bisect, and interview Big-O complexities.";
-    lessons = pythonLessons;
-  } else if (lang === "javascript") {
-    title = "JavaScript Programming Curriculum";
-    description = "From V8 engine internals, closures, and prototypal OOP to the Event Loop, Promises, and rate-limiting patterns.";
-    lessons = javascriptLessons;
-  } else {
+    return {
+      name: "Java",
+      title: "Java Programming Curriculum",
+      description: "From JVM architecture and primitive types to Collections, Concurrency, and placement-focused concepts.",
+      lessons: javaLessons,
+    };
+  }
+  if (lang === "cpp") {
+    return {
+      name: "C++",
+      title: "C++ Programming Curriculum",
+      description: "From direct memory, pointers, and RAII to the Standard Template Library (STL) and modern move semantics.",
+      lessons: cppLessons,
+    };
+  }
+  if (lang === "python") {
+    return {
+      name: "Python",
+      title: "Python Programming Curriculum",
+      description: "From object references, dynamic typing, and collections to heapq, bisect, and interview Big-O complexities.",
+      lessons: pythonLessons,
+    };
+  }
+  if (lang === "javascript") {
+    return {
+      name: "JavaScript",
+      title: "JavaScript Programming Curriculum",
+      description: "From V8 engine internals, closures, and prototypal OOP to the Event Loop, Promises, and rate-limiting patterns.",
+      lessons: javascriptLessons,
+    };
+  }
+  return null;
+}
+
+export async function generateMetadata({ params }: PageProps) {
+  const { lang } = await params;
+  const data = getLangData(lang.toLowerCase());
+  if (!data) return {};
+  return createLanguageMetadata(data.name, lang.toLowerCase(), data.description);
+}
+
+export default async function LanguageHubPage({ params }: PageProps) {
+  const { lang: rawLang } = await params;
+  const lang = rawLang.toLowerCase();
+  const data = getLangData(lang);
+
+  if (!data) {
     notFound();
   }
+
+  const { name, title, description, lessons } = data;
 
   // Group lessons by module topicTitle
   const moduleMap = new Map<string, Lesson[]>();
@@ -54,30 +86,31 @@ export default async function LanguageHubPage({ params }: PageProps) {
     moduleMap.set(l.topicTitle, list);
   }
 
+  const breadcrumbs = getLanguageBreadcrumbs(name);
+  const breadcrumbJsonLd = createBreadcrumbJsonLd(breadcrumbs);
+
   return (
     <div className={styles.container}>
-      <Breadcrumbs
-        items={[
-          { label: "Home", href: "/" },
-          { label: "Languages", href: "/languages" },
-          { label: lang.toUpperCase() },
-        ]}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
+      <Breadcrumbs items={breadcrumbs} />
 
-      <div className={styles.header}>
+      <header className={styles.header}>
         <div style={{ display: "flex", gap: "var(--space-2)", alignItems: "center", marginBottom: "var(--space-2)" }}>
-          <Badge variant="level">{lang.toUpperCase()} TRACK</Badge>
+          <Badge variant="level">{name.toUpperCase()} TRACK</Badge>
           <span style={{ fontSize: "var(--font-size-xs)", color: "var(--text-muted)", fontFamily: "var(--font-mono)" }}>
             {lessons.length} In-Depth Lessons Across {moduleMap.size} Modules
           </span>
         </div>
         <h1 className={styles.title}>{title}</h1>
         <p className={styles.desc}>{description}</p>
-      </div>
+      </header>
 
       <div className={styles.modulesContainer}>
         {Array.from(moduleMap.entries()).map(([moduleTitle, moduleLessons], modIdx) => (
-          <div key={moduleTitle} className={styles.moduleSection}>
+          <section key={moduleTitle} className={styles.moduleSection}>
             <div className={styles.moduleHeader}>
               <div className={styles.moduleBadge}>
                 <BookOpen size={14} />
@@ -103,7 +136,7 @@ export default async function LanguageHubPage({ params }: PageProps) {
                   </div>
                   <div className={styles.cardActions}>
                     <Button
-                      href={`/languages/${lang}/${lesson.slug}`}
+                      href={getLanguageLessonPath(lang, lesson.slug)}
                       variant="primary"
                       size="sm"
                       icon={<ArrowRight size={14} />}
@@ -114,7 +147,7 @@ export default async function LanguageHubPage({ params }: PageProps) {
                 </div>
               ))}
             </div>
-          </div>
+          </section>
         ))}
       </div>
     </div>

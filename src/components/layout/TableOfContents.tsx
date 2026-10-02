@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import styles from "./TableOfContents.module.css";
 
 export interface TocItem {
@@ -14,39 +14,72 @@ interface TableOfContentsProps {
 
 export const TableOfContents: React.FC<TableOfContentsProps> = ({ items }) => {
   const [activeId, setActiveId] = useState<string>(items[0]?.id || "");
+  const observerRef = useRef<IntersectionObserver | null>(null);
 
   useEffect(() => {
-    const handleScroll = () => {
-      const headingElements = items
-        .map((item) => document.getElementById(item.id))
-        .filter(Boolean) as HTMLElement[];
+    if (typeof window === "undefined" || !("IntersectionObserver" in window)) {
+      return;
+    }
 
-      const triggerPosition = window.innerHeight * 0.35;
+    const headingElements = items
+      .map((item) => document.getElementById(item.id))
+      .filter((el): el is HTMLElement => el !== null);
 
-      for (let i = headingElements.length - 1; i >= 0; i--) {
-        const el = headingElements[i];
-        const rect = el.getBoundingClientRect();
-        if (rect.top <= triggerPosition) {
-          setActiveId(items[i].id);
-          return;
+    if (headingElements.length === 0) return;
+
+    // Use a record of visible entry ratios to reliably determine the most prominent heading
+    const visibleHeadings = new Map<string, number>();
+
+    observerRef.current = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            visibleHeadings.set(entry.target.id, entry.boundingClientRect.top);
+          } else {
+            visibleHeadings.delete(entry.target.id);
+          }
+        });
+
+        if (visibleHeadings.size > 0) {
+          // Find the visible heading that is highest on screen
+          let topId = "";
+          let minTop = Infinity;
+
+          visibleHeadings.forEach((top, id) => {
+            if (top < minTop) {
+              minTop = top;
+              topId = id;
+            }
+          });
+
+          if (topId) {
+            setActiveId(topId);
+          }
         }
+      },
+      {
+        rootMargin: "-70px 0px -65% 0px",
+        threshold: [0, 1.0],
       }
+    );
 
-      if (items.length > 0) {
-        setActiveId(items[0].id);
-      }
+    headingElements.forEach((el) => observerRef.current?.observe(el));
+
+    return () => {
+      observerRef.current?.disconnect();
     };
-
-    window.addEventListener("scroll", handleScroll, true);
-    handleScroll();
-    return () => window.removeEventListener("scroll", handleScroll, true);
   }, [items]);
 
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
-    e.preventDefault();
+    // Preserve native browser behavior for new tabs, middle clicks, or modifier clicks
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) {
+      return;
+    }
+
     const el = document.getElementById(id);
     if (el) {
-      const headerOffset = 70;
+      e.preventDefault();
+      const headerOffset = 76;
       const elementPosition = el.getBoundingClientRect().top;
       const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
 
@@ -54,13 +87,16 @@ export const TableOfContents: React.FC<TableOfContentsProps> = ({ items }) => {
         top: offsetPosition,
         behavior: "smooth",
       });
+
       setActiveId(id);
       window.history.pushState(null, "", `#${id}`);
     }
   };
 
+  if (!items || items.length === 0) return null;
+
   return (
-    <nav className={styles.toc} aria-label="On this page">
+    <nav className={styles.toc} aria-label="Table of contents">
       <div className={styles.title}>On this page</div>
       <ul className={styles.list}>
         {items.map((item) => {
@@ -71,6 +107,7 @@ export const TableOfContents: React.FC<TableOfContentsProps> = ({ items }) => {
                 href={`#${item.id}`}
                 onClick={(e) => handleClick(e, item.id)}
                 className={`${styles.link} ${isActive ? styles.linkActive : ""}`}
+                aria-current={isActive ? "location" : undefined}
               >
                 {item.label}
               </a>

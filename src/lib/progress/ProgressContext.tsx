@@ -1,16 +1,25 @@
 "use client";
 
 import React, { createContext, useContext, useEffect, useState } from "react";
+import { z } from "zod";
 
-export interface ProgressState {
-  completedLessons: string[];
-  solvedProblems: string[];
-  attemptedProblems: string[];
-  bookmarkedItems: string[];
-  weakTopics: string[];
-  notes: Record<string, string>;
-  lastVisited: { title: string; url: string; timestamp: number } | null;
-}
+export const LastVisitedSchema = z.object({
+  title: z.string(),
+  url: z.string(),
+  timestamp: z.number(),
+});
+export type LastVisited = z.infer<typeof LastVisitedSchema>;
+
+export const ProgressStateSchema = z.object({
+  completedLessons: z.array(z.string()).default([]),
+  solvedProblems: z.array(z.string()).default([]),
+  attemptedProblems: z.array(z.string()).default([]),
+  bookmarkedItems: z.array(z.string()).default([]),
+  weakTopics: z.array(z.string()).default([]),
+  notes: z.record(z.string(), z.string()).default({}),
+  lastVisited: LastVisitedSchema.nullable().default(null),
+});
+export type ProgressState = z.infer<typeof ProgressStateSchema>;
 
 interface ProgressContextValue extends ProgressState {
   isLoaded: boolean;
@@ -32,17 +41,19 @@ interface ProgressContextValue extends ProgressState {
   };
 }
 
-const STORAGE_KEY = "placement_prep_progress_v1";
+export const STORAGE_KEY = "algoprimer_progress_v1";
+export const LEGACY_STORAGE_KEY = "placement_prep_progress_v1";
 
-const defaultState: ProgressState = {
+export const defaultState: ProgressState = {
   completedLessons: [],
   solvedProblems: [],
   attemptedProblems: [],
   bookmarkedItems: [],
-  weakTopics: ["Recursion", "Binary Search"],
+  weakTopics: [], // Never start a new user with fabricated weak topics
   notes: {},
   lastVisited: null,
 };
+export const INITIAL_STATE: ProgressState = defaultState;
 
 const ProgressContext = createContext<ProgressContextValue | null>(null);
 
@@ -50,17 +61,59 @@ export const ProgressProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [isHydrated, setIsHydrated] = useState(false);
   const [state, setState] = useState<ProgressState>(defaultState);
 
-  // Load from localStorage only after mount to guarantee identical server and initial client render
+  // Load and validate from localStorage only after mount
   useEffect(() => {
+    /* eslint-disable react-hooks/set-state-in-effect */
     try {
-      const stored = window.localStorage.getItem(STORAGE_KEY);
+      const stored =
+        window.localStorage.getItem(STORAGE_KEY) ||
+        window.localStorage.getItem(LEGACY_STORAGE_KEY);
+
       if (stored) {
         const parsed = JSON.parse(stored);
-        // eslint-disable-next-line react-hooks/set-state-in-effect
-        setState((prev) => ({ ...prev, ...parsed }));
+        const validated = ProgressStateSchema.safeParse(parsed);
+
+        if (validated.success) {
+          setState(validated.data);
+        } else {
+          // Graceful partial recovery from malformed or older schema versions
+          const recovered: ProgressState = {
+            completedLessons: Array.isArray(parsed?.completedLessons)
+              ? parsed.completedLessons.filter((s: unknown): s is string => typeof s === "string")
+              : [],
+            solvedProblems: Array.isArray(parsed?.solvedProblems)
+              ? parsed.solvedProblems.filter((s: unknown): s is string => typeof s === "string")
+              : [],
+            attemptedProblems: Array.isArray(parsed?.attemptedProblems)
+              ? parsed.attemptedProblems.filter((s: unknown): s is string => typeof s === "string")
+              : [],
+            bookmarkedItems: Array.isArray(parsed?.bookmarkedItems)
+              ? parsed.bookmarkedItems.filter((s: unknown): s is string => typeof s === "string")
+              : [],
+            weakTopics: Array.isArray(parsed?.weakTopics)
+              ? parsed.weakTopics.filter((s: unknown): s is string => typeof s === "string")
+              : [],
+            notes:
+              typeof parsed?.notes === "object" && parsed.notes !== null && !Array.isArray(parsed.notes)
+                ? (parsed.notes as Record<string, string>)
+                : {},
+            lastVisited:
+              parsed?.lastVisited &&
+              typeof parsed.lastVisited.title === "string" &&
+              typeof parsed.lastVisited.url === "string"
+                ? {
+                    title: parsed.lastVisited.title,
+                    url: parsed.lastVisited.url,
+                    timestamp: Number(parsed.lastVisited.timestamp) || Date.now(),
+                  }
+                : null,
+          };
+          setState(recovered);
+        }
       }
     } catch {
-      // ignore
+      // Graceful fallback to default state on storage failure
+      setState(defaultState);
     }
     setIsHydrated(true);
   }, []);
@@ -71,7 +124,7 @@ export const ProgressProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     try {
       window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
     } catch {
-      // ignore
+      // ignore quota or security exceptions in restricted browser environments
     }
   }, [state, isHydrated]);
 
@@ -158,10 +211,16 @@ export const ProgressProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   };
 
   const recordVisit = (title: string, url: string) => {
-    setState((prev) => ({
-      ...prev,
-      lastVisited: { title, url, timestamp: Date.now() },
-    }));
+    setState((prev) => {
+      // Only update if URL or title changed to avoid unnecessary re-renders
+      if (prev.lastVisited?.url === url && prev.lastVisited?.title === title) {
+        return prev;
+      }
+      return {
+        ...prev,
+        lastVisited: { title, url, timestamp: Date.now() },
+      };
+    });
   };
 
   const getOverallStats = () => {

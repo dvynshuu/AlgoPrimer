@@ -1,11 +1,11 @@
 {
-  "name": "Forge — Open Learning Coding Platform",
-  "short_name": "Forge",
-  "description": "An open learning coding platform engineered from first principles.",
+  "name": "AlgoPrimer — Programming, DSA & Coding Interview Preparation",
+  "short_name": "AlgoPrimer",
+  "description": "Teach programming and problem solving from first principles, then progressively move users toward technical interview readiness.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#090B10",
-  "theme_color": "#3B82F6",
+  "theme_color": "#38BDF8",
   "icons": [
     {
       "src": "/icon-192x192.png",

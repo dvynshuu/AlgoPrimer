@@ -3,7 +3,7 @@ import { Lesson } from "@/types/content";
 export const foundationsLessons: Lesson[] = [
   {
     id: "dsa-complexity-lesson",
-    slug: "complexity",
+    slug: "asymptotic-analysis",
     title: "Understanding Time and Space Complexity (Big-O)",
     track: "dsa",
     topicSlug: "complexity",
@@ -137,7 +137,7 @@ The total number of steps k satisfies 2^k = N  =>  k = log2(N).`,
   },
   {
     id: "dsa-arrays-lesson",
-    slug: "arrays",
+    slug: "fundamentals",
     title: "Arrays: Contiguity, Memory Layout, and Cache Locality",
     track: "dsa",
     topicSlug: "arrays",
@@ -446,7 +446,7 @@ return false;`,
   },
   {
     id: "dsa-strings-lesson",
-    slug: "strings",
+    slug: "immutability-and-matching",
     title: "Strings & Pattern Matching: Immutability, Encodings & Algorithms",
     track: "dsa",
     topicSlug: "strings",

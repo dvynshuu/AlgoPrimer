@@ -1,61 +1,96 @@
-"use client";
-
 import React from "react";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
+import {
+  getHomePath,
+  getLanguagePath,
+  getDsaPath,
+} from "@/lib/routes";
+import {
+  getLanguageLessonCount,
+  getDsaLessonCount,
+} from "@/lib/contentCounts";
+import { createPageMetadata, createBreadcrumbJsonLd } from "@/lib/seo";
 import { ArrowRight } from "lucide-react";
 import styles from "./learn.module.css";
 
+export const metadata = createPageMetadata({
+  title: "The Learning Model — From First Principles to Placement Readiness",
+  description:
+    "AlgoPrimer is organized around a 7-stage learning hierarchy designed to build deep mental models, language mastery, and technical interview readiness.",
+  path: "/learn",
+});
+
 export default function LearnPage() {
+  const javaCount = getLanguageLessonCount("java");
+  const cppCount = getLanguageLessonCount("cpp");
+  const pythonCount = getLanguageLessonCount("python");
+  const jsCount = getLanguageLessonCount("javascript");
+  const dsaCount = getDsaLessonCount();
 
   const tracks = [
     {
       id: "java",
       title: "Java Programming Track",
-      desc: "Statically-typed fundamentals, OOP, JVM memory model, and Collections.",
-      href: "/languages/java",
-      lessonCount: 4,
-      tag: "Recommended for Campus",
+      desc: "Statically-typed fundamentals, OOP invariants, JVM memory models (Stack vs Heap), and Collections Framework.",
+      href: getLanguagePath("java"),
+      lessonCount: javaCount,
+      tag: "Enterprise & Campus Standard",
     },
     {
       id: "cpp",
       title: "C++ Programming Track",
-      desc: "Hardware-level memory, pointers, references, and the Standard Template Library (STL).",
-      href: "/languages/cpp",
-      lessonCount: 3,
-      tag: "Ideal for OAs & Speed",
+      desc: "Hardware-level memory, pointers, references, value vs reference semantics, and deep Standard Template Library (STL).",
+      href: getLanguagePath("cpp"),
+      lessonCount: cppCount,
+      tag: "OA Speed & Systems",
     },
     {
       id: "python",
       title: "Python Programming Track",
-      desc: "Dynamic typing, object references, list comprehensions, and interview patterns.",
-      href: "/languages/python",
-      lessonCount: 3,
-      tag: "Fast Prototyping",
+      desc: "Dynamic typing, object references, list comprehensions, idiomatic iteration, and placement standard libraries.",
+      href: getLanguagePath("python"),
+      lessonCount: pythonCount,
+      tag: "Rapid Prototyping",
+    },
+    {
+      id: "javascript",
+      title: "JavaScript Track",
+      desc: "V8 internals, event loop, asynchronous promises, closures, prototypal inheritance, and placement coding idioms.",
+      href: getLanguagePath("javascript"),
+      lessonCount: jsCount,
+      tag: "Web & Full-Stack Core",
     },
     {
       id: "dsa",
       title: "Data Structures & Algorithms (DSA)",
       desc: "20-topic pedagogical roadmap from Complexity and Arrays to Graphs and Dynamic Programming.",
-      href: "/dsa",
-      lessonCount: 3,
-      tag: "Core Placement Subject",
+      href: getDsaPath(),
+      lessonCount: dsaCount,
+      tag: "Core Interview Subject",
     },
   ];
 
+  const breadcrumbs = [{ label: "Home", href: getHomePath() }, { label: "Learn" }];
+  const breadcrumbJsonLd = createBreadcrumbJsonLd(breadcrumbs);
+
   return (
     <div className={styles.container}>
-      <Breadcrumbs items={[{ label: "Home", href: "/" }, { label: "Learn" }]} />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
+      <Breadcrumbs items={breadcrumbs} />
 
-      <div className={styles.header}>
+      <header className={styles.header}>
         <h1 className={styles.title}>The Learning Model</h1>
         <p className={styles.desc}>
-          CampusPrep is organized strictly around a 7-stage learning hierarchy:
+          AlgoPrimer is organized strictly around a 7-stage learning hierarchy:
           <br />
           <strong>TRACK &rarr; MODULE &rarr; TOPIC &rarr; LESSON &rarr; EXAMPLES &rarr; PRACTICE &rarr; REVISION</strong>
         </p>
-      </div>
+      </header>
 
       <div className={styles.tracksGrid}>
         {tracks.map((t) => (
@@ -77,13 +112,13 @@ export default function LearnPage() {
 
       <section className={styles.howToLearnSection}>
         <h2 style={{ fontSize: "var(--font-size-xl)", marginBottom: "var(--space-4)" }}>
-          How to Study on CampusPrep
+          How to Study on AlgoPrimer
         </h2>
         <div className={styles.stepsGrid}>
           <div className={styles.stepBox}>
             <div className={styles.stepNum}>01</div>
             <h3>Master One Language</h3>
-            <p>Don&apos;t jump between languages. Pick Java or C++ and understand its memory layout, scoping, and standard library inside-out.</p>
+            <p>Don&apos;t jump between languages. Pick Java, C++, Python, or JavaScript and understand its memory layout, scoping, and standard library inside-out.</p>
           </div>
           <div className={styles.stepBox}>
             <div className={styles.stepNum}>02</div>

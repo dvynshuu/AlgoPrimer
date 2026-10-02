@@ -4,68 +4,91 @@ import { cppLessons } from "@/content/languages/cpp";
 import { pythonLessons } from "@/content/languages/python";
 import { javascriptLessons } from "@/content/languages/javascript";
 import { dsaTopics } from "@/content/dsa/topics";
+import { dsaLessons } from "@/content/dsa/lessons";
 import { problems } from "@/content/problems";
+import {
+  getHomePath,
+  getLearnPath,
+  getLanguagesPath,
+  getLanguagePath,
+  getLanguageLessonPath,
+  getDsaPath,
+  getDsaTopicPath,
+  getDsaLessonPath,
+  getProblemsPath,
+  getProblemPath,
+  getRoadmapPath,
+  getRevisionPath,
+  getInterviewPath,
+} from "@/lib/routes";
+import { getCanonicalUrl } from "@/lib/seo";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = "https://campusprep.dev";
-
   const staticRoutes: MetadataRoute.Sitemap = [
-    { url: `${baseUrl}`, lastModified: new Date(), changeFrequency: "daily", priority: 1.0 },
-    { url: `${baseUrl}/learn`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.9 },
-    { url: `${baseUrl}/languages`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.9 },
-    { url: `${baseUrl}/languages/java`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.8 },
-    { url: `${baseUrl}/languages/cpp`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.8 },
-    { url: `${baseUrl}/languages/python`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.8 },
-    { url: `${baseUrl}/languages/javascript`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.8 },
-    { url: `${baseUrl}/dsa`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.9 },
-    { url: `${baseUrl}/problems`, lastModified: new Date(), changeFrequency: "daily", priority: 0.9 },
-    { url: `${baseUrl}/roadmap`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.8 },
-    { url: `${baseUrl}/revision`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.8 },
-    { url: `${baseUrl}/interview`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.8 },
-    { url: `${baseUrl}/search`, lastModified: new Date(), changeFrequency: "daily", priority: 0.7 },
+    { url: getCanonicalUrl(getHomePath()), changeFrequency: "daily", priority: 1.0 },
+    { url: getCanonicalUrl(getLearnPath()), changeFrequency: "weekly", priority: 0.9 },
+    { url: getCanonicalUrl(getLanguagesPath()), changeFrequency: "weekly", priority: 0.9 },
+    { url: getCanonicalUrl(getLanguagePath("java")), changeFrequency: "weekly", priority: 0.8 },
+    { url: getCanonicalUrl(getLanguagePath("cpp")), changeFrequency: "weekly", priority: 0.8 },
+    { url: getCanonicalUrl(getLanguagePath("python")), changeFrequency: "weekly", priority: 0.8 },
+    { url: getCanonicalUrl(getLanguagePath("javascript")), changeFrequency: "weekly", priority: 0.8 },
+    { url: getCanonicalUrl(getDsaPath()), changeFrequency: "weekly", priority: 0.9 },
+    { url: getCanonicalUrl(getProblemsPath()), changeFrequency: "daily", priority: 0.9 },
+    { url: getCanonicalUrl(getRoadmapPath()), changeFrequency: "monthly", priority: 0.8 },
+    { url: getCanonicalUrl(getRevisionPath()), changeFrequency: "weekly", priority: 0.8 },
+    { url: getCanonicalUrl(getInterviewPath()), changeFrequency: "monthly", priority: 0.8 },
   ];
 
   const javaUrls: MetadataRoute.Sitemap = javaLessons.map((l) => ({
-    url: `${baseUrl}/languages/java/${l.slug}`,
-    lastModified: new Date(),
+    url: getCanonicalUrl(getLanguageLessonPath("java", l.slug)),
     changeFrequency: "monthly",
     priority: 0.7,
   }));
 
   const cppUrls: MetadataRoute.Sitemap = cppLessons.map((l) => ({
-    url: `${baseUrl}/languages/cpp/${l.slug}`,
-    lastModified: new Date(),
+    url: getCanonicalUrl(getLanguageLessonPath("cpp", l.slug)),
     changeFrequency: "monthly",
     priority: 0.7,
   }));
 
   const pythonUrls: MetadataRoute.Sitemap = pythonLessons.map((l) => ({
-    url: `${baseUrl}/languages/python/${l.slug}`,
-    lastModified: new Date(),
+    url: getCanonicalUrl(getLanguageLessonPath("python", l.slug)),
     changeFrequency: "monthly",
     priority: 0.7,
   }));
 
   const javascriptUrls: MetadataRoute.Sitemap = javascriptLessons.map((l) => ({
-    url: `${baseUrl}/languages/javascript/${l.slug}`,
-    lastModified: new Date(),
+    url: getCanonicalUrl(getLanguageLessonPath("javascript", l.slug)),
     changeFrequency: "monthly",
     priority: 0.7,
   }));
 
-  const dsaUrls: MetadataRoute.Sitemap = dsaTopics.map((t) => ({
-    url: `${baseUrl}/dsa/${t.slug}`,
-    lastModified: new Date(),
+  const dsaTopicUrls: MetadataRoute.Sitemap = dsaTopics.map((t) => ({
+    url: getCanonicalUrl(getDsaTopicPath(t.slug)),
+    changeFrequency: "weekly",
+    priority: 0.8,
+  }));
+
+  const dsaLessonUrls: MetadataRoute.Sitemap = dsaLessons.map((l) => ({
+    url: getCanonicalUrl(getDsaLessonPath(l.topicSlug, l.slug)),
     changeFrequency: "monthly",
     priority: 0.7,
   }));
 
   const problemUrls: MetadataRoute.Sitemap = problems.map((p) => ({
-    url: `${baseUrl}/problems/${p.slug}`,
-    lastModified: new Date(),
+    url: getCanonicalUrl(getProblemPath(p.slug)),
     changeFrequency: "monthly",
     priority: 0.8,
   }));
 
-  return [...staticRoutes, ...javaUrls, ...cppUrls, ...pythonUrls, ...javascriptUrls, ...dsaUrls, ...problemUrls];
+  return [
+    ...staticRoutes,
+    ...javaUrls,
+    ...cppUrls,
+    ...pythonUrls,
+    ...javascriptUrls,
+    ...dsaTopicUrls,
+    ...dsaLessonUrls,
+    ...problemUrls,
+  ];
 }

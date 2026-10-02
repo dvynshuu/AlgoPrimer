@@ -1,10 +1,11 @@
-# Forge ⚒️
+# AlgoPrimer ⚡
 
-> **The open learning coding platform for everyone — from your first line of code to technical mastery.**
+> **AlgoPrimer — Programming, DSA & Coding Interview Preparation**
+>
+> *Teach programming and problem solving from first principles, then progressively move users toward technical interview readiness.*
 
-Forge is a free, open-access learning platform engineered from first principles: explain simply, build progressively, and empower anyone — whether a first-year student, self-taught programmer, or career switcher — to master computer science fundamentals, data structures, algorithms, and technical hiring standards.
+AlgoPrimer is a modern, developer-native educational platform built with Next.js 16 (App Router), TypeScript, and Vanilla CSS tokens. It provides deep computer science fundamentals, structured language curricula, a canonical 20-topic DSA roadmap, 65 curated company interview problems with 3-tier solutions, and rapid revision cards.
 
-[![GitHub repository](https://img.shields.io/badge/GitHub-Repository-blue?logo=github)](https://github.com/dvynshuu/Forge.git)
 [![Next.js](https://img.shields.io/badge/Next.js-16.3.4-black?logo=next.js)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue?logo=typescript)](https://www.typescriptlang.org/)
 [![Tests](https://img.shields.io/badge/Tests-Vitest%20Passed-success?logo=vitest)](https://vitest.dev/)
@@ -14,37 +15,41 @@ Forge is a free, open-access learning platform engineered from first principles:
 
 ## 🌟 Core Pillars
 
-1. **Four Complete Language Tracks**:
+1. **Four Complete Language Tracks (108 Lessons)**:
    - **Java**: JVM internals, memory models, primitives vs wrappers, OOP, Collections Framework, garbage collection.
    - **C++**: Pointers, references, stack vs heap, STL containers, iterators, RAII, memory management.
    - **Python**: Dynamic typing, references, comprehensions, internal hashing, iteration protocols, big-O overheads.
    - **JavaScript**: V8 engine, Event Loop, Execution Context, Closures, Promises/Async-Await, Prototypes, ES6+ methods.
 
-2. **20-Topic Pedagogical DSA Roadmap**:
-   - Built to take any learner from basic arrays through graph algorithms, dynamic programming, and system design patterns.
+2. **20-Topic Canonical DSA Roadmap & Lessons**:
+   - Structured canonical routing: `/dsa`, `/dsa/[topic]`, and `/dsa/[topic]/[lesson]`.
+   - Complete pedagogical progression: Complexity analysis, linear structures, trees, graphs, heaps, greedy, dynamic programming, backtracking, bit manipulation, and advanced patterns.
    - Every topic breaks down the concept into *Why do we need it?*, *Visual intuition*, *How it works step-by-step*, *Common traps*, and *Practical applications*.
 
-3. **Curated Problem Bank (33 High-Frequency Company Problems)**:
-   - Covers 8 core categories: Arrays & Hashing, Two Pointers & Sliding Window, Strings, Linked Lists, Binary Search, Stacks & Queues, Trees & Graphs, and Dynamic Programming.
-   - **Quad-lingual solutions**: Every single problem includes full, runnable implementations in **Java**, **C++**, **Python**, and **JavaScript** for both Brute Force and Optimal approaches.
+3. **Curated Problem Bank (65 High-Frequency Core Problems)**:
+   - Covers 12 core categories: Arrays, Two Pointers & Sliding Window, Strings, Linked Lists, Binary Search, Stacks & Queues, Trees & Graphs, Heaps, Intervals, Backtracking, Dynamic Programming, and Bit Manipulation.
+   - **Quad-lingual solutions**: Every problem includes full implementations in **Java**, **C++**, **Python**, and **JavaScript** across Brute Force, Better, and Optimal approaches.
    - Verified company tags (**Amazon**, **Microsoft**, **Google**, **Meta**, **TCS**, **Infosys**, **Goldman Sachs**, **Bloomberg**, **Apple**, **Adobe**, **Uber**, **Flipkart**).
    - Interactive company filter pills and visual step-by-step dry-run tables.
 
-4. **Calm, High-Performance UX**:
-   - Zero marketing fluff, zero paywalls, zero gamified distraction.
+4. **Lightweight Client-Side Search Index**:
+   - Precomputed lightweight singleton search index that excludes heavy solution bodies and code blocks.
+   - Fast tokenized fuzzy matching with keyboard navigation (Ctrl+K, arrows, Enter, Esc).
+
+5. **Calm, High-Performance UX**:
+   - Server-first rendering model with small client islands for progress and interactivity.
    - Pure CSS tokens, sleek dark mode with tailored visual hierarchy.
-   - Global Cmd+K / Ctrl+K search index with real-time scoring.
-   - LocalStorage progress sync with bookmarking and solve tracking.
+   - LocalStorage progress sync with bookmarking, visit tracking, and validated schema migrations.
 
 ---
 
 ## 🚀 Tech Stack
 
-- **Framework**: [Next.js 16 (App Router, Turbopack)](https://nextjs.org/)
+- **Framework**: [Next.js 16 (App Router)](https://nextjs.org/)
 - **Language**: [TypeScript](https://www.typescriptlang.org/)
 - **Styling**: Vanilla CSS Modules (custom design tokens)
-- **Validation**: [Zod](https://zod.dev/) for curriculum and problem schema verification
-- **Testing**: [Vitest](https://vitest.dev/) with automated content integrity testing
+- **Validation**: [Zod](https://zod.dev/) for curriculum, problem, and progress schema verification
+- **Testing**: [Vitest](https://vitest.dev/) with automated content integrity and crawl assertions
 - **Icons**: [Lucide React](https://lucide.dev/)
 
 ---
@@ -58,8 +63,8 @@ Forge is a free, open-access learning platform engineered from first principles:
 ### Installation
 ```bash
 # Clone the repository
-git clone https://github.com/dvynshuu/Forge.git
-cd Forge
+git clone https://github.com/dvynshuu/Forge.git algoprimer
+cd algoprimer
 
 # Install dependencies
 npm install
@@ -78,7 +83,7 @@ npm test
 # Run ESLint
 npm run lint
 
-# Build production bundle (SSG / 158+ prerendered static pages)
+# Build production bundle
 npm run build
 ```
 
@@ -88,23 +93,26 @@ npm run build
 
 ```
 ├── src/
-│   ├── app/                    # Next.js App Router routes
-│   │   ├── dsa/                # 20 DSA topic modules & dynamic lessons
-│   │   ├── languages/          # Java, C++, Python, and JavaScript tracks
-│   │   ├── problems/           # Curated Problem Bank & problem viewers
+│   ├── app/                    # Canonical App Router hierarchy
+│   │   ├── dsa/                # DSA hub, [topic] hubs, and [topic]/[lesson] pages
+│   │   ├── languages/          # Language hub and [lang]/[lesson] pages
+│   │   ├── problems/           # Curated problem bank and [slug] solution viewer
 │   │   ├── revision/           # Rapid revision cheat sheet cards
 │   │   ├── roadmap/            # Progressive curriculum timeline
 │   │   ├── interview/          # OA rounds & technical interview guides
-│   │   └── search/             # Global search modal and index
+│   │   ├── profile/            # Student progress dashboard (private)
+│   │   ├── search/             # Global search page (noindex)
+│   │   ├── robots.ts           # Crawl directives & canonical sitemap link
+│   │   └── sitemap.ts          # Comprehensive canonical sitemap generator
 │   ├── components/             # Reusable UI, layout & content components
 │   ├── content/                # Zod-validated curriculum & problem modules
-│   │   ├── languages/          # Java, C++, Python, JavaScript lessons
-│   │   ├── dsa/                # DSA roadmap and topic contents
-│   │   └── problems/           # 33 curated company problems across 8 modules
-│   ├── lib/                    # Progress tracking context & search engine
+│   │   ├── languages/          # Java, C++, Python, JavaScript lessons (108 total)
+│   │   ├── dsa/                # 20 DSA topics and 21 distinct lessons
+│   │   └── problems/           # 65 curated company problems across 12 modules
+│   ├── lib/                    # Routes manifest, SEO helpers, search engine, progress
 │   ├── styles/                 # Global CSS design tokens & utilities
-│   └── types/                  # Zod schemas (ProblemSchema, LessonSchema)
-├── tests/                      # Vitest test suites (content, search, progress)
+│   └── types/                  # Content types & Zod schemas
+├── tests/                      # Automated Vitest suites (content, search, brand, routes, SEO)
 └── package.json
 ```
 
@@ -112,4 +120,4 @@ npm run build
 
 ## 📄 License
 
-MIT © [Forge Community](https://github.com/dvynshuu/Forge.git)
+MIT © [AlgoPrimer](https://algoprimer.com)

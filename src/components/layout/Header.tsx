@@ -2,11 +2,23 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { Search, Menu, X, Terminal, CheckCircle2 } from "lucide-react";
+import { Search, Menu, X, CheckCircle2 } from "lucide-react";
 import styles from "./Header.module.css";
 import { SearchModal } from "@/components/search/SearchModal";
 import { useProgress } from "@/lib/progress/ProgressContext";
+import {
+  getHomePath,
+  getLearnPath,
+  getLanguagesPath,
+  getDsaPath,
+  getProblemsPath,
+  getRoadmapPath,
+  getRevisionPath,
+  getInterviewPath,
+  getProfilePath,
+} from "@/lib/routes";
 
 export const Header: React.FC = () => {
   const pathname = usePathname();
@@ -27,13 +39,13 @@ export const Header: React.FC = () => {
   }, []);
 
   const navLinks = [
-    { label: "Learn", href: "/learn" },
-    { label: "Languages", href: "/languages" },
-    { label: "DSA", href: "/dsa" },
-    { label: "Problems", href: "/problems" },
-    { label: "Roadmap", href: "/roadmap" },
-    { label: "Revision", href: "/revision" },
-    { label: "Interview", href: "/interview" },
+    { label: "Learn", href: getLearnPath() },
+    { label: "Languages", href: getLanguagesPath() },
+    { label: "DSA", href: getDsaPath() },
+    { label: "Problems", href: getProblemsPath() },
+    { label: "Roadmap", href: getRoadmapPath() },
+    { label: "Revision", href: getRevisionPath() },
+    { label: "Interview", href: getInterviewPath() },
   ];
 
   return (
@@ -41,9 +53,16 @@ export const Header: React.FC = () => {
       <header className={styles.header}>
         <div className={styles.container}>
           <div className={styles.brandGroup}>
-            <Link href="/" className={styles.logo}>
-              <Terminal size={18} className={styles.logoAccent} />
-              <span>Forge</span>
+            <Link href={getHomePath()} className={styles.logo}>
+              <Image
+                src="/logo-mark.svg"
+                alt="AlgoPrimer"
+                width={22}
+                height={22}
+                className={styles.logoMark}
+                priority
+              />
+              <span>Algo<span style={{ color: "var(--accent-hover)" }}>Primer</span></span>
             </Link>
           </div>
 
@@ -74,7 +93,7 @@ export const Header: React.FC = () => {
               <kbd className={styles.kbd}>Ctrl K</kbd>
             </button>
 
-            <Link href="/profile" className={styles.statsBtn} title="View your progress dashboard">
+            <Link href={getProfilePath()} className={styles.statsBtn} title="View your progress dashboard">
               <CheckCircle2 size={13} style={{ color: "var(--success)" }} />
               <span suppressHydrationWarning>{isLoaded ? solvedProblems.length + completedLessons.length : 0}</span>
             </Link>
@@ -105,7 +124,7 @@ export const Header: React.FC = () => {
             </Link>
           ))}
           <Link
-            href="/profile"
+            href={getProfilePath()}
             className={styles.mobileLink}
             onClick={() => setIsMobileMenuOpen(false)}
           >

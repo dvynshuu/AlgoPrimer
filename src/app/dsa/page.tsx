@@ -3,32 +3,50 @@ import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { dsaTopics } from "@/content/dsa/topics";
+import { getHomePath, getDsaPath, getDsaTopicPath } from "@/lib/routes";
+import { createPageMetadata, createBreadcrumbJsonLd } from "@/lib/seo";
 import { ArrowRight, Clock } from "lucide-react";
 import styles from "./dsa.module.css";
 
-export const metadata = {
-  title: "Data Structures & Algorithms Roadmap — CampusPrep",
-  description: "20 pedagogical DSA topics ordered from fundamentals to advanced interview patterns.",
-};
+export const metadata = createPageMetadata({
+  title: "Data Structures & Algorithms Roadmap — 20 Pedagogical Topics",
+  description:
+    "A sequenced 20-topic DSA roadmap teaching algorithmic intuition and pattern recognition from first principles to technical interview mastery.",
+  path: getDsaPath(),
+  keywords: [
+    "DSA roadmap",
+    "data structures and algorithms",
+    "coding interview prep",
+    "algorithm patterns",
+    "technical interview preparation",
+  ],
+});
 
 export default function DSARoadmapPage() {
+  const breadcrumbs = [{ label: "Home", href: getHomePath() }, { label: "DSA Roadmap" }];
+  const breadcrumbJsonLd = createBreadcrumbJsonLd(breadcrumbs);
+
   return (
     <div className={styles.container}>
-      <Breadcrumbs items={[{ label: "Home", href: "/" }, { label: "DSA Roadmap" }]} />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
+      <Breadcrumbs items={breadcrumbs} />
 
-      <div className={styles.header}>
+      <header className={styles.header}>
         <div style={{ display: "flex", gap: "var(--space-2)", alignItems: "center", marginBottom: "var(--space-2)" }}>
           <Badge variant="level">MASTER CURRICULUM</Badge>
           <span style={{ fontSize: "var(--font-size-xs)", color: "var(--text-muted)", fontFamily: "var(--font-mono)" }}>
-            20 Pedagogical Topic Areas
+            20 Pedagogical Topic Areas &bull; Complete From Zero
           </span>
         </div>
         <h1 className={styles.title}>Data Structures & Algorithms</h1>
         <p className={styles.desc}>
-          The DSA section is not merely a list of 500 questions. It is a structured system teaching
-          problem-solving patterns from zero, showing how naive solutions evolve into optimal solutions.
+          The AlgoPrimer DSA curriculum is sequenced so every data structure and technique builds on the previous.
+          Understand why a structure exists in physical RAM, how it is implemented, and how its patterns solve complex interview problems.
         </p>
-      </div>
+      </header>
 
       <div className={styles.topicsGrid}>
         {dsaTopics.map((topic) => (
@@ -37,7 +55,7 @@ export default function DSARoadmapPage() {
               <div className={styles.cardTopRow}>
                 <span className={styles.orderBadge}>Topic #{topic.order}</span>
                 <span className={styles.hoursMeta}>
-                  <Clock size={12} /> ~{topic.estimatedHours} hrs
+                  <Clock size={12} /> ~{topic.estimatedHours} hrs &bull; {topic.lessons.length} Lesson{topic.lessons.length > 1 ? "s" : ""}
                 </span>
               </div>
               <h2 className={styles.topicTitle}>{topic.title}</h2>
@@ -49,7 +67,12 @@ export default function DSARoadmapPage() {
                 <span>Prerequisites:</span>
                 <span style={{ color: "var(--text-secondary)" }}>{topic.prerequisites.join(", ")}</span>
               </div>
-              <Button href={`/dsa/${topic.slug}`} variant="secondary" size="sm" icon={<ArrowRight size={13} />}>
+              <Button
+                href={getDsaTopicPath(topic.slug)}
+                variant="secondary"
+                size="sm"
+                icon={<ArrowRight size={13} />}
+              >
                 Explore Topic
               </Button>
             </div>

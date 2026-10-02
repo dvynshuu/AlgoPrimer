@@ -14,20 +14,36 @@ interface SearchModalProps {
 
 export const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
   const [query, setQuery] = useState("");
+  const [debouncedQuery, setDebouncedQuery] = useState("");
   const [selectedIndex, setSelectedIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
 
+  // Debounce query input to avoid heavy re-renders on keystroke
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedQuery(query);
+      setSelectedIndex(0);
+    }, 120);
+    return () => clearTimeout(timer);
+  }, [query]);
+
   useEffect(() => {
     if (isOpen) {
-      setTimeout(() => inputRef.current?.focus(), 50);
+      setTimeout(() => inputRef.current?.focus(), 40);
+    } else {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setQuery("");
+      setDebouncedQuery("");
+      setSelectedIndex(0);
     }
   }, [isOpen]);
 
   const results = useMemo(() => {
-    const q = query.trim();
-    return searchContent(q || "arrays");
-  }, [query]);
+    const q = debouncedQuery.trim();
+    if (!q) return [];
+    return searchContent(q);
+  }, [debouncedQuery]);
 
   // Handle keyboard navigation inside search modal
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -49,7 +65,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => 
   if (!isOpen) return null;
 
   return (
-    <div className={styles.backdrop} onClick={onClose}>
+    <div className={styles.backdrop} onClick={onClose} role="presentation">
       <div
         className={styles.modal}
         onClick={(e) => e.stopPropagation()}
@@ -63,25 +79,29 @@ export const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => 
             ref={inputRef}
             type="text"
             className={styles.input}
-            placeholder="Search lessons, problems, patterns, topics (e.g. HashMap, Two Sum, DP)..."
+            placeholder="Search lessons, problems, patterns, topics (e.g. Two Pointers, BFS, Kadane)..."
             value={query}
-            onChange={(e) => {
-              setQuery(e.target.value);
-              setSelectedIndex(0);
-            }}
+            onChange={(e) => setQuery(e.target.value)}
             onKeyDown={handleKeyDown}
+            aria-autocomplete="list"
           />
           <kbd className={styles.kbd}>ESC</kbd>
         </div>
 
-        <div className={styles.results}>
-          {results.length > 0 ? (
+        <div className={styles.results} role="listbox">
+          {query.trim().length === 0 ? (
+            <div className={styles.empty}>
+              Type keywords above to search all lessons, DSA roadmap topics, interview problems, and revision cards.
+            </div>
+          ) : results.length > 0 ? (
             results.map((item, index) => (
               <Link
                 key={item.id}
                 href={item.url}
                 className={`${styles.item} ${index === selectedIndex ? styles.itemFocused : ""}`}
                 onClick={onClose}
+                role="option"
+                aria-selected={index === selectedIndex}
               >
                 <div className={styles.itemHeader}>
                   <span className={styles.itemTitle}>{item.title}</span>
@@ -92,13 +112,13 @@ export const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => 
             ))
           ) : (
             <div className={styles.empty}>
-              No matching lessons, problems, or revision items found for &quot;{query}&quot;.
+              No matching lessons, problems, or revision items found for &quot;{debouncedQuery}&quot;.
             </div>
           )}
         </div>
 
         <div className={styles.footer}>
-          <span>Use &uarr; &darr; to navigate, Enter to open</span>
+          <span>Use &uarr; &darr; to navigate, Enter to open, Esc to close</span>
           <span>{results.length} results</span>
         </div>
       </div>

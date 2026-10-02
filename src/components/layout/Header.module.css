@@ -38,8 +38,9 @@
   gap: var(--space-2);
 }
 
-.logoAccent {
-  color: var(--accent-primary);
+.logoMark {
+  border-radius: var(--radius-xs, 4px);
+  flex-shrink: 0;
 }
 
 .nav {

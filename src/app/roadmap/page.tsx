@@ -1,32 +1,53 @@
 import React from "react";
+import type { Metadata } from "next";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { ArrowRight } from "lucide-react";
 import styles from "./roadmap.module.css";
+import {
+  getHomePath,
+  getRoadmapPath,
+  getLanguagesPath,
+  getLanguageLessonPath,
+  getDsaPath,
+  getDsaTopicPath,
+  getProblemsPath,
+  getInterviewPath,
+} from "@/lib/routes";
+import { createPageMetadata, createBreadcrumbJsonLd } from "@/lib/seo";
 
-export const metadata = {
-  title: "Placement Progression Roadmap — CampusPrep",
-  description: "Minimal, pedagogical roadmap from first line of code to placement readiness.",
-};
+export const metadata: Metadata = createPageMetadata({
+  title: "Engineering & Placement Progression Roadmap — From Zero to Interview Ready",
+  description:
+    "Sequenced 8-stage engineering progression roadmap from programming foundations and Big-O complexity to advanced DSA, core CS, and technical interview readiness.",
+  path: getRoadmapPath(),
+  keywords: [
+    "programming roadmap",
+    "DSA roadmap",
+    "placement roadmap",
+    "software engineer career path",
+    "coding interview roadmap",
+  ],
+});
 
 export default function RoadmapPage() {
   const steps = [
     {
       stage: "STAGE 01",
       title: "Choose One Programming Language",
-      focus: "Java, C++, or Python",
-      desc: "Pick one language and stick with it. Learn its compiler/runtime execution model, data types, primitive sizes in memory, and standard I/O.",
-      href: "/languages",
+      focus: "Java, C++, Python, or JavaScript",
+      desc: "Pick one language and build strong mental models. Learn its execution model, memory layout, primitive types, and standard library.",
+      href: getLanguagesPath(),
       actionLabel: "Pick Language",
-      completedWhen: "You can write loops and functions without looking at syntax documentation.",
+      completedWhen: "You can write loops, functions, and control structures without looking at syntax documentation.",
     },
     {
       stage: "STAGE 02",
       title: "Programming Fundamentals & Control Flow",
       focus: "Conditionals, Loops, Arrays, Scoping",
-      desc: "Master loop invariants, termination conditions, boundary checks (< vs <=), off-by-one prevention, and basic in-place array manipulation.",
-      href: "/languages/java/loops",
+      desc: "Master loop invariants, termination conditions, boundary checks, off-by-one prevention, and basic in-place array manipulation.",
+      href: getLanguageLessonPath("java", "loops"),
       actionLabel: "Study Fundamentals",
       completedWhen: "You can reverse an array, find minimum/maximum, and filter numbers with zero syntax errors.",
     },
@@ -34,8 +55,8 @@ export default function RoadmapPage() {
       stage: "STAGE 03",
       title: "Complexity & Asymptotic Analysis",
       focus: "Big-O Notation, Time Limits, Memory Limits",
-      desc: "Learn why code that works on small test cases fails in Online Assessments (10^8 operations per second limit). Understand O(1), O(log N), O(N), O(N log N), O(N^2).",
-      href: "/dsa/complexity",
+      desc: "Learn why code that works on small test cases fails in technical assessments (10^8 operations per second limit). Understand O(1), O(log N), O(N), O(N log N), and O(N^2).",
+      href: getDsaTopicPath("complexity"),
       actionLabel: "Master Big-O",
       completedWhen: "You can calculate the worst-case time complexity of nested loops and recursive calls.",
     },
@@ -43,8 +64,8 @@ export default function RoadmapPage() {
       stage: "STAGE 04",
       title: "Linear Data Structures & Foundational Patterns",
       focus: "Arrays, Strings, Two Pointers, Prefix Sums, Sliding Window",
-      desc: "60% of all interview problems are array and string problems. Transition from brute-force nested loops to optimal linear scans using pointers and prefix sums.",
-      href: "/dsa/arrays",
+      desc: "Fundamental patterns make up the majority of interview problems. Transition from brute-force nested loops to optimal linear scans using pointers and sliding windows.",
+      href: getDsaTopicPath("arrays"),
       actionLabel: "Master Array Patterns",
       completedWhen: "You can solve Two Sum, Kadane's Algorithm, and Move Zeroes optimally.",
     },
@@ -53,7 +74,7 @@ export default function RoadmapPage() {
       title: "Hashing & Associative Containers",
       focus: "Hash Tables, Hash Sets, Frequency Maps, Collisions",
       desc: "Trade O(N) space for O(1) time lookups. Solve complement matching, substring frequency, and deduplication problems.",
-      href: "/problems",
+      href: getProblemsPath(),
       actionLabel: "Practice Hashing",
       completedWhen: "You intuitively check if a Hash Map can convert an O(N^2) search into O(N).",
     },
@@ -62,7 +83,7 @@ export default function RoadmapPage() {
       title: "Hierarchical & Non-Linear Structures",
       focus: "Recursion, Linked Lists, Stacks, Queues, Binary Trees, BST",
       desc: "Learn call stacks, monotonic stacks for next greater element, BFS level-order, and DFS tree traversals.",
-      href: "/dsa",
+      href: getDsaPath(),
       actionLabel: "Explore DSA",
       completedWhen: "You can implement Tree Traversals (Pre, In, Post, Level-order) without hesitation.",
     },
@@ -70,69 +91,82 @@ export default function RoadmapPage() {
       stage: "STAGE 07",
       title: "Advanced Problem Solving",
       focus: "Binary Search on Answer, Heaps, Greedy, Graphs, Dynamic Programming",
-      desc: "Master decision trees, shortest path (Dijkstra, BFS), cycle detection, and DP memoization vs tabulation.",
-      href: "/dsa",
+      desc: "Master decision trees, shortest paths (Dijkstra, BFS), cycle detection, and DP memoization vs tabulation.",
+      href: getDsaPath(),
       actionLabel: "Advanced Topics",
       completedWhen: "You can recognize overlapping subproblems and optimal substructures.",
     },
     {
       stage: "STAGE 08",
       title: "Interview Readiness & Core CS",
-      focus: "OS, DBMS, Computer Networks, OOP Invariants, Mock Interviews",
-      desc: "Understand process vs thread, virtual memory, SQL indexing, ACID properties, TCP/IP handshake, and HR round behavioral framing.",
-      href: "/interview",
+      focus: "OS, DBMS, Computer Networks, OOP Invariants, Technical Explanations",
+      desc: "Understand process vs thread, virtual memory, SQL indexing, ACID properties, TCP/IP fundamentals, and structured behavioral framing.",
+      href: getInterviewPath(),
       actionLabel: "Prepare for Rounds",
-      completedWhen: "You pass timed 60-minute Online Assessments and explain your thoughts aloud calmly.",
+      completedWhen: "You can solve timed assessments and articulate your thought process aloud calmly.",
     },
   ];
 
+  const breadcrumbs = [
+    { label: "Home", href: getHomePath() },
+    { label: "Roadmap" },
+  ];
+
+  const breadcrumbJsonLd = createBreadcrumbJsonLd(breadcrumbs);
+
   return (
-    <div className={styles.container}>
-      <Breadcrumbs items={[{ label: "Home", href: "/" }, { label: "Roadmap" }]} />
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
+      <div className={styles.container}>
+        <Breadcrumbs items={breadcrumbs} />
 
-      <div className={styles.header}>
-        <div style={{ display: "flex", gap: "var(--space-2)", alignItems: "center", marginBottom: "var(--space-2)" }}>
-          <Badge variant="level">SEQUENCED PROGRESSION</Badge>
-          <span style={{ fontSize: "var(--font-size-xs)", color: "var(--text-muted)", fontFamily: "var(--font-mono)" }}>
-            Day 1 to Placement Day
-          </span>
-        </div>
-        <h1 className={styles.title}>The Engineering Roadmap</h1>
-        <p className={styles.desc}>
-          A clear, deliberate roadmap designed for first-year college students.
-          Understand exactly where you are, what comes next, and what prerequisites remain.
-        </p>
-      </div>
-
-      <div className={styles.roadmapTimeline}>
-        {steps.map((step, idx) => (
-          <div key={idx} className={styles.timelineNode}>
-            <div className={styles.nodeLeft}>
-              <span className={styles.stageTag}>{step.stage}</span>
-              <div className={styles.circleMarker}>{idx + 1}</div>
-              {idx < steps.length - 1 && <div className={styles.connectingLine} />}
-            </div>
-
-            <div className={styles.nodeCard}>
-              <div className={styles.nodeHeader}>
-                <div>
-                  <h2 className={styles.nodeTitle}>{step.title}</h2>
-                  <div className={styles.nodeFocus}>Focus: {step.focus}</div>
-                </div>
-                <Button href={step.href} variant="primary" size="sm" icon={<ArrowRight size={13} />}>
-                  {step.actionLabel}
-                </Button>
-              </div>
-
-              <p className={styles.nodeDesc}>{step.desc}</p>
-
-              <div className={styles.criteriaBox}>
-                <strong>Target Milestone:</strong> {step.completedWhen}
-              </div>
-            </div>
+        <div className={styles.header}>
+          <div style={{ display: "flex", gap: "var(--space-2)", alignItems: "center", marginBottom: "var(--space-2)" }}>
+            <Badge variant="level">SEQUENCED PROGRESSION</Badge>
+            <span style={{ fontSize: "var(--font-size-xs)", color: "var(--text-muted)", fontFamily: "var(--font-mono)" }}>
+              Foundations to Technical Readiness
+            </span>
           </div>
-        ))}
+          <h1 className={styles.title}>The Engineering Roadmap</h1>
+          <p className={styles.desc}>
+            A clear, deliberate roadmap designed for computer science students and engineers.
+            Understand exactly where you are, what comes next, and what prerequisites remain.
+          </p>
+        </div>
+
+        <div className={styles.roadmapTimeline}>
+          {steps.map((step, idx) => (
+            <div key={idx} className={styles.timelineNode}>
+              <div className={styles.nodeLeft}>
+                <span className={styles.stageTag}>{step.stage}</span>
+                <div className={styles.circleMarker}>{idx + 1}</div>
+                {idx < steps.length - 1 && <div className={styles.connectingLine} />}
+              </div>
+
+              <div className={styles.nodeCard}>
+                <div className={styles.nodeHeader}>
+                  <div>
+                    <h2 className={styles.nodeTitle}>{step.title}</h2>
+                    <div className={styles.nodeFocus}>Focus: {step.focus}</div>
+                  </div>
+                  <Button href={step.href} variant="primary" size="sm" icon={<ArrowRight size={13} />}>
+                    {step.actionLabel}
+                  </Button>
+                </div>
+
+                <p className={styles.nodeDesc}>{step.desc}</p>
+
+                <div className={styles.criteriaBox}>
+                  <strong>Target Milestone:</strong> {step.completedWhen}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
-    </div>
+    </>
   );
 }

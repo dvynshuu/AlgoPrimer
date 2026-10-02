@@ -1,100 +1,129 @@
-"use client";
-
 import React from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
-import { useProgress } from "@/lib/progress/ProgressContext";
-import { ArrowRight, BookOpen, Code2, Compass, RotateCw } from "lucide-react";
-import styles from "./page.module.css";
+import { ContinueLearningWidget } from "@/components/home/ContinueLearningWidget";
+import { LearningStatsWidget } from "@/components/home/LearningStatsWidget";
 import { dsaTopics } from "@/content/dsa/topics";
 import { problems } from "@/content/problems";
+import {
+  getLanguageLessonCount,
+  getProblemCount,
+  getDsaTopicCount,
+} from "@/lib/contentCounts";
+import {
+  getLanguagePath,
+  getLanguageLessonPath,
+  getDsaPath,
+  getDsaTopicPath,
+  getProblemsPath,
+  getProblemPath,
+  getInterviewPath,
+  getRevisionPath,
+  getRoadmapPath,
+} from "@/lib/routes";
+import { createPageMetadata, createWebSiteJsonLd } from "@/lib/seo";
+import { ArrowRight, BookOpen, Code2, Compass, RotateCw } from "lucide-react";
+import styles from "./page.module.css";
+
+export const metadata = createPageMetadata({
+  title: "AlgoPrimer — Programming, DSA & Coding Interview Preparation",
+  description:
+    "Teach programming and problem solving from first principles, then progressively move users toward technical interview readiness. Free, fast, and developer-native.",
+  path: "/",
+});
 
 export default function HomePage() {
-  const { completedLessons, solvedProblems, lastVisited } = useProgress();
+  const javaCount = getLanguageLessonCount("java");
+  const cppCount = getLanguageLessonCount("cpp");
+  const pythonCount = getLanguageLessonCount("python");
+  const jsCount = getLanguageLessonCount("javascript");
+  const totalProblems = getProblemCount();
+  const totalTopics = getDsaTopicCount();
+  const websiteJsonLd = createWebSiteJsonLd();
 
   return (
     <div className={styles.container}>
-      {/* 1. Clear Product Introduction & 2. CTA */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
+      />
+
+      {/* 1. Hero / Product Identity */}
       <section className={styles.hero}>
-        <div className={styles.badgeTag}>Open Learning Coding Platform For Everyone</div>
+        <div className={styles.badgeTag}>Programming, DSA & Interview Prep</div>
         <h1 className={styles.headline}>
           Master programming, computer science, and problem solving from first principles.
         </h1>
         <p className={styles.subheadline}>
-          Forge is an open learning platform built for everyone — from complete beginners writing their first line of code to engineers preparing for technical interviews. Zero marketing fluff, zero paywalls. Just clear first-principles explanations, hands-on language tracks, deep mental models, and curated algorithmic practice.
+          AlgoPrimer is a developer-native educational platform built for everyone — from beginners writing their first line of code to engineers preparing for technical interviews. Zero marketing fluff, zero paywalls. Just clear mental models, hands-on language tracks, structured DSA progression, and 3-tier solutions.
         </p>
 
         <div className={styles.ctaRow}>
-          <Button href="/languages/java/variables" variant="primary" size="lg" icon={<ArrowRight size={16} />}>
+          <Button
+            href={getLanguageLessonPath("java", "variables")}
+            variant="primary"
+            size="lg"
+            icon={<ArrowRight size={16} />}
+          >
             Start from Zero (Java)
           </Button>
-          <Button href="/dsa" variant="secondary" size="lg" icon={<Compass size={16} />}>
+          <Button
+            href={getDsaPath()}
+            variant="secondary"
+            size="lg"
+            icon={<Compass size={16} />}
+          >
             Explore DSA Roadmap
           </Button>
-          <Button href="/problems" variant="secondary" size="lg" icon={<Code2 size={16} />}>
-            Problem Bank
-          </Button>
-        </div>
-      </section>
-
-      {/* 3. Continue Learning Section (Local Storage sync) */}
-      <section className={styles.section}>
-        <div className={styles.continueBox}>
-          <div>
-            <div style={{ fontSize: "var(--font-size-xs)", fontFamily: "var(--font-mono)", color: "var(--accent-primary)", marginBottom: "4px" }}>
-              CONTINUE LEARNING
-            </div>
-            <div style={{ fontSize: "var(--font-size-md)", fontWeight: 600, color: "var(--text-primary)" }} suppressHydrationWarning>
-              {lastVisited ? lastVisited.title : "Arrays — Contiguity, Operations & Two Pointers"}
-            </div>
-            <div style={{ fontSize: "var(--font-size-xs)", color: "var(--text-secondary)", marginTop: "4px" }} suppressHydrationWarning>
-              {lastVisited ? "Jump straight back into your last session." : "Next recommended lesson in your curriculum."}
-            </div>
-          </div>
           <Button
-            href={lastVisited ? lastVisited.url : "/dsa/arrays"}
-            variant="primary"
-            size="md"
-            icon={<ArrowRight size={14} />}
+            href={getProblemsPath()}
+            variant="secondary"
+            size="lg"
+            icon={<Code2 size={16} />}
           >
-            Resume Lesson
+            Problem Bank ({totalProblems})
           </Button>
         </div>
       </section>
 
-      {/* 4. Programming Languages Tracks */}
+      {/* 2. Continue Learning Section (Client Island) */}
+      <section className={styles.section}>
+        <ContinueLearningWidget />
+      </section>
+
+      {/* 3. Programming Languages Tracks (Java, C++, Python, JavaScript) */}
       <section className={styles.section}>
         <h2 className={styles.sectionTitle}>1. Language Mastery Tracks</h2>
         <p className={styles.sectionDesc}>
           Pick one core language and master its foundations, memory architecture, and standard library.
-          Every track builds mental models from absolute zero.
+          Every track builds mental models from absolute zero with code examples and common pitfalls.
         </p>
 
-        <div className={styles.grid3}>
-          <Link href="/languages/java" className={styles.trackCard}>
+        <div className={styles.grid4}>
+          <Link href={getLanguagePath("java")} className={styles.trackCard}>
             <div>
               <div className={styles.trackHeader}>
                 <span className={styles.trackName}>Java</span>
-                <span className={styles.trackMeta}>Tier 1 Choice</span>
+                <span className={styles.trackMeta}>{javaCount} Lessons</span>
               </div>
               <p className={styles.trackDesc}>
-                Strong static typing, JVM stack vs heap memory models, OOP invariants, and Java Collections Framework.
+                Static typing, JVM stack vs heap memory models, OOP invariants, and Java Collections Framework.
               </p>
             </div>
             <div className={styles.trackTopicsList}>
-              Foundations &bull; OOP &bull; Collections &bull; Interview Concepts
+              Foundations &bull; OOP &bull; Collections &bull; Memory Models
             </div>
           </Link>
 
-          <Link href="/languages/cpp" className={styles.trackCard}>
+          <Link href={getLanguagePath("cpp")} className={styles.trackCard}>
             <div>
               <div className={styles.trackHeader}>
                 <span className={styles.trackName}>C++</span>
-                <span className={styles.trackMeta}>Competitive / OA</span>
+                <span className={styles.trackMeta}>{cppCount} Lessons</span>
               </div>
               <p className={styles.trackDesc}>
-                Direct hardware control, pointers, references, pass-by-reference semantics, and deep Standard Template Library (STL).
+                Direct memory control, pointers, references, value vs reference semantics, and the Standard Template Library (STL).
               </p>
             </div>
             <div className={styles.trackTopicsList}>
@@ -102,29 +131,44 @@ export default function HomePage() {
             </div>
           </Link>
 
-          <Link href="/languages/python" className={styles.trackCard}>
+          <Link href={getLanguagePath("python")} className={styles.trackCard}>
             <div>
               <div className={styles.trackHeader}>
                 <span className={styles.trackName}>Python</span>
-                <span className={styles.trackMeta}>Rapid Prototyping</span>
+                <span className={styles.trackMeta}>{pythonCount} Lessons</span>
               </div>
               <p className={styles.trackDesc}>
-                Dynamic typing, object references, list comprehensions, idiomatic iteration, and placement-focused standard libraries.
+                Dynamic typing, object references, list comprehensions, idiomatic iteration, and placement standard libraries.
               </p>
             </div>
             <div className={styles.trackTopicsList}>
               Object References &bull; Comprehensions &bull; Interview Idioms
             </div>
           </Link>
+
+          <Link href={getLanguagePath("javascript")} className={styles.trackCard}>
+            <div>
+              <div className={styles.trackHeader}>
+                <span className={styles.trackName}>JavaScript</span>
+                <span className={styles.trackMeta}>{jsCount} Lessons</span>
+              </div>
+              <p className={styles.trackDesc}>
+                V8 runtime internals, event loop, closures, prototypal inheritance, promises, async/await, and modern ES6+.
+              </p>
+            </div>
+            <div className={styles.trackTopicsList}>
+              Event Loop &bull; Closures &bull; Promises &bull; OOP &bull; Async
+            </div>
+          </Link>
         </div>
       </section>
 
-      {/* 5. DSA Roadmap Preview */}
+      {/* 4. DSA Roadmap Preview */}
       <section className={styles.section}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "var(--space-2)" }}>
           <h2 className={styles.sectionTitle} style={{ margin: 0 }}>2. Pedagogical DSA Roadmap</h2>
-          <Link href="/dsa" style={{ fontSize: "var(--font-size-xs)", fontFamily: "var(--font-mono)" }}>
-            View all 20 topics &rarr;
+          <Link href={getDsaPath()} style={{ fontSize: "var(--font-size-xs)", fontFamily: "var(--font-mono)" }}>
+            View all {totalTopics} topics &rarr;
           </Link>
         </div>
         <p className={styles.sectionDesc}>
@@ -135,7 +179,7 @@ export default function HomePage() {
           {dsaTopics.slice(0, 8).map((topic) => (
             <Link
               key={topic.id}
-              href={`/dsa/${topic.slug}`}
+              href={getDsaTopicPath(topic.slug)}
               style={{
                 background: "var(--bg-surface)",
                 border: "1px solid var(--border-subtle)",
@@ -146,20 +190,20 @@ export default function HomePage() {
               }}
             >
               <div style={{ fontSize: "var(--font-size-xs)", fontFamily: "var(--font-mono)", color: "var(--text-muted)" }}>
-                Topic #{topic.order}
+                Topic #{topic.order} &bull; {topic.lessons.length} Lesson{topic.lessons.length > 1 ? "s" : ""}
               </div>
               <div style={{ fontSize: "var(--font-size-sm)", fontWeight: 600, color: "var(--text-primary)", marginTop: "2px" }}>
                 {topic.title}
               </div>
               <div style={{ fontSize: "var(--font-size-xs)", color: "var(--text-secondary)", marginTop: "4px" }}>
-                {topic.description.slice(0, 70)}...
+                {topic.description.slice(0, 75)}...
               </div>
             </Link>
           ))}
         </div>
       </section>
 
-      {/* 6. Problem-Solving Progression */}
+      {/* 5. Problem-Solving Progression */}
       <section className={styles.section}>
         <h2 className={styles.sectionTitle}>3. 5-Level Problem Progression</h2>
         <p className={styles.sectionDesc}>
@@ -195,12 +239,12 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 7. Representative Problem Bank */}
+      {/* 6. Problem Bank Preview */}
       <section className={styles.section}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "var(--space-2)" }}>
           <h2 className={styles.sectionTitle} style={{ margin: 0 }}>4. Problem Bank: 3-Tier Solutions</h2>
-          <Link href="/problems" style={{ fontSize: "var(--font-size-xs)", fontFamily: "var(--font-mono)" }}>
-            View all {problems.length} problems &rarr;
+          <Link href={getProblemsPath()} style={{ fontSize: "var(--font-size-xs)", fontFamily: "var(--font-mono)" }}>
+            View all {totalProblems} problems &rarr;
           </Link>
         </div>
         <p className={styles.sectionDesc}>
@@ -211,7 +255,7 @@ export default function HomePage() {
           {problems.slice(0, 5).map((prob) => (
             <Link
               key={prob.id}
-              href={`/problems/${prob.slug}`}
+              href={getProblemPath(prob.slug)}
               style={{
                 display: "flex",
                 alignItems: "center",
@@ -229,7 +273,7 @@ export default function HomePage() {
                 </span>
                 <Badge variant={prob.difficulty === "Easy" ? "easy" : "medium"}>{prob.difficulty}</Badge>
                 <span style={{ fontSize: "var(--font-size-xs)", color: "var(--text-muted)", fontFamily: "var(--font-mono)" }}>
-                  Pattern: {prob.pattern}
+                  Pattern: {prob.pattern} &bull; {prob.topic}
                 </span>
               </div>
               <span style={{ fontSize: "var(--font-size-xs)", fontFamily: "var(--font-mono)", color: "var(--accent-primary)" }}>
@@ -240,7 +284,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 8. Placement & Revision Overview */}
+      {/* 7. Placement & Revision Overview */}
       <section className={styles.section}>
         <div className={styles.grid3}>
           <div className={styles.trackCard}>
@@ -250,10 +294,10 @@ export default function HomePage() {
                 <BookOpen size={16} />
               </div>
               <p className={styles.trackDesc}>
-                Understand how campus placement works: Online Assessment (OA) scoring, technical interview rounds, core CS subjects (OS, DBMS, CN), and HR expectations.
+                Understand how technical hiring works: Online Assessment (OA) scoring, technical interview rounds, core CS subjects (OS, DBMS, CN), and behavioral expectations.
               </p>
             </div>
-            <Link href="/interview" style={{ fontSize: "var(--font-size-xs)", fontFamily: "var(--font-mono)" }}>
+            <Link href={getInterviewPath()} style={{ fontSize: "var(--font-size-xs)", fontFamily: "var(--font-mono)" }}>
               Read Interview Breakdown &rarr;
             </Link>
           </div>
@@ -268,7 +312,7 @@ export default function HomePage() {
                 Concise cheat sheets for quick revision before coding rounds. Review key properties, time bounds, common pitfalls, and code snippets in 5 minutes.
               </p>
             </div>
-            <Link href="/revision" style={{ fontSize: "var(--font-size-xs)", fontFamily: "var(--font-mono)" }}>
+            <Link href={getRevisionPath()} style={{ fontSize: "var(--font-size-xs)", fontFamily: "var(--font-mono)" }}>
               Open Revision Cards &rarr;
             </Link>
           </div>
@@ -283,38 +327,21 @@ export default function HomePage() {
                 A clear, visual sequence showing where you currently stand, what prerequisites remain, and what you need to master next.
               </p>
             </div>
-            <Link href="/roadmap" style={{ fontSize: "var(--font-size-xs)", fontFamily: "var(--font-mono)" }}>
+            <Link href={getRoadmapPath()} style={{ fontSize: "var(--font-size-xs)", fontFamily: "var(--font-mono)" }}>
               Inspect Progression Roadmap &rarr;
             </Link>
           </div>
         </div>
       </section>
 
-      {/* 9. Simple Progress Overview */}
+      {/* 8. Simple Progress Overview (Client Island) */}
       <section className={styles.section}>
         <h2 className={styles.sectionTitle}>Your Learning Overview</h2>
         <p className={styles.sectionDesc}>
           Non-gamified progress tracking synced directly to your browser storage. No account required to start.
         </p>
 
-        <div className={styles.statsOverview}>
-          <div className={styles.statCard}>
-            <div className={styles.statVal}>{completedLessons.length}</div>
-            <div className={styles.statLabel}>Lessons Completed</div>
-          </div>
-          <div className={styles.statCard}>
-            <div className={styles.statVal}>{solvedProblems.length}</div>
-            <div className={styles.statLabel}>Problems Solved</div>
-          </div>
-          <div className={styles.statCard}>
-            <div className={styles.statVal}>{dsaTopics.length}</div>
-            <div className={styles.statLabel}>DSA Topics Mapped</div>
-          </div>
-          <div className={styles.statCard}>
-            <div className={styles.statVal}>Level 1 &rarr; 5</div>
-            <div className={styles.statLabel}>Pedagogical Depth</div>
-          </div>
-        </div>
+        <LearningStatsWidget totalDsaTopics={totalTopics} />
       </section>
     </div>
   );
