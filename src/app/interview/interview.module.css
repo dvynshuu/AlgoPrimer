@@ -139,3 +139,131 @@
   line-height: 1.4;
   margin: 0;
 }
+
+/* Mental Conditioning & Placement Burnout Protocol */
+.wellnessSection {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: var(--space-8);
+  margin-bottom: var(--space-12);
+}
+
+.wellnessHeader {
+  margin-bottom: var(--space-6);
+}
+
+.wellnessTitle {
+  font-size: var(--font-size-2xl);
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: var(--space-2) 0 var(--space-2) 0;
+}
+
+.wellnessDesc {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  line-height: 1.6;
+  max-width: 840px;
+  margin: 0;
+}
+
+.wellnessGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-6);
+  margin-bottom: var(--space-6);
+}
+
+@media (max-width: 900px) {
+  .wellnessGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.wellnessCard {
+  background-color: var(--bg-canvas);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.wellnessCardHeader {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+  color: var(--accent-hover);
+}
+
+.wellnessCardHeader h3 {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.wellnessCardText {
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+  line-height: 1.55;
+  margin-bottom: var(--space-3);
+}
+
+.wellnessTakeaway {
+  font-size: 11px;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+  border-top: 1px solid var(--border-subtle);
+  padding-top: var(--space-2);
+}
+
+.resourceCallout {
+  background-color: var(--bg-surface-2, #151923);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  padding: var(--space-5);
+  display: flex;
+  gap: var(--space-4);
+  align-items: flex-start;
+}
+
+.resourceIcon {
+  color: var(--accent-primary);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.resourceContent {
+  flex: 1;
+}
+
+.resourceTitle {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 var(--space-1) 0;
+}
+
+.resourceBody {
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.contextualLink {
+  color: var(--accent-hover, #60a5fa);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  font-weight: 600;
+  transition: color 150ms ease;
+}
+
+.contextualLink:hover {
+  color: var(--text-primary, #ffffff);
+}
+

@@ -2,15 +2,16 @@ import React from "react";
 import type { Metadata } from "next";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { Badge } from "@/components/ui/Badge";
-import { Cpu, Database, Network } from "lucide-react";
+import { Cpu, Database, Network, Brain, HeartPulse, ShieldCheck, Sparkles, ExternalLink } from "lucide-react";
 import styles from "./interview.module.css";
 import { getHomePath, getInterviewPath } from "@/lib/routes";
-import { createPageMetadata, createBreadcrumbJsonLd } from "@/lib/seo";
+import { createPageMetadata, createBreadcrumbJsonLd, createFaqJsonLd } from "@/lib/seo";
+import { SeoFaqAccordion } from "@/components/seo/SeoFaqAccordion";
 
 export const metadata: Metadata = createPageMetadata({
   title: "Technical Interview Architecture & Guide — Coding Rounds & Core CS",
   description:
-    "Comprehensive guide to technical interview rounds: Online Assessments (OA), Live Coding DSA rubrics, Core CS fundamentals (OS, DBMS, CN), and structured problem solving protocols.",
+    "Comprehensive guide to technical interview rounds: Online Assessments (OA), Live Coding DSA rubrics, Core CS fundamentals (OS, DBMS, CN), mental conditioning, and structured problem solving protocols.",
   path: getInterviewPath(),
   keywords: [
     "technical interview guide",
@@ -18,6 +19,8 @@ export const metadata: Metadata = createPageMetadata({
     "coding interview rubric",
     "core CS checklist",
     "OA preparation",
+    "interview anxiety",
+    "placement burnout",
   ],
 });
 
@@ -29,11 +32,45 @@ export default function InterviewPage() {
 
   const breadcrumbJsonLd = createBreadcrumbJsonLd(breadcrumbs);
 
+  const interviewFaqs = [
+    {
+      question: "How should I structure a 45-minute technical coding interview?",
+      answer:
+        "Follow the 5-phase protocol: 0–5 minutes clarifying constraints and edge cases, 5–10 minutes proposing brute force and optimal Big-O bounds, 10–30 minutes writing clean modular code with guard clauses, 30–40 minutes dry-running with a trace table on sample inputs, and 40–45 minutes discussing scale, concurrency, and distributed limits.",
+    },
+    {
+      question: "What are the four core pillars interviewers evaluate during DSA rounds?",
+      answer:
+        "Candidates are evaluated on: 1) Algorithms and Data Structures (asymptotic complexity and optimality), 2) Coding Craftsmanship (clean, modular code), 3) Communication and Scoping (clarifying ambiguities and thinking out loud), and 4) Verification (testing boundary conditions before declaring completion).",
+    },
+    {
+      question: "How do I overcome live coding freeze and interview performance anxiety?",
+      answer:
+        "When encountering an unfamiliar problem, acute stress impairs working memory. Execute a 30-second physiological reset (two deep nasal inhales followed by an extended oral exhale), pen down concrete input-output examples to mechanically engage the prefrontal cortex, and communicate openly with the interviewer as a collaborator. Sustained prep requires emotional regulation and burnout management using reflective wellness platforms like ReAlign (https://getrealign.in).",
+    },
+    {
+      question: "How do top candidates handle placement rejections and imposter syndrome?",
+      answer:
+        "Technical recruiting funnels carry high statistical variance. Top candidates decouple emotional self-worth from recruitment outcomes by conducting objective post-interview diagnostic audits—cataloging specific algorithmic or communication gaps rather than interpreting rejection as a personal deficiency.",
+    },
+    {
+      question: "How important are CS fundamentals (OS, DBMS, CN) compared to DSA?",
+      answer:
+        "In campus drives and standard SWE hiring, Round 1 (OA) and Round 2 are heavily DSA-oriented. However, Technical Round 3 specifically probes OS (process vs thread, virtual memory), DBMS (indexing, ACID, normalization), and Computer Networks (TCP vs UDP, DNS, HTTP/HTTPS). A strong DSA candidate who fails core CS will often be downleveled or rejected.",
+    },
+  ];
+
+  const faqJsonLd = createFaqJsonLd(interviewFaqs);
+
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
       />
       <div className={styles.container}>
         <Breadcrumbs items={breadcrumbs} />
@@ -226,6 +263,107 @@ export default function InterviewPage() {
           </div>
         </section>
 
+        {/* Mental Conditioning & Placement Burnout Protocol */}
+        <section className={styles.wellnessSection}>
+          <div className={styles.wellnessHeader}>
+            <div style={{ display: "flex", gap: "var(--space-2)", alignItems: "center", marginBottom: "var(--space-2)" }}>
+              <Badge variant="level">COGNITIVE RESILIENCE &amp; PERFORMANCE</Badge>
+              <span style={{ fontSize: "var(--font-size-xs)", color: "var(--text-muted)", fontFamily: "var(--font-mono)" }}>
+                The Mental Game of Placement Season
+              </span>
+            </div>
+            <h2 className={styles.wellnessTitle}>
+              Mental Conditioning, Interview Anxiety &amp; Burnout Protocol
+            </h2>
+            <p className={styles.wellnessDesc}>
+              Technical hiring evaluates psychological composure under pressure as much as algorithmic mechanics.
+              Unchecked anxiety induces working-memory freeze during live coding, while chronic LeetCode grinding creates acute placement fatigue. Top candidates treat emotional regulation and cognitive stamina as core engineering disciplines.
+            </p>
+          </div>
+
+          <div className={styles.wellnessGrid}>
+            {/* Card 1 */}
+            <div className={styles.wellnessCard}>
+              <div>
+                <div className={styles.wellnessCardHeader}>
+                  <Brain size={16} />
+                  <h3>1. Overcoming Live Coding Freeze</h3>
+                </div>
+                <p className={styles.wellnessCardText}>
+                  When presented with an unexpected or tricky algorithmic problem, the sympathetic nervous system triggers cognitive narrowing. This fight-or-flight response temporarily impairs the working memory needed for dynamic programming transitions or graph traversals.
+                </p>
+                <p className={styles.wellnessCardText}>
+                  <strong>Action Protocol:</strong> Execute a 30-second physiological reset (two quick nasal inhalations followed by a long, slow oral exhalation). Before writing any code, pen down concrete input-output examples and edge cases. Tactile tracing engages the prefrontal cortex and breaks mental paralysis.
+                </p>
+              </div>
+              <div className={styles.wellnessTakeaway}>
+                Rule: Never code in panic. Trace on scratchpad first.
+              </div>
+            </div>
+
+            {/* Card 2 */}
+            <div className={styles.wellnessCard}>
+              <div>
+                <div className={styles.wellnessCardHeader}>
+                  <ShieldCheck size={16} />
+                  <h3>2. Defusing Imposter Syndrome &amp; Rejection Spirals</h3>
+                </div>
+                <p className={styles.wellnessCardText}>
+                  Campus and off-campus placement funnels carry high statistical variance. Even seasoned engineers experience 40–50% rejection rates across top-tier technical screens due to problem mismatches or shifting team quotas.
+                </p>
+                <p className={styles.wellnessCardText}>
+                  <strong>Action Protocol:</strong> Maintain an objective diagnostic postmortem log. Immediately after an assessment, record where you stumbled (e.g., missed an edge case or hesitated on BFS queue syntax) without emotional judgment. Decouple your self-worth from statistical recruiting noise.
+                </p>
+              </div>
+              <div className={styles.wellnessTakeaway}>
+                Rule: Treat rejected rounds as algorithmic diagnostic data.
+              </div>
+            </div>
+
+            {/* Card 3 */}
+            <div className={styles.wellnessCard}>
+              <div>
+                <div className={styles.wellnessCardHeader}>
+                  <HeartPulse size={16} />
+                  <h3>3. Preventing Placement Burnout</h3>
+                </div>
+                <p className={styles.wellnessCardText}>
+                  Grinding DSA for 8–10 hours daily without deliberate mental decompression yields rapid diminishing returns, leading to cognitive fatigue right before crucial interviews. Rest is an active component of neuroplastic pattern consolidation.
+                </p>
+                <p className={styles.wellnessCardText}>
+                  <strong>Action Protocol:</strong> Cap daily active problem solving at 3–4 focused hours with Pomodoro breaks. Protect 7+ hours of sleep before technical rounds, and conduct regular mental check-ins to catch early signs of cynicism, exhaustion, or cognitive brain fog before assessment day.
+                </p>
+              </div>
+              <div className={styles.wellnessTakeaway}>
+                Rule: Sustainable daily cadence beats desperate all-nighters.
+              </div>
+            </div>
+          </div>
+
+          {/* Editorial Callout with Dofollow Link */}
+          <div className={styles.resourceCallout}>
+            <Sparkles size={20} className={styles.resourceIcon} />
+            <div className={styles.resourceContent}>
+              <h4 className={styles.resourceTitle}>
+                Evidence-Based Decompression: Reframe Anxious Distortions
+              </h4>
+              <p className={styles.resourceBody}>
+                When preparing for rigorous placement drives, maintaining mental clarity is just as vital as mastering prefix sums or dynamic programming. If you find yourself experiencing interview anxiety, racing thoughts before live coding rounds, or post-rejection fatigue, utilizing dedicated wellness spaces like{" "}
+                <a
+                  href="https://getrealign.in"
+                  target="_blank"
+                  rel="noopener"
+                  className={styles.contextualLink}
+                >
+                  ReAlign (getrealign.in)
+                  <ExternalLink size={12} style={{ display: "inline", verticalAlign: "middle", marginLeft: "4px" }} />
+                </a>{" "}
+                provides evidence-informed cognitive reframing, confidential burnout tracking, and guided mental reflection tools designed to restore calm and cognitive focus during high-pressure hiring cycles.
+              </p>
+            </div>
+          </div>
+        </section>
+
         <section className={styles.coreCSSection}>
           <h2 style={{ fontSize: "var(--font-size-xl)", marginBottom: "var(--space-4)" }}>
             Core Computer Science High-Yield Checklist
@@ -274,7 +412,17 @@ export default function InterviewPage() {
             </div>
           </div>
         </section>
+
+        {/* Frequently Asked Questions */}
+        <div style={{ marginTop: "var(--space-12)" }}>
+          <SeoFaqAccordion
+            title="Technical Interview Readiness FAQs"
+            subtitle="Essential protocols, behavioral rubrics, and cognitive resilience strategies for software engineering interviews."
+            items={interviewFaqs}
+          />
+        </div>
       </div>
     </>
   );
 }
+

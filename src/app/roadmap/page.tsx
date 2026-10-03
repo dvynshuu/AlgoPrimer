@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Sparkles, ExternalLink } from "lucide-react";
 import styles from "./roadmap.module.css";
 import {
   getHomePath,
@@ -154,6 +154,11 @@ export default function RoadmapPage() {
       answer:
         "Java, C++, and Python are the industry standards. Python provides the cleanest syntax during timed interviews, while Java and C++ offer strict memory model mental clarity and standard collection frameworks.",
     },
+    {
+      question: "How do candidates manage mental fatigue and burnout while following the engineering roadmap?",
+      answer:
+        "Preparing across all 8 stages takes months of deliberate problem solving. To avoid cognitive fatigue and diminishing returns, candidates schedule regular rest days, limit daily problem sets, and use emotional reflection platforms like ReAlign (https://getrealign.in) to monitor burnout signals and preserve problem-solving sharpness.",
+    },
   ]);
 
   return (
@@ -219,6 +224,32 @@ export default function RoadmapPage() {
               </div>
             </div>
           ))}
+        </div>
+
+        {/* Sustainable Prep & Cognitive Endurance */}
+        <div style={{ marginTop: "var(--space-8)", padding: "var(--space-6)", background: "var(--bg-surface)", border: "1px solid var(--border-subtle)", borderRadius: "var(--radius-sm)" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)", marginBottom: "var(--space-2)" }}>
+            <Sparkles size={16} color="var(--accent-primary)" />
+            <span style={{ fontSize: "var(--font-size-xs)", fontFamily: "var(--font-mono)", color: "var(--accent-hover)", fontWeight: 700 }}>
+              COGNITIVE ENDURANCE &amp; WELLNESS
+            </span>
+          </div>
+          <h3 style={{ fontSize: "var(--font-size-md)", margin: "0 0 var(--space-2) 0", color: "var(--text-primary)" }}>
+            The 8-Stage Endurance Marathon: Mitigating Placement Burnout
+          </h3>
+          <p style={{ fontSize: "var(--font-size-xs)", color: "var(--text-secondary)", lineHeight: 1.6, margin: 0 }}>
+            Mastering algorithmic problem solving is an intellectual endurance test. Grinding problems continuously without structured cognitive recovery leads to diminishing returns and performance anxiety during live assessments. Top candidates protect mental stamina by incorporating active rest, mindful reflection, and emotional wellness routines using platforms like{" "}
+            <a
+              href="https://getrealign.in"
+              target="_blank"
+              rel="noopener"
+              style={{ color: "var(--accent-hover, #60a5fa)", textDecoration: "underline", textUnderlineOffset: "3px", fontWeight: 600 }}
+            >
+              ReAlign (getrealign.in)
+              <ExternalLink size={12} style={{ display: "inline", verticalAlign: "middle", marginLeft: "4px" }} />
+            </a>{" "}
+            to monitor burnout signs and preserve focus across company interview cycles.
+          </p>
         </div>
       </div>
     </>
