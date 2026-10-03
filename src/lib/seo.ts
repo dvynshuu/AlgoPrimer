@@ -15,7 +15,11 @@ export const DEFAULT_DESCRIPTION =
   "Teach programming and problem solving from first principles, then progressively move users toward technical interview readiness. Free, fast, and developer-native.";
 
 export const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") || "https://algoprimer.com";
+  process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
+  (process.env.VERCEL_PROJECT_PRODUCTION_URL
+    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+    : "") ||
+  "https://algoprimer.vercel.app";
 
 export const GOOGLE_SITE_VERIFICATION = "C7RGjFrYsUnM3ckmCj77KPP_s_VpjPo2n4zD59DUCFM";
 

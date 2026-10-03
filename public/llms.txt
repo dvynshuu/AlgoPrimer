@@ -8,47 +8,47 @@ AlgoPrimer provides comprehensive curricula without paywalls or ad bloat:
 - **Rapid Revision Cards**: High-yield 5-minute technical review cards with complexity tables and beginner pitfalls.
 
 ## Core Hubs & Roadmaps
-- [DSA Roadmap](https://algoprimer.com/dsa): Sequenced 20-topic curriculum covering linear structures, trees, graphs, heaps, dynamic programming, and interview patterns.
-- [Curated Interview Sheets](https://algoprimer.com/sheets): High-yield practice sheets including Blind 75 and Top 50 FAANG with 3-tier solutions.
-- [Company Coding Sheets](https://algoprimer.com/companies): Verified hiring processes and interview problem sheets for Amazon, Google, Microsoft, Meta, Apple, Bloomberg, and Goldman Sachs.
-- [Engineering Progression Roadmap](https://algoprimer.com/roadmap): 8-stage progression roadmap from zero coding fundamentals to senior technical interview readiness.
-- [Curated Problem Bank](https://algoprimer.com/problems): 65 high-frequency placement problems with 3-tier solutions, complexity tables, and dry runs.
-- [Programming Language Tracks](https://algoprimer.com/languages): First-principles language curricula for Java, C++, Python, and JavaScript.
-- [Rapid Revision Cards](https://algoprimer.com/revision): High-yield revision cards covering Big-O boundaries, memory layouts, and core idioms.
-- [Technical Interview Guide](https://algoprimer.com/interview): In-depth guide to Online Assessments (OA), Live Coding rubrics, and Core CS (OS, DBMS, CN).
+- [DSA Roadmap](https://algoprimer.vercel.app/dsa): Sequenced 20-topic curriculum covering linear structures, trees, graphs, heaps, dynamic programming, and interview patterns.
+- [Curated Interview Sheets](https://algoprimer.vercel.app/sheets): High-yield practice sheets including Blind 75 and Top 50 FAANG with 3-tier solutions.
+- [Company Coding Sheets](https://algoprimer.vercel.app/companies): Verified hiring processes and interview problem sheets for Amazon, Google, Microsoft, Meta, Apple, Bloomberg, and Goldman Sachs.
+- [Engineering Progression Roadmap](https://algoprimer.vercel.app/roadmap): 8-stage progression roadmap from zero coding fundamentals to senior technical interview readiness.
+- [Curated Problem Bank](https://algoprimer.vercel.app/problems): 65 high-frequency placement problems with 3-tier solutions, complexity tables, and dry runs.
+- [Programming Language Tracks](https://algoprimer.vercel.app/languages): First-principles language curricula for Java, C++, Python, and JavaScript.
+- [Rapid Revision Cards](https://algoprimer.vercel.app/revision): High-yield revision cards covering Big-O boundaries, memory layouts, and core idioms.
+- [Technical Interview Guide](https://algoprimer.vercel.app/interview): In-depth guide to Online Assessments (OA), Live Coding rubrics, and Core CS (OS, DBMS, CN).
 
 ## 20-Topic Canonical DSA Curriculum
-- [Time & Space Complexity](https://algoprimer.com/dsa/complexity): Big-O notation, asymptotic analysis, worst vs average case, and the 10^8 operations rule.
-- [Arrays & Dynamic Arrays](https://algoprimer.com/dsa/arrays): Contiguous memory layout, two pointers, prefix sums, sliding window, and Kadane's algorithm.
-- [Strings & Pattern Matching](https://algoprimer.com/dsa/strings): String immutability, ASCII/Unicode representation, anagrams, palindrome patterns, and KMP basics.
-- [Linear & Binary Search](https://algoprimer.com/dsa/searching): Search space reduction, monotonic functions, lower/upper bounds, and binary search on answer.
-- [Sorting Fundamentals](https://algoprimer.com/dsa/sorting): Merge Sort, Quick Sort, stability, comparison vs non-comparison sorting.
-- [Hashing & Hash Maps](https://algoprimer.com/dsa/hashing): Hash functions, collision resolution, load factors, and frequency counting.
-- [Two Pointers Technique](https://algoprimer.com/dsa/two-pointers): Oppositely directed, same-direction (fast & slow), and cycle detection.
-- [Sliding Window Pattern](https://algoprimer.com/dsa/sliding-window): Fixed-size windows, dynamically shrinking windows, and substring frequency tracking.
-- [Linked Lists](https://algoprimer.com/dsa/linked-lists): Singly, doubly, dummy head nodes, pointer reversal, and cycle detection.
-- [Recursion & Backtracking](https://algoprimer.com/dsa/recursion-backtracking): Call stack frames, base cases, choice-explore-unchoose recursion trees, and pruning.
-- [Stacks & Monotonic Stack](https://algoprimer.com/dsa/stacks): LIFO discipline, parentheses balancing, evaluation, and next greater element patterns.
-- [Queues, Deques & Monotonic Queue](https://algoprimer.com/dsa/queues): FIFO queues, circular buffers, double-ended queues, and sliding window maximum.
-- [Trees & Binary Trees](https://algoprimer.com/dsa/trees): Hierarchical data structures, DFS (inorder, preorder, postorder), BFS level order, height, and diameter.
-- [Binary Search Trees (BST)](https://algoprimer.com/dsa/binary-search-tree): BST invariant, search, insert, delete, and validation.
-- [Heaps & Priority Queues](https://algoprimer.com/dsa/heaps): Min-heaps, max-heaps, complete binary trees in arrays, and top-K frequent elements.
-- [Graphs](https://algoprimer.com/dsa/graphs): Adjacency matrix vs list, BFS, DFS, cycle detection, topological sort (Kahn's), and Dijkstra.
-- [Dynamic Programming](https://algoprimer.com/dsa/dynamic-programming): Overlapping subproblems, optimal substructure, memoization vs tabulation, and knapsack variants.
-- [Greedy Algorithms](https://algoprimer.com/dsa/greedy): Locally optimal choices, interval scheduling, and fractional knapsack.
-- [Bit Manipulation](https://algoprimer.com/dsa/bit-manipulation): Bitwise operations, two's complement, power of two checks, and XOR cancellation.
-- [Trie (Prefix Tree)](https://algoprimer.com/dsa/trie): Prefix trees, word dictionary search, and autocomplete patterns.
+- [Time & Space Complexity](https://algoprimer.vercel.app/dsa/complexity): Big-O notation, asymptotic analysis, worst vs average case, and the 10^8 operations rule.
+- [Arrays & Dynamic Arrays](https://algoprimer.vercel.app/dsa/arrays): Contiguous memory layout, two pointers, prefix sums, sliding window, and Kadane's algorithm.
+- [Strings & Pattern Matching](https://algoprimer.vercel.app/dsa/strings): String immutability, ASCII/Unicode representation, anagrams, palindrome patterns, and KMP basics.
+- [Linear & Binary Search](https://algoprimer.vercel.app/dsa/searching): Search space reduction, monotonic functions, lower/upper bounds, and binary search on answer.
+- [Sorting Fundamentals](https://algoprimer.vercel.app/dsa/sorting): Merge Sort, Quick Sort, stability, comparison vs non-comparison sorting.
+- [Hashing & Hash Maps](https://algoprimer.vercel.app/dsa/hashing): Hash functions, collision resolution, load factors, and frequency counting.
+- [Two Pointers Technique](https://algoprimer.vercel.app/dsa/two-pointers): Oppositely directed, same-direction (fast & slow), and cycle detection.
+- [Sliding Window Pattern](https://algoprimer.vercel.app/dsa/sliding-window): Fixed-size windows, dynamically shrinking windows, and substring frequency tracking.
+- [Linked Lists](https://algoprimer.vercel.app/dsa/linked-lists): Singly, doubly, dummy head nodes, pointer reversal, and cycle detection.
+- [Recursion & Backtracking](https://algoprimer.vercel.app/dsa/recursion-backtracking): Call stack frames, base cases, choice-explore-unchoose recursion trees, and pruning.
+- [Stacks & Monotonic Stack](https://algoprimer.vercel.app/dsa/stacks): LIFO discipline, parentheses balancing, evaluation, and next greater element patterns.
+- [Queues, Deques & Monotonic Queue](https://algoprimer.vercel.app/dsa/queues): FIFO queues, circular buffers, double-ended queues, and sliding window maximum.
+- [Trees & Binary Trees](https://algoprimer.vercel.app/dsa/trees): Hierarchical data structures, DFS (inorder, preorder, postorder), BFS level order, height, and diameter.
+- [Binary Search Trees (BST)](https://algoprimer.vercel.app/dsa/binary-search-tree): BST invariant, search, insert, delete, and validation.
+- [Heaps & Priority Queues](https://algoprimer.vercel.app/dsa/heaps): Min-heaps, max-heaps, complete binary trees in arrays, and top-K frequent elements.
+- [Graphs](https://algoprimer.vercel.app/dsa/graphs): Adjacency matrix vs list, BFS, DFS, cycle detection, topological sort (Kahn's), and Dijkstra.
+- [Dynamic Programming](https://algoprimer.vercel.app/dsa/dynamic-programming): Overlapping subproblems, optimal substructure, memoization vs tabulation, and knapsack variants.
+- [Greedy Algorithms](https://algoprimer.vercel.app/dsa/greedy): Locally optimal choices, interval scheduling, and fractional knapsack.
+- [Bit Manipulation](https://algoprimer.vercel.app/dsa/bit-manipulation): Bitwise operations, two's complement, power of two checks, and XOR cancellation.
+- [Trie (Prefix Tree)](https://algoprimer.vercel.app/dsa/trie): Prefix trees, word dictionary search, and autocomplete patterns.
 
 ## Programming Language Tracks
-- [Java Curriculum](https://algoprimer.com/languages/java): JVM architecture, primitive types vs wrapper classes, Collections Framework, garbage collection.
-- [C++ Curriculum](https://algoprimer.com/languages/cpp): Direct memory pointers, references, RAII, Standard Template Library (STL), and iterators.
-- [Python Curriculum](https://algoprimer.com/languages/python): Object references, dynamic typing, list comprehensions, heapq, bisect, and Big-O overheads.
-- [JavaScript Curriculum](https://algoprimer.com/languages/javascript): V8 execution context, closures, event loop, Promises, async/await, and prototypal inheritance.
+- [Java Curriculum](https://algoprimer.vercel.app/languages/java): JVM architecture, primitive types vs wrapper classes, Collections Framework, garbage collection.
+- [C++ Curriculum](https://algoprimer.vercel.app/languages/cpp): Direct memory pointers, references, RAII, Standard Template Library (STL), and iterators.
+- [Python Curriculum](https://algoprimer.vercel.app/languages/python): Object references, dynamic typing, list comprehensions, heapq, bisect, and Big-O overheads.
+- [JavaScript Curriculum](https://algoprimer.vercel.app/languages/javascript): V8 execution context, closures, event loop, Promises, async/await, and prototypal inheritance.
 
 ## Representative Problems & Patterns
-- [Two Sum](https://algoprimer.com/problems/two-sum): Hash Map complement lookup ($O(N)$ time, $O(N)$ space).
-- [Best Time to Buy and Sell Stock](https://algoprimer.com/problems/best-time-to-buy-and-sell-stock): Single-pass minimum tracking ($O(N)$ time, $O(1)$ space).
-- [Longest Substring Without Repeating Characters](https://algoprimer.com/problems/longest-substring-without-repeating-characters): Dynamic sliding window with hash set/map ($O(N)$ time, $O(\min(N, M))$ space).
-- [Trapping Rain Water](https://algoprimer.com/problems/trapping-rain-water): Two pointers converging elevation tracking ($O(N)$ time, $O(1)$ space).
-- [Reverse Linked List](https://algoprimer.com/problems/reverse-linked-list): Iterative 3-pointer pointer manipulation and recursive reversal ($O(N)$ time, $O(1)$ space).
-- [Course Schedule](https://algoprimer.com/problems/course-schedule): Directed graph cycle detection via Kahn's algorithm (BFS) and DFS ($O(V + E)$ time).
+- [Two Sum](https://algoprimer.vercel.app/problems/two-sum): Hash Map complement lookup ($O(N)$ time, $O(N)$ space).
+- [Best Time to Buy and Sell Stock](https://algoprimer.vercel.app/problems/best-time-to-buy-and-sell-stock): Single-pass minimum tracking ($O(N)$ time, $O(1)$ space).
+- [Longest Substring Without Repeating Characters](https://algoprimer.vercel.app/problems/longest-substring-without-repeating-characters): Dynamic sliding window with hash set/map ($O(N)$ time, $O(\min(N, M))$ space).
+- [Trapping Rain Water](https://algoprimer.vercel.app/problems/trapping-rain-water): Two pointers converging elevation tracking ($O(N)$ time, $O(1)$ space).
+- [Reverse Linked List](https://algoprimer.vercel.app/problems/reverse-linked-list): Iterative 3-pointer pointer manipulation and recursive reversal ($O(N)$ time, $O(1)$ space).
+- [Course Schedule](https://algoprimer.vercel.app/problems/course-schedule): Directed graph cycle detection via Kahn's algorithm (BFS) and DFS ($O(V + E)$ time).

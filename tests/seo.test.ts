@@ -12,8 +12,8 @@ import {
 } from "@/lib/seo";
 
 describe("SEO & Sitemap Architecture", () => {
-  it("enforces canonical domain https://algoprimer.com", () => {
-    expect(SITE_URL).toBe("https://algoprimer.com");
+  it("enforces canonical domain https://algoprimer.vercel.app", () => {
+    expect(SITE_URL).toBe("https://algoprimer.vercel.app");
     expect(SITE_NAME).toBe("AlgoPrimer");
     expect(GOOGLE_SITE_VERIFICATION).toBe("C7RGjFrYsUnM3ckmCj77KPP_s_VpjPo2n4zD59DUCFM");
   });
@@ -26,7 +26,7 @@ describe("SEO & Sitemap Architecture", () => {
     });
     expect(meta.title).toBe("Test Page | AlgoPrimer");
     expect(meta.description).toBe("Test Description");
-    expect(meta.alternates?.canonical).toBe("https://algoprimer.com/dsa");
+    expect(meta.alternates?.canonical).toBe("https://algoprimer.vercel.app/dsa");
     expect(meta.verification?.google).toBe("C7RGjFrYsUnM3ckmCj77KPP_s_VpjPo2n4zD59DUCFM");
   });
 
@@ -36,29 +36,29 @@ describe("SEO & Sitemap Architecture", () => {
 
     // Verify root & hub pages
     const urls = map.map((entry) => entry.url);
-    expect(urls).toContain("https://algoprimer.com");
-    expect(urls).toContain("https://algoprimer.com/dsa");
-    expect(urls).toContain("https://algoprimer.com/problems");
-    expect(urls).toContain("https://algoprimer.com/languages");
-    expect(urls).toContain("https://algoprimer.com/roadmap");
-    expect(urls).toContain("https://algoprimer.com/revision");
-    expect(urls).toContain("https://algoprimer.com/interview");
+    expect(urls).toContain("https://algoprimer.vercel.app");
+    expect(urls).toContain("https://algoprimer.vercel.app/dsa");
+    expect(urls).toContain("https://algoprimer.vercel.app/problems");
+    expect(urls).toContain("https://algoprimer.vercel.app/languages");
+    expect(urls).toContain("https://algoprimer.vercel.app/roadmap");
+    expect(urls).toContain("https://algoprimer.vercel.app/revision");
+    expect(urls).toContain("https://algoprimer.vercel.app/interview");
 
     // Verify canonical DSA topic and lesson paths
-    expect(urls).toContain("https://algoprimer.com/dsa/arrays");
-    expect(urls).toContain("https://algoprimer.com/dsa/arrays/two-pointers");
-    expect(urls).toContain("https://algoprimer.com/dsa/binary-search/patterns");
+    expect(urls).toContain("https://algoprimer.vercel.app/dsa/arrays");
+    expect(urls).toContain("https://algoprimer.vercel.app/dsa/arrays/two-pointers");
+    expect(urls).toContain("https://algoprimer.vercel.app/dsa/binary-search/patterns");
 
     // Verify language lesson paths
-    expect(urls).toContain("https://algoprimer.com/languages/java/arrays");
-    expect(urls).toContain("https://algoprimer.com/languages/javascript/closures");
+    expect(urls).toContain("https://algoprimer.vercel.app/languages/java/arrays");
+    expect(urls).toContain("https://algoprimer.vercel.app/languages/javascript/closures");
 
     // Verify problem paths
-    expect(urls).toContain("https://algoprimer.com/problems/two-sum");
+    expect(urls).toContain("https://algoprimer.vercel.app/problems/two-sum");
 
     // Verify excluded private/utility pages
-    expect(urls).not.toContain("https://algoprimer.com/search");
-    expect(urls).not.toContain("https://algoprimer.com/profile");
+    expect(urls).not.toContain("https://algoprimer.vercel.app/search");
+    expect(urls).not.toContain("https://algoprimer.vercel.app/profile");
 
     // Verify no entries have artificial lastModified timestamps
     for (const entry of map) {
@@ -68,7 +68,7 @@ describe("SEO & Sitemap Architecture", () => {
 
   it("configures robots.txt properly", () => {
     const r = robots();
-    expect(r.sitemap).toBe("https://algoprimer.com/sitemap.xml");
+    expect(r.sitemap).toBe("https://algoprimer.vercel.app/sitemap.xml");
 
     const rules = Array.isArray(r.rules) ? r.rules[0] : r.rules;
     expect(rules.disallow).toContain("/search");
@@ -89,7 +89,7 @@ describe("SEO & Sitemap Architecture", () => {
     expect(breadcrumbLd["@type"]).toBe("BreadcrumbList");
     expect(breadcrumbLd.itemListElement).toHaveLength(3);
     expect(breadcrumbLd.itemListElement[0].name).toBe("Home");
-    expect(breadcrumbLd.itemListElement[0].item).toBe("https://algoprimer.com");
+    expect(breadcrumbLd.itemListElement[0].item).toBe("https://algoprimer.vercel.app");
     expect(breadcrumbLd.itemListElement[2].name).toBe("Arrays");
     expect(breadcrumbLd.itemListElement[2].item).toBeUndefined();
 
@@ -99,7 +99,7 @@ describe("SEO & Sitemap Architecture", () => {
       path: "/dsa/arrays/two-pointers",
     });
     expect(techArticleLd["@type"]).toBe("TechArticle");
-    expect(techArticleLd.url).toBe("https://algoprimer.com/dsa/arrays/two-pointers");
+    expect(techArticleLd.url).toBe("https://algoprimer.vercel.app/dsa/arrays/two-pointers");
   });
 
   it("creates valid FAQ, Problem, Course, and Organization JSON-LD", async () => {
@@ -158,8 +158,8 @@ describe("SEO & Sitemap Architecture", () => {
 
     const content = fs.readFileSync(llmsPath, "utf-8");
     expect(content.startsWith("# AlgoPrimer")).toBe(true);
-    expect(content).toContain("https://algoprimer.com/dsa");
-    expect(content).toContain("https://algoprimer.com/problems");
-    expect(content).toContain("https://algoprimer.com/languages");
+    expect(content).toContain("https://algoprimer.vercel.app/dsa");
+    expect(content).toContain("https://algoprimer.vercel.app/problems");
+    expect(content).toContain("https://algoprimer.vercel.app/languages");
   });
 });
