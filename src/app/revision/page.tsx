@@ -6,8 +6,15 @@ import { revisionCards } from "@/content/revision";
 import { Check, AlertTriangle, Lightbulb } from "lucide-react";
 import styles from "./revision.module.css";
 import { getHomePath, getRevisionPath } from "@/lib/routes";
-import { createPageMetadata, createBreadcrumbJsonLd } from "@/lib/seo";
+import {
+  createPageMetadata,
+  createBreadcrumbJsonLd,
+  createItemListJsonLd,
+  createFaqJsonLd,
+} from "@/lib/seo";
 import { getRevisionCount } from "@/lib/contentCounts";
+import { ComplexityMatrix } from "@/components/seo/ComplexityMatrix";
+import { SeoFaqAccordion } from "@/components/seo/SeoFaqAccordion";
 
 export const metadata: Metadata = createPageMetadata({
   title: "High-Yield Revision Cards — Rapid Technical Review",
@@ -19,6 +26,7 @@ export const metadata: Metadata = createPageMetadata({
     "coding interview review",
     "algorithm complexity cheat sheet",
     "quick revision",
+    "Big-O cheat sheet",
   ],
 });
 
@@ -29,12 +37,38 @@ export default function RevisionPage() {
   ];
 
   const breadcrumbJsonLd = createBreadcrumbJsonLd(breadcrumbs);
+  const itemListJsonLd = createItemListJsonLd({
+    name: "High-Yield DSA Revision Cards",
+    description:
+      "Rapid technical review cards covering time complexities, memory layouts, and interview patterns.",
+    path: getRevisionPath(),
+    items: revisionCards.map((c) => ({
+      name: c.title,
+      path: `${getRevisionPath()}#${c.id}`,
+      description: `${c.rememberPoints[0] || ""} (Common trap: ${c.commonMistakes[0] || ""})`,
+    })),
+  });
+
+  const faqJsonLd = createFaqJsonLd(
+    revisionCards.slice(0, 10).map((c) => ({
+      question: `What are the key points to remember for ${c.title}?`,
+      answer: `${c.rememberPoints.join(" ")} Watch out for common mistake: ${c.commonMistakes[0] || ""}`,
+    }))
+  );
 
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
       />
       <div className={styles.container}>
         <Breadcrumbs items={breadcrumbs} />
@@ -111,6 +145,19 @@ export default function RevisionPage() {
             </div>
           ))}
         </div>
+
+        {/* Interactive Big-O Complexity Matrix */}
+        <ComplexityMatrix />
+
+        {/* High-Yield SEO FAQ Accordion */}
+        <SeoFaqAccordion
+          title="Rapid Technical Revision FAQs"
+          subtitle="Essential conceptual questions asked in technical screens and placement interviews."
+          items={revisionCards.slice(0, 8).map((c) => ({
+            question: `What are the key points to remember for ${c.title}?`,
+            answer: `${c.rememberPoints.join(" ")} Common mistake: ${c.commonMistakes[0] || ""}`,
+          }))}
+        />
       </div>
     </>
   );

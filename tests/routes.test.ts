@@ -16,7 +16,9 @@ import {
   getProfilePath,
   getSearchPath,
   resolveLegacyDsaPath,
+  getProblemsForDsaTopic,
 } from "@/lib/routes";
+import { dsaTopics } from "@/content/dsa/topics";
 
 describe("Centralized Route Manifest", () => {
   it("generates clean, lowercase, canonical paths with no trailing slashes", () => {
@@ -50,5 +52,15 @@ describe("Centralized Route Manifest", () => {
     expect(resolveLegacyDsaPath("linear-and-binary-search")).toBe("/dsa/searching/linear-and-binary-search");
     expect(resolveLegacyDsaPath("call-stack-and-trees")).toBe("/dsa/recursion/call-stack-and-trees");
     expect(resolveLegacyDsaPath("non-existent-topic")).toBeNull();
+  });
+
+  it("ensures every DSA topic has mapped practice problems", () => {
+    for (const topic of dsaTopics) {
+      const topicProblems = getProblemsForDsaTopic(topic.slug);
+      expect(
+        topicProblems.length,
+        `Topic ${topic.slug} has 0 mapped problems`
+      ).toBeGreaterThan(0);
+    }
   });
 });

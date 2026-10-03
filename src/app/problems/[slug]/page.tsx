@@ -3,7 +3,11 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ProblemViewer } from "@/components/content/ProblemViewer";
 import { problems } from "@/content/problems";
-import { createProblemMetadata, createBreadcrumbJsonLd } from "@/lib/seo";
+import {
+  createProblemMetadata,
+  createBreadcrumbJsonLd,
+  createProblemJsonLd,
+} from "@/lib/seo";
 import { getProblemBreadcrumbs, getDsaTopicBySlug } from "@/lib/routes";
 
 interface PageProps {
@@ -35,12 +39,17 @@ export default async function ProblemDetailPage({ params }: PageProps) {
   const topicMeta = getDsaTopicBySlug(problem.topicSlug);
   const breadcrumbItems = getProblemBreadcrumbs(problem, topicMeta);
   const breadcrumbJsonLd = createBreadcrumbJsonLd(breadcrumbItems);
+  const problemJsonLd = createProblemJsonLd(problem);
 
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(problemJsonLd) }}
       />
       <ProblemViewer problem={problem} />
     </>

@@ -6,6 +6,8 @@ import { javascriptLessons } from "@/content/languages/javascript";
 import { dsaTopics } from "@/content/dsa/topics";
 import { dsaLessons } from "@/content/dsa/lessons";
 import { problems } from "@/content/problems";
+import { getAllCompanies } from "@/content/companies";
+import { getAllSheets } from "@/content/sheets";
 import {
   getHomePath,
   getLearnPath,
@@ -17,6 +19,10 @@ import {
   getDsaLessonPath,
   getProblemsPath,
   getProblemPath,
+  getCompaniesPath,
+  getCompanyPath,
+  getSheetsPath,
+  getSheetPath,
   getRoadmapPath,
   getRevisionPath,
   getInterviewPath,
@@ -34,6 +40,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: getCanonicalUrl(getLanguagePath("javascript")), changeFrequency: "weekly", priority: 0.8 },
     { url: getCanonicalUrl(getDsaPath()), changeFrequency: "weekly", priority: 0.9 },
     { url: getCanonicalUrl(getProblemsPath()), changeFrequency: "daily", priority: 0.9 },
+    { url: getCanonicalUrl(getCompaniesPath()), changeFrequency: "daily", priority: 0.9 },
+    { url: getCanonicalUrl(getSheetsPath()), changeFrequency: "daily", priority: 0.9 },
     { url: getCanonicalUrl(getRoadmapPath()), changeFrequency: "monthly", priority: 0.8 },
     { url: getCanonicalUrl(getRevisionPath()), changeFrequency: "weekly", priority: 0.8 },
     { url: getCanonicalUrl(getInterviewPath()), changeFrequency: "monthly", priority: 0.8 },
@@ -81,6 +89,18 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.8,
   }));
 
+  const companyUrls: MetadataRoute.Sitemap = getAllCompanies().map((c) => ({
+    url: getCanonicalUrl(getCompanyPath(c.slug)),
+    changeFrequency: "weekly",
+    priority: 0.8,
+  }));
+
+  const sheetUrls: MetadataRoute.Sitemap = getAllSheets().map((s) => ({
+    url: getCanonicalUrl(getSheetPath(s.slug)),
+    changeFrequency: "weekly",
+    priority: 0.8,
+  }));
+
   return [
     ...staticRoutes,
     ...javaUrls,
@@ -90,5 +110,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...dsaTopicUrls,
     ...dsaLessonUrls,
     ...problemUrls,
+    ...companyUrls,
+    ...sheetUrls,
   ];
 }

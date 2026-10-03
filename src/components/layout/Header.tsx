@@ -14,9 +14,10 @@ import {
   getLanguagesPath,
   getDsaPath,
   getProblemsPath,
+  getCompaniesPath,
+  getSheetsPath,
   getRoadmapPath,
   getRevisionPath,
-  getInterviewPath,
   getProfilePath,
 } from "@/lib/routes";
 
@@ -43,9 +44,10 @@ export const Header: React.FC = () => {
     { label: "Languages", href: getLanguagesPath() },
     { label: "DSA", href: getDsaPath() },
     { label: "Problems", href: getProblemsPath() },
+    { label: "Sheets", href: getSheetsPath() },
+    { label: "Companies", href: getCompaniesPath() },
     { label: "Roadmap", href: getRoadmapPath() },
     { label: "Revision", href: getRevisionPath() },
-    { label: "Interview", href: getInterviewPath() },
   ];
 
   return (

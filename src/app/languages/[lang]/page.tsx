@@ -11,8 +11,15 @@ import { Lesson } from "@/types/content";
 import {
   getLanguageLessonPath,
   getLanguageBreadcrumbs,
+  getLanguagePath,
 } from "@/lib/routes";
-import { createLanguageMetadata, createBreadcrumbJsonLd } from "@/lib/seo";
+import {
+  createLanguageMetadata,
+  createBreadcrumbJsonLd,
+  createCourseJsonLd,
+  createItemListJsonLd,
+  createFaqJsonLd,
+} from "@/lib/seo";
 import { ArrowRight, Clock, BookOpen } from "lucide-react";
 import styles from "./langHub.module.css";
 
@@ -88,12 +95,54 @@ export default async function LanguageHubPage({ params }: PageProps) {
 
   const breadcrumbs = getLanguageBreadcrumbs(name);
   const breadcrumbJsonLd = createBreadcrumbJsonLd(breadcrumbs);
+  const courseJsonLd = createCourseJsonLd({
+    name: `${name} Programming Curriculum`,
+    description,
+    path: getLanguagePath(lang),
+    courseCode: `LANG-${lang.toUpperCase()}`,
+  });
+  const itemListJsonLd = createItemListJsonLd({
+    name: `${name} Lessons Curriculum`,
+    description,
+    path: getLanguagePath(lang),
+    items: lessons.map((l) => ({
+      name: l.title,
+      path: getLanguageLessonPath(lang, l.slug),
+      description: l.oneSentence,
+    })),
+  });
+  const faqJsonLd = createFaqJsonLd([
+    {
+      question: `Is ${name} good for Data Structures and Algorithms (DSA)?`,
+      answer: `${name} is widely supported across all technical interview platforms and major tech company coding assessments. This track teaches language mechanics, collections, and interview idioms from first principles.`,
+    },
+    {
+      question: `What is covered in the AlgoPrimer ${name} curriculum?`,
+      answer: `The curriculum covers ${lessons.length} lessons spanning memory models, type systems, execution internals, standard collections, and interview-critical patterns.`,
+    },
+    {
+      question: `Is the ${name} curriculum beginner friendly?`,
+      answer: `Yes, each topic begins with zero-assumption mental models and progresses to performance characteristics, memory layouts, and interview problem applications.`,
+    },
+  ]);
 
   return (
     <div className={styles.container}>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(courseJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
       />
       <Breadcrumbs items={breadcrumbs} />
 

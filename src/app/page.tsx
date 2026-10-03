@@ -29,8 +29,22 @@ import styles from "./page.module.css";
 export const metadata = createPageMetadata({
   title: "AlgoPrimer — Programming, DSA & Coding Interview Preparation",
   description:
-    "Teach programming and problem solving from first principles, then progressively move users toward technical interview readiness. Free, fast, and developer-native.",
+    "Master Data Structures & Algorithms, programming foundations, and coding interview patterns from first principles. Canonical 20-topic DSA roadmap, 65 high-frequency problems with 3-tier solutions in Java, C++, Python, and JavaScript.",
   path: "/",
+  keywords: [
+    "DSA roadmap 2026",
+    "coding interview preparation",
+    "data structures and algorithms",
+    "DSA sheet",
+    "Blind 75 alternative",
+    "NeetCode 150 alternative",
+    "Java DSA",
+    "Python DSA",
+    "C++ STL",
+    "JavaScript algorithms",
+    "technical interview questions",
+    "learn DSA from scratch",
+  ],
 });
 
 export default function HomePage() {

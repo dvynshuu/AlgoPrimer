@@ -4,6 +4,7 @@ import robots from "@/app/robots";
 import {
   SITE_NAME,
   SITE_URL,
+  GOOGLE_SITE_VERIFICATION,
   createPageMetadata,
   createBreadcrumbJsonLd,
   createTechArticleJsonLd,
@@ -14,6 +15,7 @@ describe("SEO & Sitemap Architecture", () => {
   it("enforces canonical domain https://algoprimer.com", () => {
     expect(SITE_URL).toBe("https://algoprimer.com");
     expect(SITE_NAME).toBe("AlgoPrimer");
+    expect(GOOGLE_SITE_VERIFICATION).toBe("C7RGjFrYsUnM3ckmCj77KPP_s_VpjPo2n4zD59DUCFM");
   });
 
   it("creates page metadata with canonical URLs and OpenGraph", () => {
@@ -25,6 +27,7 @@ describe("SEO & Sitemap Architecture", () => {
     expect(meta.title).toBe("Test Page | AlgoPrimer");
     expect(meta.description).toBe("Test Description");
     expect(meta.alternates?.canonical).toBe("https://algoprimer.com/dsa");
+    expect(meta.verification?.google).toBe("C7RGjFrYsUnM3ckmCj77KPP_s_VpjPo2n4zD59DUCFM");
   });
 
   it("generates a canonical, complete sitemap", () => {
@@ -97,5 +100,66 @@ describe("SEO & Sitemap Architecture", () => {
     });
     expect(techArticleLd["@type"]).toBe("TechArticle");
     expect(techArticleLd.url).toBe("https://algoprimer.com/dsa/arrays/two-pointers");
+  });
+
+  it("creates valid FAQ, Problem, Course, and Organization JSON-LD", async () => {
+    const {
+      createOrganizationJsonLd,
+      createFaqJsonLd,
+      createProblemJsonLd,
+      createCourseJsonLd,
+      createItemListJsonLd,
+    } = await import("@/lib/seo");
+    const { problems } = await import("@/content/problems");
+
+    const orgLd = createOrganizationJsonLd();
+    expect(orgLd["@type"]).toBe("Organization");
+    expect(orgLd.name).toBe("AlgoPrimer");
+
+    const faqLd = createFaqJsonLd([
+      { question: "What is Big-O?", answer: "Asymptotic notation." },
+    ]);
+    expect(faqLd["@type"]).toBe("FAQPage");
+    expect(faqLd.mainEntity).toHaveLength(1);
+    expect(faqLd.mainEntity[0].name).toBe("What is Big-O?");
+
+    const sampleProblem = problems[0];
+    const problemLd = createProblemJsonLd(sampleProblem);
+    expect(problemLd["@context"]).toBe("https://schema.org");
+    expect(Array.isArray(problemLd["@graph"])).toBe(true);
+    const graphTypes = problemLd["@graph"].map((node: { "@type": string }) => node["@type"]);
+    expect(graphTypes).toContain("TechArticle");
+    expect(graphTypes).toContain("Question");
+    expect(graphTypes).toContain("FAQPage");
+
+    const courseLd = createCourseJsonLd({
+      name: "Arrays in DSA",
+      description: "Master contiguous memory",
+      path: "/dsa/arrays",
+    });
+    expect(courseLd["@type"]).toBe("Course");
+    expect(courseLd.name).toBe("Arrays in DSA");
+
+    const itemLd = createItemListJsonLd({
+      name: "Lessons",
+      description: "Topic lessons",
+      path: "/dsa/arrays",
+      items: [{ name: "Two Pointers", path: "/dsa/arrays/two-pointers" }],
+    });
+    expect(itemLd["@type"]).toBe("ItemList");
+    expect(itemLd.numberOfItems).toBe(1);
+  });
+
+  it("verifies public/llms.txt standard conformity", async () => {
+    const fs = await import("fs");
+    const path = await import("path");
+    const llmsPath = path.resolve(__dirname, "../public/llms.txt");
+    expect(fs.existsSync(llmsPath)).toBe(true);
+
+    const content = fs.readFileSync(llmsPath, "utf-8");
+    expect(content.startsWith("# AlgoPrimer")).toBe(true);
+    expect(content).toContain("https://algoprimer.com/dsa");
+    expect(content).toContain("https://algoprimer.com/problems");
+    expect(content).toContain("https://algoprimer.com/languages");
   });
 });

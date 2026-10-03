@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect } from "react";
+import Link from "next/link";
 import { Problem } from "@/types/content";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { Badge } from "@/components/ui/Badge";
@@ -10,6 +11,8 @@ import { CodeBlock } from "@/components/ui/CodeBlock";
 import { ComplexityTable, ComplexityRow } from "@/components/ui/ComplexityTable";
 import { DryRunTable } from "@/components/ui/DryRunTable";
 import { TableOfContents, TocItem } from "@/components/layout/TableOfContents";
+import { SeoAnswerCapsule } from "@/components/seo/SeoAnswerCapsule";
+import { SeoFaqAccordion } from "@/components/seo/SeoFaqAccordion";
 import { useProgress } from "@/lib/progress/ProgressContext";
 import { getHomePath, getProblemsPath, getDsaTopicPath, getProblemPath } from "@/lib/routes";
 import { CheckCircle2, Bookmark, Building2 } from "lucide-react";
@@ -43,6 +46,7 @@ export const ProblemViewer: React.FC<ProblemViewerProps> = ({ problem }) => {
   ];
 
   const tocItems: TocItem[] = [
+    { id: "quick-summary", label: "Executive Summary" },
     { id: "problem-statement", label: "Problem Statement" },
     { id: "understand-the-problem", label: "Understand in Plain Words" },
     { id: "examples", label: "Examples & Constraints" },
@@ -53,6 +57,7 @@ export const ProblemViewer: React.FC<ProblemViewerProps> = ({ problem }) => {
     { id: "dry-run", label: "Step-by-Step Dry Run" },
     { id: "common-mistakes", label: "Common Mistakes" },
     { id: "variations-and-practice", label: "Variations & Practice" },
+    { id: "faqs", label: "Frequently Asked Questions" },
   ];
 
   const complexityRows: ComplexityRow[] = [
@@ -131,12 +136,32 @@ export const ProblemViewer: React.FC<ProblemViewerProps> = ({ problem }) => {
                 Asked at:
               </span>
               {problem.companies.map((company) => (
-                <span key={company} className={styles.companyBadge}>
+                <Link
+                  key={company}
+                  href={`/companies/${company.toLowerCase().replace(/\s+/g, "-")}`}
+                  className={styles.companyBadge}
+                  style={{ textDecoration: "none" }}
+                >
                   {company}
-                </span>
+                </Link>
               ))}
             </div>
           )}
+        </div>
+
+        {/* Executive Summary & AI Overview Capsule */}
+        <div id="quick-summary">
+          <SeoAnswerCapsule
+            title={`${problem.title} — Executive Summary & Optimal Strategy`}
+            summary={`Solve ${problem.title} using the ${problem.pattern} pattern in ${problem.topic}. ${problem.optimalSolution.intuition} Optimal time complexity is ${problem.optimalSolution.timeComplexity} with ${problem.optimalSolution.spaceComplexity} space.`}
+            metrics={[
+              { label: "Optimal Time", value: problem.optimalSolution.timeComplexity },
+              { label: "Aux Space", value: problem.optimalSolution.spaceComplexity },
+              { label: "Pattern", value: problem.pattern },
+              { label: "Difficulty", value: problem.difficulty },
+            ]}
+            takeaway={problem.optimalSolution.whyOptimal}
+          />
         </div>
 
         {/* Problem Statement */}
@@ -295,8 +320,9 @@ export const ProblemViewer: React.FC<ProblemViewerProps> = ({ problem }) => {
               </span>
               <div style={{ display: "flex", gap: "var(--space-2)", flexWrap: "wrap", marginTop: "var(--space-2)" }}>
                 {problem.companies.map((c) => (
-                  <span
+                  <Link
                     key={c}
+                    href={`/companies/${c.toLowerCase().replace(/\s+/g, "-")}`}
                     style={{
                       background: "var(--bg-subtle)",
                       border: "1px solid var(--border-subtle)",
@@ -304,14 +330,41 @@ export const ProblemViewer: React.FC<ProblemViewerProps> = ({ problem }) => {
                       padding: "0.2rem 0.5rem",
                       borderRadius: "var(--radius-xs)",
                       color: "var(--text-secondary)",
+                      textDecoration: "none",
                     }}
                   >
                     {c}
-                  </span>
+                  </Link>
                 ))}
               </div>
             </div>
           )}
+        </section>
+
+        {/* Frequently Asked Questions */}
+        <section id="faqs">
+          <SeoFaqAccordion
+            title={`${problem.title} — Frequently Asked Questions`}
+            subtitle={`Interview mechanics, time bounds, and implementation trade-offs for ${problem.title}.`}
+            items={[
+              {
+                question: `What is the optimal time and space complexity for ${problem.title}?`,
+                answer: `The optimal solution for ${problem.title} runs in ${problem.optimalSolution.timeComplexity} time complexity and requires ${problem.optimalSolution.spaceComplexity} auxiliary space. ${problem.optimalSolution.whyOptimal || ""}`,
+              },
+              {
+                question: `Which algorithmic pattern is used to solve ${problem.title}?`,
+                answer: `${problem.title} is solved using the ${problem.pattern} pattern in ${problem.topic}. Key intuition: ${problem.optimalSolution.intuition}`,
+              },
+              ...(problem.commonMistakes && problem.commonMistakes.length > 0
+                ? [
+                    {
+                      question: `What are common mistakes when solving ${problem.title}?`,
+                      answer: problem.commonMistakes.map((m) => `${m.mistake}: ${m.fix}`).join("; "),
+                    },
+                  ]
+                : []),
+            ]}
+          />
         </section>
       </main>
 

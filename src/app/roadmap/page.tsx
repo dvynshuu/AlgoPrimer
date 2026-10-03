@@ -15,7 +15,13 @@ import {
   getProblemsPath,
   getInterviewPath,
 } from "@/lib/routes";
-import { createPageMetadata, createBreadcrumbJsonLd } from "@/lib/seo";
+import {
+  createPageMetadata,
+  createBreadcrumbJsonLd,
+  createCourseJsonLd,
+  createItemListJsonLd,
+  createFaqJsonLd,
+} from "@/lib/seo";
 
 export const metadata: Metadata = createPageMetadata({
   title: "Engineering & Placement Progression Roadmap — From Zero to Interview Ready",
@@ -24,10 +30,12 @@ export const metadata: Metadata = createPageMetadata({
   path: getRoadmapPath(),
   keywords: [
     "programming roadmap",
-    "DSA roadmap",
+    "DSA roadmap 2026",
+    "coding interview roadmap",
     "placement roadmap",
     "software engineer career path",
-    "coding interview roadmap",
+    "data structures roadmap",
+    "learn DSA from scratch",
   ],
 });
 
@@ -113,12 +121,58 @@ export default function RoadmapPage() {
   ];
 
   const breadcrumbJsonLd = createBreadcrumbJsonLd(breadcrumbs);
+  const courseJsonLd = createCourseJsonLd({
+    name: "Engineering & Technical Interview Roadmap",
+    description:
+      "Sequenced 8-stage progression roadmap from programming foundations and Big-O complexity to advanced DSA, core CS, and technical interview readiness.",
+    path: getRoadmapPath(),
+    courseCode: "ENG-ROADMAP",
+  });
+  const itemListJsonLd = createItemListJsonLd({
+    name: "8-Stage Engineering Progression Roadmap",
+    description: "Step-by-step career and technical interview preparation progression.",
+    path: getRoadmapPath(),
+    items: steps.map((s) => ({
+      name: `${s.stage}: ${s.title}`,
+      path: s.href,
+      description: `${s.focus} — ${s.desc}`,
+    })),
+  });
+  const faqJsonLd = createFaqJsonLd([
+    {
+      question: "What is the best order to learn Data Structures and Algorithms (DSA)?",
+      answer:
+        "Start with one programming language, master asymptotic analysis (Big-O), proceed through linear structures (Arrays, Strings, Linked Lists, Stacks, Queues), advance to non-linear structures (Trees, BST, Heaps, Graphs), and conclude with optimization techniques (Dynamic Programming, Greedy, Backtracking).",
+    },
+    {
+      question: "How long does it take to prepare for technical coding interviews?",
+      answer:
+        "Depending on baseline programming experience, a structured 8-stage progression takes between 3 to 6 months of daily 1-2 hour practice focusing on pattern recognition rather than rote memorization.",
+    },
+    {
+      question: "Which language is recommended for coding interviews?",
+      answer:
+        "Java, C++, and Python are the industry standards. Python provides the cleanest syntax during timed interviews, while Java and C++ offer strict memory model mental clarity and standard collection frameworks.",
+    },
+  ]);
 
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(courseJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
       />
       <div className={styles.container}>
         <Breadcrumbs items={breadcrumbs} />

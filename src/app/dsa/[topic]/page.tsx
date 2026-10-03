@@ -17,7 +17,13 @@ import {
   getProblemsPath,
   getDsaTopicPath,
 } from "@/lib/routes";
-import { createDsaTopicMetadata, createBreadcrumbJsonLd } from "@/lib/seo";
+import {
+  createDsaTopicMetadata,
+  createBreadcrumbJsonLd,
+  createCourseJsonLd,
+  createFaqJsonLd,
+} from "@/lib/seo";
+import { SeoAnswerCapsule } from "@/components/seo/SeoAnswerCapsule";
 import { ArrowRight, Clock } from "lucide-react";
 import styles from "./topicPage.module.css";
 
@@ -57,6 +63,26 @@ export default async function DSATopicPage({ params }: PageProps) {
   const relatedProblems = getProblemsForDsaTopic(topicMeta.slug);
   const breadcrumbs = getDsaTopicBreadcrumbs(topicMeta);
   const breadcrumbJsonLd = createBreadcrumbJsonLd(breadcrumbs);
+  const courseJsonLd = createCourseJsonLd({
+    name: `${topicMeta.title} in DSA`,
+    description: topicMeta.description,
+    path: getDsaTopicPath(topicMeta.slug),
+    courseCode: `DSA-${topicMeta.order.toString().padStart(2, "0")}`,
+  });
+  const faqJsonLd = createFaqJsonLd([
+    {
+      question: `What concepts are taught in ${topicMeta.title}?`,
+      answer: `${topicMeta.description} Includes ${lessons.length} structured lessons and ${relatedProblems.length} curated practice problems.`,
+    },
+    {
+      question: `What are the prerequisites for ${topicMeta.title}?`,
+      answer: `Prerequisites include: ${topicMeta.prerequisites.join(", ")}.`,
+    },
+    {
+      question: `How many hours are recommended to study ${topicMeta.title}?`,
+      answer: `Estimated study time is ~${topicMeta.estimatedHours} hours covering fundamental theory, visual intuition, and coding interview practice.`,
+    },
+  ]);
 
   const sidebarSections: SidebarSection[] = [
     {
@@ -75,6 +101,14 @@ export default async function DSATopicPage({ params }: PageProps) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(courseJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
       <TopicSidebar sections={sidebarSections} />
       <main className={styles.mainArea}>
         <Breadcrumbs items={breadcrumbs} />
@@ -89,6 +123,20 @@ export default async function DSATopicPage({ params }: PageProps) {
           <h1 className={styles.title}>{topicMeta.title}</h1>
           <p className={styles.desc}>{topicMeta.description}</p>
         </header>
+
+        {/* Direct Executive Summary & SEO Answer Capsule */}
+        <SeoAnswerCapsule
+          title={`Mastering ${topicMeta.title} for Coding Interviews`}
+          summary={topicMeta.description}
+          metrics={[
+            { label: "Topic Order", value: `#${topicMeta.order} of 20 Topics` },
+            { label: "Study Time", value: `~${topicMeta.estimatedHours} Hours` },
+            { label: "Lessons", value: `${lessons.length} Core Lesson${lessons.length > 1 ? "s" : ""}` },
+            { label: "Curated Problems", value: `${relatedProblems.length} High-Yield Questions` },
+          ]}
+          takeaway={`Master the physical memory intuition, invariants, and edge cases of ${topicMeta.title} before attempting high-difficulty interview variations.`}
+          badgeText="EXECUTIVE TOPIC BRIEF"
+        />
 
         {/* Prerequisites */}
         <section className={styles.section}>

@@ -19,6 +19,8 @@ export const ROUTES = {
   interview: "/interview",
   profile: "/profile",
   search: "/search",
+  companies: "/companies",
+  sheets: "/sheets",
 } as const;
 
 export function getHomePath(): string {
@@ -59,6 +61,22 @@ export function getProblemsPath(): string {
 
 export function getProblemPath(problemSlug: string): string {
   return `/problems/${problemSlug.toLowerCase()}`;
+}
+
+export function getCompaniesPath(): string {
+  return ROUTES.companies;
+}
+
+export function getCompanyPath(companySlug: string): string {
+  return `/companies/${companySlug.toLowerCase()}`;
+}
+
+export function getSheetsPath(): string {
+  return ROUTES.sheets;
+}
+
+export function getSheetPath(sheetSlug: string): string {
+  return `/sheets/${sheetSlug.toLowerCase()}`;
 }
 
 export function getRevisionPath(cardId?: string): string {
@@ -115,8 +133,136 @@ export function getAdjacentDsaLessons(topicSlug: string, lessonSlug: string): {
 }
 
 export function getProblemsForDsaTopic(topicSlug: string): Problem[] {
-  const normTopic = topicSlug.trim().toLowerCase();
-  return problems.filter((p) => p.topicSlug === normTopic);
+  const norm = topicSlug.trim().toLowerCase();
+
+  switch (norm) {
+    case "complexity":
+      return problems.filter((p) =>
+        ["two-sum", "maximum-subarray", "binary-search", "contains-duplicate", "valid-anagram"].includes(p.slug)
+      );
+
+    case "arrays":
+      return problems.filter((p) => p.topicSlug === "arrays");
+
+    case "strings":
+      return problems.filter((p) => p.topicSlug === "strings");
+
+    case "searching":
+    case "binary-search":
+      return problems.filter((p) => p.topicSlug === "binary-search");
+
+    case "sorting":
+      return problems.filter(
+        (p) =>
+          [
+            "three-sum",
+            "merge-intervals",
+            "non-overlapping-intervals",
+            "top-k-frequent-elements",
+            "kth-largest-element-in-an-array",
+          ].includes(p.slug) || p.pattern.toLowerCase().includes("sorting")
+      );
+
+    case "hashing":
+      return problems.filter(
+        (p) =>
+          [
+            "two-sum",
+            "contains-duplicate",
+            "group-anagrams",
+            "longest-consecutive-sequence",
+            "subarray-sum-equals-k",
+            "lru-cache",
+          ].includes(p.slug) || p.pattern.toLowerCase().includes("hash")
+      );
+
+    case "linked-list":
+    case "linked-lists":
+      return problems.filter((p) => p.topicSlug === "linked-list");
+
+    case "stack":
+    case "stacks":
+      return problems.filter((p) => p.topicSlug === "stack");
+
+    case "queue":
+    case "queues":
+      return problems.filter(
+        (p) =>
+          p.topicSlug === "queue" ||
+          p.slug === "sliding-window-maximum" ||
+          p.pattern.toLowerCase().includes("queue") ||
+          p.pattern.toLowerCase().includes("deque")
+      );
+
+    case "recursion":
+      return problems.filter(
+        (p) =>
+          [
+            "subsets",
+            "combination-sum",
+            "permutations",
+            "word-search",
+            "maximum-depth-of-binary-tree",
+            "invert-binary-tree",
+          ].includes(p.slug) || p.topicSlug === "backtracking"
+      );
+
+    case "trees":
+      return problems.filter((p) => p.topicSlug === "trees");
+
+    case "bst":
+    case "binary-search-tree":
+      return problems.filter(
+        (p) =>
+          p.topicSlug === "bst" ||
+          p.slug === "lowest-common-ancestor-of-a-binary-tree" ||
+          p.slug === "validate-binary-search-tree"
+      );
+
+    case "heap":
+    case "heaps":
+      return problems.filter((p) => p.topicSlug === "heap");
+
+    case "greedy":
+      return problems.filter(
+        (p) =>
+          p.topicSlug === "greedy" ||
+          ["best-time-to-buy-and-sell-stock", "non-overlapping-intervals", "meeting-rooms-ii"].includes(p.slug)
+      );
+
+    case "backtracking":
+      return problems.filter((p) => p.topicSlug === "backtracking");
+
+    case "graphs":
+      return problems.filter((p) => p.topicSlug === "graphs");
+
+    case "dynamic-programming":
+    case "dp":
+      return problems.filter((p) => p.topicSlug === "dynamic-programming");
+
+    case "bit-manipulation":
+      return problems.filter((p) => p.topicSlug === "bit-manipulation");
+
+    case "advanced-patterns":
+      return problems.filter((p) =>
+        [
+          "find-median-from-data-stream",
+          "course-schedule",
+          "minimum-window-substring",
+          "word-break",
+          "lru-cache",
+          "trapping-rain-water",
+        ].includes(p.slug)
+      );
+
+    default:
+      return problems.filter(
+        (p) =>
+          p.topicSlug === norm ||
+          p.topic.toLowerCase().includes(norm) ||
+          norm.includes(p.topicSlug)
+      );
+  }
 }
 
 /**
