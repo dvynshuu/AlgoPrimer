@@ -19,6 +19,8 @@ export const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => 
   const inputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
 
+  const resultsContainerRef = useRef<HTMLDivElement>(null);
+
   // Debounce query input to avoid heavy re-renders on keystroke
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -28,16 +30,18 @@ export const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => 
     return () => clearTimeout(timer);
   }, [query]);
 
+  // Focus input on mount
   useEffect(() => {
-    if (isOpen) {
-      setTimeout(() => inputRef.current?.focus(), 40);
-    } else {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setQuery("");
-      setDebouncedQuery("");
-      setSelectedIndex(0);
+    inputRef.current?.focus();
+  }, []);
+
+  // Ensure keyboard selection scrolls into view
+  useEffect(() => {
+    if (resultsContainerRef.current) {
+      const activeEl = resultsContainerRef.current.children[selectedIndex] as HTMLElement | undefined;
+      activeEl?.scrollIntoView({ block: "nearest" });
     }
-  }, [isOpen]);
+  }, [selectedIndex]);
 
   const results = useMemo(() => {
     const q = debouncedQuery.trim();
@@ -88,7 +92,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => 
           <kbd className={styles.kbd}>ESC</kbd>
         </div>
 
-        <div className={styles.results} role="listbox">
+        <div ref={resultsContainerRef} className={styles.results} role="listbox">
           {query.trim().length === 0 ? (
             <div className={styles.empty}>
               Type keywords above to search all lessons, DSA roadmap topics, interview problems, and revision cards.

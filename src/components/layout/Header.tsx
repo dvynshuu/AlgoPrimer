@@ -5,9 +5,18 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { Search, Menu, X, CheckCircle2 } from "lucide-react";
+import dynamic from "next/dynamic";
 import styles from "./Header.module.css";
-import { SearchModal } from "@/components/search/SearchModal";
 import { useProgress } from "@/lib/progress/ProgressContext";
+
+const SearchModal = dynamic(
+  () => import("@/components/search/SearchModal").then((mod) => mod.SearchModal),
+  { ssr: false }
+);
+
+const preloadSearch = () => {
+  import("@/components/search/SearchModal");
+};
 import {
   getHomePath,
   getLearnPath,
@@ -88,6 +97,8 @@ export const Header: React.FC = () => {
               type="button"
               className={styles.searchBtn}
               onClick={() => setIsSearchOpen(true)}
+              onMouseEnter={preloadSearch}
+              onFocus={preloadSearch}
               aria-label="Search curriculum"
             >
               <Search size={14} />
@@ -135,7 +146,7 @@ export const Header: React.FC = () => {
         </div>
       )}
 
-      <SearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
+      {isSearchOpen && <SearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />}
     </>
   );
 };

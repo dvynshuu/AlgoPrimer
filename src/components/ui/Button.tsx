@@ -22,6 +22,18 @@ type AsLinkProps = BaseButtonProps &
 
 export type ButtonProps = AsButtonProps | AsLinkProps;
 
+const CUSTOM_PROPS = new Set(["variant", "size", "icon", "children", "className", "href"]);
+
+function omitCustomProps(props: Record<string, unknown>): Record<string, unknown> {
+  const rest: Record<string, unknown> = {};
+  for (const key of Object.keys(props)) {
+    if (!CUSTOM_PROPS.has(key)) {
+      rest[key] = props[key];
+    }
+  }
+  return rest;
+}
+
 export const Button: React.FC<ButtonProps> = (props) => {
   const {
     variant = "secondary",
@@ -34,29 +46,16 @@ export const Button: React.FC<ButtonProps> = (props) => {
   const combinedClasses = `${styles.button} ${styles[variant]} ${styles[size]} ${className}`;
 
   if (props.href !== undefined) {
-    const { href, ...rest } = props;
-    const linkProps = { ...rest };
-    delete (linkProps as Record<string, unknown>).variant;
-    delete (linkProps as Record<string, unknown>).size;
-    delete (linkProps as Record<string, unknown>).icon;
-    delete (linkProps as Record<string, unknown>).className;
-    delete (linkProps as Record<string, unknown>).children;
-
+    const linkProps = omitCustomProps(props as unknown as Record<string, unknown>);
     return (
-      <Link href={href} className={combinedClasses} {...linkProps}>
+      <Link href={props.href} className={combinedClasses} {...linkProps}>
         {icon}
         {children}
       </Link>
     );
   }
 
-  const buttonProps = { ...props };
-  delete (buttonProps as Record<string, unknown>).variant;
-  delete (buttonProps as Record<string, unknown>).size;
-  delete (buttonProps as Record<string, unknown>).icon;
-  delete (buttonProps as Record<string, unknown>).className;
-  delete (buttonProps as Record<string, unknown>).children;
-
+  const buttonProps = omitCustomProps(props as unknown as Record<string, unknown>);
   return (
     <button className={combinedClasses} {...buttonProps}>
       {icon}

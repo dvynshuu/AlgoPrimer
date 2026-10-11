@@ -12,7 +12,8 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
   label,
   showPercent = true,
 }) => {
-  const clamped = Math.min(100, Math.max(0, value));
+  const safeValue = Number.isFinite(value) ? value : 0;
+  const clamped = Math.min(100, Math.max(0, safeValue));
 
   return (
     <div className={styles.wrapper} aria-label={label || "Progress bar"}>

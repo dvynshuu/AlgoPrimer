@@ -133,7 +133,7 @@ export const sheetsData: SheetInfo[] = [
         description: "The most recurring array and string interview questions in FAANG screens.",
         problems: problems
           .filter((p) => (p.topicSlug === "arrays" || p.topicSlug === "strings") && (p.companies || []).some((c) => ["Google", "Meta", "Amazon", "Microsoft"].includes(c)))
-          .slice(0, 15),
+          .slice(0, 14),
       },
       {
         title: "Core Trees & Graph Algorithms",
@@ -159,7 +159,7 @@ export const sheetsData: SheetInfo[] = [
         description: "High-yield search space reduction, monotonic stacks, and bitwise tricks.",
         problems: problems
           .filter((p) => p.topicSlug === "binary-search" || p.topicSlug === "stack" || p.topicSlug === "bit-manipulation")
-          .slice(0, 11),
+          .slice(0, 10),
       },
     ],
     faqs: [

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useState, useCallback, useMemo } from "react";
 import { z } from "zod";
 
 export const LastVisitedSchema = z.object({
@@ -128,7 +128,13 @@ export const ProgressProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }
   }, [state, isHydrated]);
 
-  const toggleLessonCompleted = (lessonId: string) => {
+  // Memoized Sets for O(1) membership lookups
+  const completedLessonsSet = useMemo(() => new Set(state.completedLessons), [state.completedLessons]);
+  const solvedProblemsSet = useMemo(() => new Set(state.solvedProblems), [state.solvedProblems]);
+  const bookmarkedItemsSet = useMemo(() => new Set(state.bookmarkedItems), [state.bookmarkedItems]);
+  const weakTopicsSet = useMemo(() => new Set(state.weakTopics), [state.weakTopics]);
+
+  const toggleLessonCompleted = useCallback((lessonId: string) => {
     setState((prev) => {
       const exists = prev.completedLessons.includes(lessonId);
       return {
@@ -138,13 +144,14 @@ export const ProgressProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           : [...prev.completedLessons, lessonId],
       };
     });
-  };
+  }, []);
 
-  const isLessonCompleted = (lessonId: string) => {
-    return state.completedLessons.includes(lessonId);
-  };
+  const isLessonCompleted = useCallback(
+    (lessonId: string) => completedLessonsSet.has(lessonId),
+    [completedLessonsSet]
+  );
 
-  const markProblemSolved = (problemId: string) => {
+  const markProblemSolved = useCallback((problemId: string) => {
     setState((prev) => {
       if (prev.solvedProblems.includes(problemId)) return prev;
       return {
@@ -153,9 +160,9 @@ export const ProgressProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         attemptedProblems: prev.attemptedProblems.filter((id) => id !== problemId),
       };
     });
-  };
+  }, []);
 
-  const markProblemAttempted = (problemId: string) => {
+  const markProblemAttempted = useCallback((problemId: string) => {
     setState((prev) => {
       if (prev.solvedProblems.includes(problemId) || prev.attemptedProblems.includes(problemId)) {
         return prev;
@@ -165,13 +172,14 @@ export const ProgressProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         attemptedProblems: [...prev.attemptedProblems, problemId],
       };
     });
-  };
+  }, []);
 
-  const isProblemSolved = (problemId: string) => {
-    return state.solvedProblems.includes(problemId);
-  };
+  const isProblemSolved = useCallback(
+    (problemId: string) => solvedProblemsSet.has(problemId),
+    [solvedProblemsSet]
+  );
 
-  const toggleBookmark = (itemId: string) => {
+  const toggleBookmark = useCallback((itemId: string) => {
     setState((prev) => {
       const exists = prev.bookmarkedItems.includes(itemId);
       return {
@@ -181,13 +189,14 @@ export const ProgressProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           : [...prev.bookmarkedItems, itemId],
       };
     });
-  };
+  }, []);
 
-  const isBookmarked = (itemId: string) => {
-    return state.bookmarkedItems.includes(itemId);
-  };
+  const isBookmarked = useCallback(
+    (itemId: string) => bookmarkedItemsSet.has(itemId),
+    [bookmarkedItemsSet]
+  );
 
-  const toggleWeakTopic = (topic: string) => {
+  const toggleWeakTopic = useCallback((topic: string) => {
     setState((prev) => {
       const exists = prev.weakTopics.includes(topic);
       return {
@@ -197,20 +206,21 @@ export const ProgressProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           : [...prev.weakTopics, topic],
       };
     });
-  };
+  }, []);
 
-  const isWeakTopic = (topic: string) => {
-    return state.weakTopics.includes(topic);
-  };
+  const isWeakTopic = useCallback(
+    (topic: string) => weakTopicsSet.has(topic),
+    [weakTopicsSet]
+  );
 
-  const saveNote = (itemId: string, note: string) => {
+  const saveNote = useCallback((itemId: string, note: string) => {
     setState((prev) => ({
       ...prev,
       notes: { ...prev.notes, [itemId]: note },
     }));
-  };
+  }, []);
 
-  const recordVisit = (title: string, url: string) => {
+  const recordVisit = useCallback((title: string, url: string) => {
     setState((prev) => {
       // Only update if URL or title changed to avoid unnecessary re-renders
       if (prev.lastVisited?.url === url && prev.lastVisited?.title === title) {
@@ -221,35 +231,53 @@ export const ProgressProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         lastVisited: { title, url, timestamp: Date.now() },
       };
     });
-  };
+  }, []);
 
-  const getOverallStats = () => {
+  const getOverallStats = useCallback(() => {
     return {
       lessonsCompleted: state.completedLessons.length,
       problemsSolved: state.solvedProblems.length,
       bookmarksCount: state.bookmarkedItems.length,
     };
-  };
+  }, [state.completedLessons.length, state.solvedProblems.length, state.bookmarkedItems.length]);
+
+  const value = useMemo<ProgressContextValue>(
+    () => ({
+      ...state,
+      isLoaded: isHydrated,
+      toggleLessonCompleted,
+      isLessonCompleted,
+      markProblemSolved,
+      markProblemAttempted,
+      isProblemSolved,
+      toggleBookmark,
+      isBookmarked,
+      toggleWeakTopic,
+      isWeakTopic,
+      saveNote,
+      recordVisit,
+      getOverallStats,
+    }),
+    [
+      state,
+      isHydrated,
+      toggleLessonCompleted,
+      isLessonCompleted,
+      markProblemSolved,
+      markProblemAttempted,
+      isProblemSolved,
+      toggleBookmark,
+      isBookmarked,
+      toggleWeakTopic,
+      isWeakTopic,
+      saveNote,
+      recordVisit,
+      getOverallStats,
+    ]
+  );
 
   return (
-    <ProgressContext.Provider
-      value={{
-        ...state,
-        isLoaded: isHydrated,
-        toggleLessonCompleted,
-        isLessonCompleted,
-        markProblemSolved,
-        markProblemAttempted,
-        isProblemSolved,
-        toggleBookmark,
-        isBookmarked,
-        toggleWeakTopic,
-        isWeakTopic,
-        saveNote,
-        recordVisit,
-        getOverallStats,
-      }}
-    >
+    <ProgressContext.Provider value={value}>
       {children}
     </ProgressContext.Provider>
   );

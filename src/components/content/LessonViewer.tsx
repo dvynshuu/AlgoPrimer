@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Lesson, Problem } from "@/types/content";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { Button } from "@/components/ui/Button";
@@ -44,7 +44,8 @@ export const LessonViewer: React.FC<LessonViewerProps> = ({
   const completed = isLessonCompleted(lesson.id);
   const bookmarked = isBookmarked(lesson.id);
 
-  const tocItems: TocItem[] = [
+  const hasRelated = Boolean(relatedProblems && relatedProblems.length > 0);
+  const tocItems: TocItem[] = useMemo(() => [
     { id: "why-do-we-need-it", label: "Why do we need it?" },
     { id: "visual-intuition", label: "Visual Intuition" },
     { id: "syntax-and-examples", label: "Syntax & Example" },
@@ -54,8 +55,8 @@ export const LessonViewer: React.FC<LessonViewerProps> = ({
     { id: "try-it-yourself", label: "Try it yourself" },
     { id: "placement-connection", label: "Placement Connection" },
     { id: "quick-revision", label: "Quick Revision" },
-    ...(relatedProblems && relatedProblems.length > 0 ? [{ id: "related-problems", label: "Practice Problems" }] : []),
-  ];
+    ...(hasRelated ? [{ id: "related-problems", label: "Practice Problems" }] : []),
+  ], [lesson.complexity, hasRelated]);
 
   return (
     <div className={styles.container}>

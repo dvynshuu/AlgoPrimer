@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useMemo } from "react";
 import Link from "next/link";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { Button } from "@/components/ui/Button";
@@ -29,11 +29,22 @@ export function ProfileDashboardClient() {
     lastVisited,
   } = useProgress();
 
-  const javaProgress = Math.round((completedLessons.filter((id) => id.startsWith("java")).length / javaLessons.length) * 100);
-  const dsaProgress = Math.round((solvedProblems.length / problems.length) * 100);
+  const javaProgress = useMemo(() => {
+    if (javaLessons.length === 0) return 0;
+    const completedJava = completedLessons.filter((id) => id.startsWith("java")).length;
+    return Math.round((completedJava / javaLessons.length) * 100);
+  }, [completedLessons]);
+
+  const dsaProgress = useMemo(() => {
+    if (problems.length === 0) return 0;
+    return Math.round((solvedProblems.length / problems.length) * 100);
+  }, [solvedProblems.length]);
 
   // Recommend next problem
-  const nextProblem = problems.find((p) => !solvedProblems.includes(p.id)) || problems[0];
+  const nextProblem = useMemo(() => {
+    const solvedSet = new Set(solvedProblems);
+    return problems.find((p) => !solvedSet.has(p.id)) || problems[0];
+  }, [solvedProblems]);
 
   return (
     <div className={styles.container}>

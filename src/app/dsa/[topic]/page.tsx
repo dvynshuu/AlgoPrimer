@@ -191,14 +191,9 @@ export default async function DSATopicPage({ params }: PageProps) {
                   <h3 className={styles.lessonTitle}>{lesson.title}</h3>
                   <p className={styles.lessonDesc}>{lesson.oneSentence}</p>
                 </div>
-                <Button
-                  href={getDsaLessonPath(topicMeta.slug, lesson.slug)}
-                  variant="primary"
-                  size="sm"
-                  icon={<ArrowRight size={13} />}
-                >
-                  Start Lesson
-                </Button>
+                <span className={styles.startBtn} aria-hidden="true">
+                  Start Lesson <ArrowRight size={13} />
+                </span>
               </Link>
             ))}
           </div>

@@ -32,6 +32,10 @@ export interface SearchResultItem {
   url: string;
   tags: string[];
   relevanceScore?: number;
+  _titleLower?: string;
+  _descLower?: string;
+  _contextLower?: string;
+  _tagsLower?: string[];
 }
 
 let cachedIndex: SearchResultItem[] | null = null;
@@ -167,6 +171,14 @@ export function getSearchIndex(): SearchResultItem[] {
     tags: ["interview", "placement", "oa", "hr", "rounds", "cs subjects"],
   });
 
+  // Precompute normalized search fields once to avoid repeated allocations during typing
+  for (const item of items) {
+    item._titleLower = item.title.toLowerCase();
+    item._contextLower = item.context.toLowerCase();
+    item._descLower = item.description.toLowerCase();
+    item._tagsLower = item.tags.map((t) => t.toLowerCase());
+  }
+
   cachedIndex = items;
   return cachedIndex;
 }
@@ -176,7 +188,7 @@ export function buildSearchIndex(): SearchResultItem[] {
 }
 
 /**
- * Searches the lightweight index with word-boundary and relevance scoring.
+ * Searches the lightweight index with word-boundary, multi-word synergy, and relevance scoring.
  */
 export function searchContent(query: string, category?: string): SearchResultItem[] {
   const trimmed = query.trim().toLowerCase();
@@ -192,27 +204,50 @@ export function searchContent(query: string, category?: string): SearchResultIte
       continue;
     }
 
-    const titleLower = item.title.toLowerCase();
-    const contextLower = item.context.toLowerCase();
-    const descLower = item.description.toLowerCase();
+    const titleLower = item._titleLower ?? item.title.toLowerCase();
+    const contextLower = item._contextLower ?? item.context.toLowerCase();
+    const descLower = item._descLower ?? item.description.toLowerCase();
+    const tagsLower = item._tagsLower ?? item.tags;
 
     let score = 0;
 
     // Exact title match gets highest score
     if (titleLower === trimmed) {
-      score += 120;
+      score += 150;
     } else if (titleLower.startsWith(trimmed)) {
-      score += 70;
+      score += 80;
     } else if (titleLower.includes(trimmed)) {
-      score += 50;
+      score += 55;
     }
 
     // Tokenized word matching
+    let matchedWordsCount = 0;
     for (const word of words) {
-      if (titleLower.includes(word)) score += 25;
-      if (item.tags.some((t) => t.includes(word))) score += 15;
-      if (descLower.includes(word)) score += 8;
-      if (contextLower.includes(word)) score += 5;
+      let wordMatched = false;
+      if (titleLower.includes(word)) {
+        score += 30;
+        wordMatched = true;
+      }
+      if (tagsLower.some((t) => t.includes(word))) {
+        score += 18;
+        wordMatched = true;
+      }
+      if (descLower.includes(word)) {
+        score += 8;
+        wordMatched = true;
+      }
+      if (contextLower.includes(word)) {
+        score += 5;
+        wordMatched = true;
+      }
+      if (wordMatched) {
+        matchedWordsCount++;
+      }
+    }
+
+    // Boost items matching all query terms
+    if (words.length > 1 && matchedWordsCount === words.length) {
+      score += 40;
     }
 
     if (score > 0) {

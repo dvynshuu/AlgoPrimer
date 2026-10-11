@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import styles from "./ComplexityMatrix.module.css";
 
 interface DsRow {
@@ -56,8 +56,9 @@ export const ComplexityMatrix: React.FC = () => {
   const [tab, setTab] = useState<"ds" | "sorting">("ds");
   const [query, setQuery] = useState("");
 
-  const filteredDs = dsData.filter((r) => r.name.toLowerCase().includes(query.toLowerCase()));
-  const filteredSort = sortingData.filter((r) => r.name.toLowerCase().includes(query.toLowerCase()));
+  const queryLower = query.toLowerCase();
+  const filteredDs = useMemo(() => dsData.filter((r) => r.name.toLowerCase().includes(queryLower)), [queryLower]);
+  const filteredSort = useMemo(() => sortingData.filter((r) => r.name.toLowerCase().includes(queryLower)), [queryLower]);
 
   return (
     <div className={styles.matrixContainer}>

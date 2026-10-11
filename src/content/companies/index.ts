@@ -392,6 +392,46 @@ export const companiesData: CompanyInfo[] = [
       "Be confident in core OOP principles and database normalization.",
     ],
   },
+  {
+    name: "Flipkart",
+    slug: "flipkart",
+    category: "FAANG / Big Tech",
+    difficulty: "High",
+    overview:
+      "Flipkart technical interviews evaluate high-scale algorithmic problem solving, machine coding (executable Low-Level Design), Two Pointers, Dynamic Programming, and Graph Traversals.",
+    hiringProcess: {
+      rounds: [
+        {
+          name: "Round 1: Online Assessment (OA)",
+          description: "3 coding questions on HackerEarth (90 mins) testing arrays, strings, and dynamic programming.",
+          focus: "Two Pointers, Prefix Sums, and DP state transitions.",
+        },
+        {
+          name: "Round 2: Machine Coding Round",
+          description: "90-120 min live object-oriented design and working executable implementation of a modular problem (e.g. Splitwise, Ride Sharing, or In-Memory Cache).",
+          focus: "Clean OOP modeling, design patterns, separation of concerns, and edge case handling.",
+        },
+        {
+          name: "Round 3: Problem Solving & DSA",
+          description: "45-60 min technical coding interview evaluating data structures, trees, graphs, and algorithmic bounds.",
+          focus: "Trees, Graphs (BFS/DFS), Intervals, and Dynamic Programming.",
+        },
+        {
+          name: "Round 4: Hiring Manager & Cultural Fit",
+          description: "Discussion of engineering tradeoffs, past project architecture, customer obsession, and leadership.",
+          focus: "Ownership, Bias for Action, and high-scale system challenges.",
+        },
+      ],
+      barRaiserNote:
+        "Flipkart's Machine Coding round is an elimination round: your code must compile, execute against driver inputs, and follow clean design patterns within 90 minutes.",
+    },
+    keyPatterns: ["Two Pointers & Sliding Window", "Binary Trees & BST", "Dynamic Programming", "Graph BFS & DFS", "Low-Level Design"],
+    tips: [
+      "Practice timed Machine Coding: write modular, object-oriented solutions within 90 minutes that compile without errors.",
+      "Master Two Pointers and Sliding Window: these appear consistently across Flipkart coding screens.",
+      "State time and auxiliary space complexity clearly before coding optimal solutions.",
+    ],
+  },
 ];
 
 export function getAllCompanies(): CompanyInfo[] {

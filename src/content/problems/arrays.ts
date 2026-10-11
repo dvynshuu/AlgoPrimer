@@ -608,13 +608,13 @@ public:
             max_sum = max(max_sum, cur)
     return max_sum`,
         javascript: `var maxSubArray = function(nums) {
-    const n = nums.length;
-    const dp = new Array(n);
-    dp[0] = nums[0];
-    let maxSum = nums[0];
-    for (let i = 1; i < n; i++) {
-        dp[i] = Math.max(nums[i], dp[i - 1] + nums[i]);
-        maxSum = Math.max(maxSum, dp[i]);
+    let maxSum = -Infinity;
+    for (let i = 0; i < nums.length; i++) {
+        let currentSum = 0;
+        for (let j = i; j < nums.length; j++) {
+            currentSum += nums[j];
+            maxSum = Math.max(maxSum, currentSum);
+        }
     }
     return maxSum;
 };`,

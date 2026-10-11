@@ -9,6 +9,8 @@ import {
   getRoadmapPath,
   getInterviewPath,
   getProfilePath,
+  getSheetsPath,
+  getCompaniesPath,
 } from "@/lib/routes";
 import {
   getProblemCount,
@@ -43,7 +45,7 @@ export const Footer: React.FC = () => {
           <ul className={styles.list}>
             <li><Link href={getDsaPath()}>{getDsaTopicCount()}-Topic DSA Curriculum</Link></li>
             <li><Link href={getProblemsPath()}>Curated Problems ({getProblemCount()})</Link></li>
-            <li><Link href="/sheets">Interview Sheets (Blind 75)</Link></li>
+            <li><Link href={getSheetsPath()}>Interview Sheets (Blind 75)</Link></li>
             <li><Link href={getRevisionPath()}>Revision Cards ({getRevisionCount()})</Link></li>
           </ul>
         </div>
@@ -51,7 +53,7 @@ export const Footer: React.FC = () => {
         <div>
           <div className={styles.colTitle}>Placement</div>
           <ul className={styles.list}>
-            <li><Link href="/companies">Company DSA Sheets</Link></li>
+            <li><Link href={getCompaniesPath()}>Company DSA Sheets</Link></li>
             <li><Link href={getRoadmapPath()}>Progression Roadmap</Link></li>
             <li><Link href={getInterviewPath()}>Interview Round Guide</Link></li>
             <li><Link href={getProfilePath()}>My Dashboard</Link></li>

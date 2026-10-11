@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import Link from "next/link";
 import { Problem } from "@/types/content";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
@@ -15,6 +15,7 @@ import { SeoAnswerCapsule } from "@/components/seo/SeoAnswerCapsule";
 import { SeoFaqAccordion } from "@/components/seo/SeoFaqAccordion";
 import { useProgress } from "@/lib/progress/ProgressContext";
 import { getHomePath, getProblemsPath, getDsaTopicPath, getProblemPath } from "@/lib/routes";
+import { getCompanyBySlug } from "@/content/companies";
 import { CheckCircle2, Bookmark, Building2 } from "lucide-react";
 import styles from "./ProblemViewer.module.css";
 
@@ -38,14 +39,14 @@ export const ProblemViewer: React.FC<ProblemViewerProps> = ({ problem }) => {
   const solved = isProblemSolved(problem.id);
   const bookmarked = isBookmarked(problem.id);
 
-  const breadcrumbs = [
+  const breadcrumbs = useMemo(() => [
     { label: "Home", href: getHomePath() },
     { label: "Problems", href: getProblemsPath() },
     { label: problem.topic, href: getDsaTopicPath(problem.topicSlug) },
     { label: problem.title },
-  ];
+  ], [problem.topic, problem.topicSlug, problem.title]);
 
-  const tocItems: TocItem[] = [
+  const tocItems: TocItem[] = useMemo(() => [
     { id: "quick-summary", label: "Executive Summary" },
     { id: "problem-statement", label: "Problem Statement" },
     { id: "understand-the-problem", label: "Understand in Plain Words" },
@@ -58,9 +59,9 @@ export const ProblemViewer: React.FC<ProblemViewerProps> = ({ problem }) => {
     { id: "common-mistakes", label: "Common Mistakes" },
     { id: "variations-and-practice", label: "Variations & Practice" },
     { id: "faqs", label: "Frequently Asked Questions" },
-  ];
+  ], [problem.betterSolution]);
 
-  const complexityRows: ComplexityRow[] = [
+  const complexityRows: ComplexityRow[] = useMemo(() => [
     {
       approach: "Brute Force",
       time: problem.bruteForce.timeComplexity,
@@ -84,7 +85,7 @@ export const ProblemViewer: React.FC<ProblemViewerProps> = ({ problem }) => {
       notes: problem.optimalSolution.whyOptimal,
       isOptimal: true,
     },
-  ];
+  ], [problem.bruteForce, problem.betterSolution, problem.optimalSolution]);
 
   const getBadgeVariant = (diff: string): "easy" | "medium" | "hard" => {
     if (diff === "Easy") return "easy";
@@ -135,16 +136,28 @@ export const ProblemViewer: React.FC<ProblemViewerProps> = ({ problem }) => {
                 <Building2 size={13} style={{ color: "var(--accent-primary)" }} />
                 Asked at:
               </span>
-              {problem.companies.map((company) => (
-                <Link
-                  key={company}
-                  href={`/companies/${company.toLowerCase().replace(/\s+/g, "-")}`}
-                  className={styles.companyBadge}
-                  style={{ textDecoration: "none" }}
-                >
-                  {company}
-                </Link>
-              ))}
+              {problem.companies.map((company) => {
+                const compSlug = company.toLowerCase().replace(/\s+/g, "-");
+                const hasPage = Boolean(getCompanyBySlug(compSlug));
+                return hasPage ? (
+                  <Link
+                    key={company}
+                    href={`/companies/${compSlug}`}
+                    className={styles.companyBadge}
+                    style={{ textDecoration: "none" }}
+                  >
+                    {company}
+                  </Link>
+                ) : (
+                  <span
+                    key={company}
+                    className={styles.companyBadge}
+                    style={{ textDecoration: "none", cursor: "default" }}
+                  >
+                    {company}
+                  </span>
+                );
+              })}
             </div>
           )}
         </div>
@@ -319,23 +332,28 @@ export const ProblemViewer: React.FC<ProblemViewerProps> = ({ problem }) => {
                 Frequently Asked At:
               </span>
               <div style={{ display: "flex", gap: "var(--space-2)", flexWrap: "wrap", marginTop: "var(--space-2)" }}>
-                {problem.companies.map((c) => (
-                  <Link
-                    key={c}
-                    href={`/companies/${c.toLowerCase().replace(/\s+/g, "-")}`}
-                    style={{
-                      background: "var(--bg-subtle)",
-                      border: "1px solid var(--border-subtle)",
-                      fontSize: "var(--font-size-xs)",
-                      padding: "0.2rem 0.5rem",
-                      borderRadius: "var(--radius-xs)",
-                      color: "var(--text-secondary)",
-                      textDecoration: "none",
-                    }}
-                  >
-                    {c}
-                  </Link>
-                ))}
+                {problem.companies.map((c) => {
+                  const compSlug = c.toLowerCase().replace(/\s+/g, "-");
+                  const hasPage = Boolean(getCompanyBySlug(compSlug));
+                  const pillStyle = {
+                    background: "var(--bg-subtle)",
+                    border: "1px solid var(--border-subtle)",
+                    fontSize: "var(--font-size-xs)",
+                    padding: "0.2rem 0.5rem",
+                    borderRadius: "var(--radius-xs)",
+                    color: "var(--text-secondary)",
+                    textDecoration: "none",
+                  };
+                  return hasPage ? (
+                    <Link key={c} href={`/companies/${compSlug}`} style={pillStyle}>
+                      {c}
+                    </Link>
+                  ) : (
+                    <span key={c} style={{ ...pillStyle, cursor: "default" }}>
+                      {c}
+                    </span>
+                  );
+                })}
               </div>
             </div>
           )}

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react";
 import { Copy, Check } from "lucide-react";
 import styles from "./CodeBlock.module.css";
 import { CodeByLanguage } from "@/types/content";
@@ -12,6 +12,13 @@ interface CodeBlockProps {
   singleLanguageLabel?: string;
 }
 
+const LANGUAGE_LABELS: Record<string, string> = {
+  java: "Java",
+  cpp: "C++",
+  python: "Python",
+  javascript: "JavaScript",
+};
+
 export const CodeBlock: React.FC<CodeBlockProps> = ({
   code,
   defaultLang = "java",
@@ -21,58 +28,61 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({
   const isMulti = typeof code === "object" && code !== null;
   const [activeLang, setActiveLang] = useState<"java" | "cpp" | "python" | "javascript">(defaultLang);
   const [copied, setCopied] = useState(false);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const currentCode = isMulti ? ((code as CodeByLanguage)[activeLang] || "") : (code as string);
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+  }, []);
+
+  const availableLangs = useMemo(() => {
+    if (!isMulti) return [];
+    const multiCode = code as CodeByLanguage;
+    return (["java", "cpp", "python", "javascript"] as const).filter(
+      (lang) => Boolean(multiCode[lang])
+    );
+  }, [isMulti, code]);
+
+  const effectiveLang =
+    isMulti && availableLangs.length > 0
+      ? availableLangs.includes(activeLang)
+        ? activeLang
+        : availableLangs.includes(defaultLang)
+        ? defaultLang
+        : availableLangs[0]
+      : activeLang;
+
+  const currentCode = isMulti ? ((code as CodeByLanguage)[effectiveLang] || "") : (code as string);
 
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(currentCode);
       setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      if (timerRef.current) clearTimeout(timerRef.current);
+      timerRef.current = setTimeout(() => setCopied(false), 2000);
     } catch {
-      // ignore
+      // ignore clipboard failures in restricted contexts
     }
   };
 
-  const lines = currentCode.trim().split("\n");
+  const lines = useMemo(() => currentCode.trim().split("\n"), [currentCode]);
 
   return (
     <div className={styles.wrapper}>
       <div className={styles.header}>
         <div className={styles.tabs}>
           {isMulti ? (
-            <>
+            availableLangs.map((lang) => (
               <button
+                key={lang}
                 type="button"
-                className={`${styles.tab} ${activeLang === "java" ? styles.tabActive : ""}`}
-                onClick={() => setActiveLang("java")}
+                className={`${styles.tab} ${effectiveLang === lang ? styles.tabActive : ""}`}
+                onClick={() => setActiveLang(lang)}
               >
-                Java
+                {LANGUAGE_LABELS[lang] || lang}
               </button>
-              <button
-                type="button"
-                className={`${styles.tab} ${activeLang === "cpp" ? styles.tabActive : ""}`}
-                onClick={() => setActiveLang("cpp")}
-              >
-                C++
-              </button>
-              <button
-                type="button"
-                className={`${styles.tab} ${activeLang === "python" ? styles.tabActive : ""}`}
-                onClick={() => setActiveLang("python")}
-              >
-                Python
-              </button>
-              {Boolean((code as CodeByLanguage).javascript) && (
-                <button
-                  type="button"
-                  className={`${styles.tab} ${activeLang === "javascript" ? styles.tabActive : ""}`}
-                  onClick={() => setActiveLang("javascript")}
-                >
-                  JavaScript
-                </button>
-              )}
-            </>
+            ))
           ) : (
             <span className={styles.tab}>
               {singleLanguageLabel || title || "Code"}

@@ -85,4 +85,15 @@
   /* Transitions */
   --transition-fast: 120ms ease;
   --transition-normal: 200ms ease;
+
+  /* Semantic & Compatibility Aliases */
+  --color-primary: var(--accent-primary);
+  --border-color: var(--border-subtle);
+  --border-hover: var(--border-strong);
+  --surface-card: var(--bg-surface);
+  --surface-bg: var(--bg-subtle);
+  --bg-surface-elevated: var(--bg-subtle);
+  --letter-spacing-tight: -0.02em;
+  --line-height-relaxed: 1.65;
+  --line-height-normal: 1.5;
 }

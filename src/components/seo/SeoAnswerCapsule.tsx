@@ -47,8 +47,7 @@ export const SeoAnswerCapsule: React.FC<SeoAnswerCapsuleProps> = ({
 
       {takeaway && (
         <div className={styles.takeaway}>
-          <strong>Key Takeaway:</strong>
-          {takeaway}
+          <strong>Key Takeaway:</strong> {takeaway}
         </div>
       )}
     </section>

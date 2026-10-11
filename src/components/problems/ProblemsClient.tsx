@@ -77,7 +77,10 @@ export function ProblemsClient() {
     });
   }, [selectedDifficulty, selectedCompany, selectedTopic, selectedPattern, searchQuery]);
 
-  const solvedCount = problems.filter((p) => isProblemSolved(p.id)).length;
+  const solvedCount = useMemo(() => {
+    return problems.filter((p) => isProblemSolved(p.id)).length;
+  }, [isProblemSolved]);
+
   const percent = Math.round((solvedCount / problems.length) * 100);
 
   const getDiffBadge = (diff: string): "easy" | "medium" | "hard" => {
@@ -247,10 +250,19 @@ export function ProblemsClient() {
                     {prob.companies.slice(0, 4).map((c) => (
                       <span
                         key={c}
+                        role="button"
+                        tabIndex={0}
                         className={styles.companyTag}
                         onClick={(e) => {
                           e.stopPropagation();
                           setSelectedCompany(c);
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" || e.key === " ") {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            setSelectedCompany(c);
+                          }
                         }}
                         title={`Filter by ${c}`}
                       >
