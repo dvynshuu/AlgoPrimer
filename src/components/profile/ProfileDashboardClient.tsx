@@ -9,6 +9,10 @@ import { ProgressBar } from "@/components/ui/ProgressBar";
 import { useProgress } from "@/lib/progress/ProgressContext";
 import { problems } from "@/content/problems";
 import { javaLessons } from "@/content/languages/java";
+import { cppLessons } from "@/content/languages/cpp";
+import { pythonLessons } from "@/content/languages/python";
+import { javascriptLessons } from "@/content/languages/javascript";
+import { dsaLessons } from "@/content/dsa/lessons";
 import {
   getHomePath,
   getDsaPath,
@@ -17,7 +21,7 @@ import {
   getProblemPath,
   getRevisionPath,
 } from "@/lib/routes";
-import { ArrowRight, RotateCw, AlertCircle } from "lucide-react";
+import { ArrowRight, RotateCw, AlertCircle, Bookmark } from "lucide-react";
 import styles from "@/app/profile/profile.module.css";
 
 export function ProfileDashboardClient() {
@@ -45,6 +49,79 @@ export function ProfileDashboardClient() {
     const solvedSet = new Set(solvedProblems);
     return problems.find((p) => !solvedSet.has(p.id)) || problems[0];
   }, [solvedProblems]);
+
+  // Resolve human-readable details for bookmarked items
+  const bookmarkDetails = useMemo(() => {
+    return bookmarkedItems.map((id) => {
+      const problem = problems.find((p) => p.id === id || p.slug === id);
+      if (problem) {
+        return {
+          id,
+          title: problem.title,
+          url: getProblemPath(problem.slug),
+          badge: problem.difficulty,
+        };
+      }
+      const dsaLesson = dsaLessons.find((l) => l.id === id || l.slug === id);
+      if (dsaLesson) {
+        return {
+          id,
+          title: dsaLesson.title,
+          url: getDsaLessonPath(dsaLesson.topicSlug, dsaLesson.slug),
+          badge: dsaLesson.topicTitle,
+        };
+      }
+      const jLesson = javaLessons.find((l) => l.id === id || l.slug === id);
+      if (jLesson) {
+        return {
+          id,
+          title: jLesson.title,
+          url: getLanguageLessonPath("java", jLesson.slug),
+          badge: "Java",
+        };
+      }
+      const cLesson = cppLessons.find((l) => l.id === id || l.slug === id);
+      if (cLesson) {
+        return {
+          id,
+          title: cLesson.title,
+          url: getLanguageLessonPath("cpp", cLesson.slug),
+          badge: "C++",
+        };
+      }
+      const pyLesson = pythonLessons.find((l) => l.id === id || l.slug === id);
+      if (pyLesson) {
+        return {
+          id,
+          title: pyLesson.title,
+          url: getLanguageLessonPath("python", pyLesson.slug),
+          badge: "Python",
+        };
+      }
+      const jsLesson = javascriptLessons.find((l) => l.id === id || l.slug === id);
+      if (jsLesson) {
+        return {
+          id,
+          title: jsLesson.title,
+          url: getLanguageLessonPath("javascript", jsLesson.slug),
+          badge: "JavaScript",
+        };
+      }
+      const formatted = id
+        .replace(/^prob-/, "")
+        .replace(/^dsa-/, "")
+        .split("-")
+        .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+        .join(" ");
+
+      return {
+        id,
+        title: formatted,
+        url: `/problems/${id.replace(/^prob-/, "")}`,
+        badge: undefined,
+      };
+    });
+  }, [bookmarkedItems]);
 
   return (
     <div className={styles.container}>
@@ -199,11 +276,40 @@ export function ProfileDashboardClient() {
           <div className={styles.sectionHeadingSmall}>SAVED FOR QUICK REFERENCE</div>
           <h3 className={styles.cardHeader}>Bookmarked Items ({bookmarkedItems.length})</h3>
 
-          {bookmarkedItems.length > 0 ? (
-            <ul style={{ paddingLeft: "var(--space-4)", margin: "var(--space-2) 0", fontSize: "var(--font-size-sm)" }}>
-              {bookmarkedItems.map((id) => (
-                <li key={id} style={{ marginBottom: "var(--space-1)" }}>
-                  <code>{id}</code>
+          {bookmarkDetails.length > 0 ? (
+            <ul style={{ listStyle: "none", padding: 0, margin: "var(--space-2) 0", display: "flex", flexDirection: "column", gap: "var(--space-2)" }}>
+              {bookmarkDetails.map((item) => (
+                <li
+                  key={item.id}
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    padding: "0.4rem 0.6rem",
+                    background: "var(--bg-secondary)",
+                    borderRadius: "var(--radius-sm)",
+                    fontSize: "var(--font-size-xs)",
+                  }}
+                >
+                  <Link
+                    href={item.url}
+                    style={{
+                      color: "var(--accent-hover)",
+                      fontWeight: 500,
+                      textDecoration: "none",
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: "6px",
+                    }}
+                  >
+                    <Bookmark size={12} style={{ color: "var(--accent-primary)" }} />
+                    {item.title}
+                  </Link>
+                  {item.badge && (
+                    <Badge variant={item.badge === "Easy" ? "easy" : item.badge === "Medium" ? "medium" : item.badge === "Hard" ? "hard" : "default"}>
+                      {item.badge}
+                    </Badge>
+                  )}
                 </li>
               ))}
             </ul>

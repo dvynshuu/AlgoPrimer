@@ -1,11 +1,24 @@
 import React from "react";
+import type { Metadata } from "next";
 import { Button } from "@/components/ui/Button";
 import { ArrowLeft } from "lucide-react";
 import { getHomePath, getDsaPath } from "@/lib/routes";
 
+export const metadata: Metadata = {
+  title: "404 — Page Not Found",
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
+
 export default function NotFound() {
   return (
-    <div
+    <>
+      <head>
+        <meta name="robots" content="noindex, nofollow" />
+      </head>
+      <div
       style={{
         display: "flex",
         flexDirection: "column",
@@ -51,6 +64,7 @@ export default function NotFound() {
           Explore DSA Roadmap
         </Button>
       </div>
-    </div>
+      </div>
+    </>
   );
 }

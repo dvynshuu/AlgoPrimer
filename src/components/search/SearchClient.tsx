@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo } from "react";
 import Link from "next/link";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { Badge } from "@/components/ui/Badge";
@@ -9,25 +9,17 @@ import { getHomePath } from "@/lib/routes";
 import { Search as SearchIcon } from "lucide-react";
 import styles from "./SearchClient.module.css";
 
-const CATEGORIES = ["All", "Language", "DSA Topic", "DSA Lesson", "Problem", "Revision", "Interview"];
+const CATEGORIES = ["All", "Language", "DSA Topic", "DSA Lesson", "Problem", "Revision", "Interview", "Company", "Sheet"];
 
 export function SearchClient() {
   const [query, setQuery] = useState("");
-  const [debouncedQuery, setDebouncedQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedQuery(query);
-    }, 120);
-    return () => clearTimeout(timer);
-  }, [query]);
-
   const results = useMemo(() => {
-    const q = debouncedQuery.trim();
+    const q = query.trim();
     if (!q) return [];
     return searchContent(q, selectedCategory);
-  }, [debouncedQuery, selectedCategory]);
+  }, [query, selectedCategory]);
 
   return (
     <div className={styles.container}>
@@ -87,7 +79,7 @@ export function SearchClient() {
 
         {query.trim().length > 0 && results.length === 0 && (
           <div className={styles.empty}>
-            No results found for &ldquo;{debouncedQuery}&rdquo; in category &ldquo;{selectedCategory}&rdquo;.
+            No results found for &ldquo;{query}&rdquo; in category &ldquo;{selectedCategory}&rdquo;.
           </div>
         )}
       </main>

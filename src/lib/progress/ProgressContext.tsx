@@ -1,25 +1,86 @@
 "use client";
 
 import React, { createContext, useContext, useEffect, useState, useCallback, useMemo } from "react";
-import { z } from "zod";
 
-export const LastVisitedSchema = z.object({
-  title: z.string(),
-  url: z.string(),
-  timestamp: z.number(),
-});
-export type LastVisited = z.infer<typeof LastVisitedSchema>;
+export interface LastVisited {
+  title: string;
+  url: string;
+  timestamp: number;
+}
 
-export const ProgressStateSchema = z.object({
-  completedLessons: z.array(z.string()).default([]),
-  solvedProblems: z.array(z.string()).default([]),
-  attemptedProblems: z.array(z.string()).default([]),
-  bookmarkedItems: z.array(z.string()).default([]),
-  weakTopics: z.array(z.string()).default([]),
-  notes: z.record(z.string(), z.string()).default({}),
-  lastVisited: LastVisitedSchema.nullable().default(null),
-});
-export type ProgressState = z.infer<typeof ProgressStateSchema>;
+export interface ProgressState {
+  completedLessons: string[];
+  solvedProblems: string[];
+  attemptedProblems: string[];
+  bookmarkedItems: string[];
+  weakTopics: string[];
+  notes: Record<string, string>;
+  lastVisited: LastVisited | null;
+}
+
+function isStringArray(val: unknown): val is string[] {
+  return Array.isArray(val) && val.every((item) => typeof item === "string");
+}
+
+function isLastVisited(val: unknown): val is LastVisited {
+  if (!val || typeof val !== "object") return false;
+  const o = val as Record<string, unknown>;
+  return (
+    typeof o.title === "string" &&
+    typeof o.url === "string" &&
+    typeof o.timestamp === "number" &&
+    !isNaN(o.timestamp)
+  );
+}
+
+function isNotesRecord(val: unknown): val is Record<string, string> {
+  if (!val || typeof val !== "object" || Array.isArray(val)) return false;
+  return Object.values(val as Record<string, unknown>).every((v) => typeof v === "string");
+}
+
+export const LastVisitedSchema = {
+  safeParse(val: unknown): { success: true; data: LastVisited } | { success: false } {
+    return isLastVisited(val) ? { success: true, data: val } : { success: false };
+  },
+};
+
+export const ProgressStateSchema = {
+  safeParse(val: unknown): { success: true; data: ProgressState } | { success: false } {
+    if (!val || typeof val !== "object" || Array.isArray(val)) {
+      return { success: false };
+    }
+    const o = val as Record<string, unknown>;
+
+    const completedLessons = o.completedLessons === undefined ? [] : o.completedLessons;
+    const solvedProblems = o.solvedProblems === undefined ? [] : o.solvedProblems;
+    const attemptedProblems = o.attemptedProblems === undefined ? [] : o.attemptedProblems;
+    const bookmarkedItems = o.bookmarkedItems === undefined ? [] : o.bookmarkedItems;
+    const weakTopics = o.weakTopics === undefined ? [] : o.weakTopics;
+    const notes = o.notes === undefined ? {} : o.notes;
+    const lastVisited = o.lastVisited === undefined ? null : o.lastVisited;
+
+    if (!isStringArray(completedLessons)) return { success: false };
+    if (!isStringArray(solvedProblems)) return { success: false };
+    if (!isStringArray(attemptedProblems)) return { success: false };
+    if (!isStringArray(bookmarkedItems)) return { success: false };
+    if (!isStringArray(weakTopics)) return { success: false };
+    if (!isNotesRecord(notes)) return { success: false };
+    if (lastVisited !== null && !isLastVisited(lastVisited)) return { success: false };
+
+    return {
+      success: true,
+      data: {
+        completedLessons,
+        solvedProblems,
+        attemptedProblems,
+        bookmarkedItems,
+        weakTopics,
+        notes: notes as Record<string, string>,
+        lastVisited: lastVisited as LastVisited | null,
+      },
+    };
+  },
+};
 
 interface ProgressContextValue extends ProgressState {
   isLoaded: boolean;

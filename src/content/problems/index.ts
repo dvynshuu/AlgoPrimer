@@ -41,3 +41,29 @@ export function getProblemsByCompany(company: string): Problem[] {
     p.companies?.some((c) => c.toLowerCase() === company.toLowerCase())
   );
 }
+
+export interface ProblemSummary {
+  id: string;
+  slug: string;
+  title: string;
+  difficulty: "Easy" | "Medium" | "Hard";
+  topic: string;
+  subtopic: string;
+  pattern: string;
+  progressionLevel: string;
+  companies?: string[];
+}
+
+export function getProblemSummaries(): ProblemSummary[] {
+  return problems.map((p) => ({
+    id: p.id,
+    slug: p.slug,
+    title: p.title,
+    difficulty: p.difficulty,
+    topic: p.topic,
+    subtopic: p.subtopic,
+    pattern: p.pattern,
+    progressionLevel: p.progressionLevel,
+    companies: p.companies,
+  }));
+}

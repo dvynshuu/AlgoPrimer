@@ -21,7 +21,7 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   title: {
     default: `${SITE_NAME} — ${SITE_TAGLINE}`,
-    template: `%s | ${SITE_NAME}`,
+    template: "%s",
   },
   description: DEFAULT_DESCRIPTION,
   keywords: [

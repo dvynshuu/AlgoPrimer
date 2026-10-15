@@ -4,6 +4,7 @@ import { ProblemsClient } from "@/components/problems/ProblemsClient";
 import { createPageMetadata, createBreadcrumbJsonLd } from "@/lib/seo";
 import { getHomePath, getProblemsPath } from "@/lib/routes";
 import { getProblemCount } from "@/lib/contentCounts";
+import { getProblemSummaries } from "@/content/problems";
 
 export const metadata: Metadata = createPageMetadata({
   title: "Coding Interview Problems — Patterns, Approaches & Solutions",
@@ -20,6 +21,7 @@ export const metadata: Metadata = createPageMetadata({
 });
 
 export default function ProblemsPage() {
+  const problemSummaries = getProblemSummaries();
   const breadcrumbJsonLd = createBreadcrumbJsonLd([
     { label: "Home", href: getHomePath() },
     { label: "Problems", href: getProblemsPath() },
@@ -31,7 +33,7 @@ export default function ProblemsPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
-      <ProblemsClient />
+      <ProblemsClient initialProblems={problemSummaries} />
     </>
   );
 }

@@ -9,7 +9,7 @@ import { Callout } from "@/components/ui/Callout";
 import { CodeBlock } from "@/components/ui/CodeBlock";
 import { TableOfContents, TocItem } from "@/components/layout/TableOfContents";
 import { useProgress } from "@/lib/progress/ProgressContext";
-import { getDsaLessonPath, getLanguageLessonPath } from "@/lib/routes";
+import { getDsaLessonPath, getLanguageLessonPath, getProblemPath } from "@/lib/routes";
 import { CheckCircle2, Bookmark, Clock, ArrowRight } from "lucide-react";
 import styles from "./LessonViewer.module.css";
 
@@ -297,7 +297,7 @@ export const LessonViewer: React.FC<LessonViewerProps> = ({
                       {prob.title}
                     </div>
                   </div>
-                  <Button href={`/problems/${prob.slug}`} variant="primary" size="sm" icon={<ArrowRight size={13} />}>
+                  <Button href={getProblemPath(prob.slug)} variant="primary" size="sm" icon={<ArrowRight size={13} />}>
                     Solve Problem
                   </Button>
                 </div>

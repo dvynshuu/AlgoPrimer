@@ -28,6 +28,18 @@ export function getCanonicalUrl(path: string): string {
   return `${SITE_URL}${cleanPath === "/" ? "" : cleanPath.replace(/\/$/, "")}`;
 }
 
+export function sanitizeMetaDescription(text: string, maxLength = 155): string {
+  if (!text) return DEFAULT_DESCRIPTION;
+  const clean = text.replace(/\s+/g, " ").trim();
+  if (clean.length <= maxLength) return clean;
+  const truncated = clean.slice(0, maxLength - 3);
+  const lastSpace = truncated.lastIndexOf(" ");
+  if (lastSpace > 100) {
+    return `${truncated.slice(0, lastSpace)}...`;
+  }
+  return `${truncated}...`;
+}
+
 interface PageMetadataOptions {
   title: string;
   description: string;
@@ -44,11 +56,13 @@ export function createPageMetadata({
   noIndex = false,
 }: PageMetadataOptions): Metadata {
   const canonicalUrl = getCanonicalUrl(path);
+  const sanitizedDescription = sanitizeMetaDescription(description);
+
   const fullTitle = title.includes(SITE_NAME) ? title : `${title} | ${SITE_NAME}`;
 
   return {
     title: fullTitle,
-    description,
+    description: sanitizedDescription,
     keywords: keywords || [
       "programming",
       "data structures",
@@ -89,7 +103,7 @@ export function createPageMetadata({
         },
     openGraph: {
       title: fullTitle,
-      description,
+      description: sanitizedDescription,
       url: canonicalUrl,
       siteName: SITE_NAME,
       locale: "en_US",
@@ -106,7 +120,7 @@ export function createPageMetadata({
     twitter: {
       card: "summary_large_image",
       title: fullTitle,
-      description,
+      description: sanitizedDescription,
       images: [`${SITE_URL}/og-image.png`],
     },
   };
@@ -155,8 +169,8 @@ export function createProblemMetadata(problem: Problem): Metadata {
     : [];
 
   return createPageMetadata({
-    title: `${problem.title} Solution (${problem.pattern}) — Java, C++, Python, JS`,
-    description: `Step-by-step 3-tier solution (Brute Force, Better, Optimal) for ${problem.title} in Java, C++, Python, and JavaScript with complete dry runs and complexity bounds.`,
+    title: `${problem.title} Solution (${problem.pattern})`,
+    description: `3-tier solution (Brute, Better, Optimal) for ${problem.title} in Java, C++, Python, and JS with dry runs and complexity analysis.`,
     path,
     keywords: [
       problem.title,
@@ -268,11 +282,15 @@ export function createTechArticleJsonLd({
   description,
   path,
   datePublished = "2026-01-01T00:00:00Z",
+  dateModified = "2026-01-01T00:00:00Z",
+  image = `${SITE_URL}/og-image.png`,
 }: {
   headline: string;
   description: string;
   path: string;
   datePublished?: string;
+  dateModified?: string;
+  image?: string;
 }) {
   return {
     "@context": "https://schema.org",
@@ -280,7 +298,9 @@ export function createTechArticleJsonLd({
     headline,
     description,
     url: getCanonicalUrl(path),
+    image,
     datePublished,
+    dateModified,
     author: {
       "@type": "Organization",
       name: SITE_NAME,
@@ -348,6 +368,9 @@ export function createProblemJsonLd(problem: Problem) {
         description: `Complete step-by-step 3-tier solution for ${problem.title} in Java, C++, Python, and JavaScript with dry runs and complexity analysis.`,
         url,
         inLanguage: "en",
+        image: `${SITE_URL}/og-image.png`,
+        datePublished: "2026-01-01T00:00:00Z",
+        dateModified: "2026-01-01T00:00:00Z",
         author: {
           "@type": "Organization",
           name: SITE_NAME,

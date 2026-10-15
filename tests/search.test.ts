@@ -13,6 +13,17 @@ describe("Global Search Indexing Engine", () => {
     expect(categories.has("Problem")).toBe(true);
     expect(categories.has("Revision")).toBe(true);
     expect(categories.has("Interview")).toBe(true);
+    expect(categories.has("Company")).toBe(true);
+    expect(categories.has("Sheet")).toBe(true);
+  });
+
+  it("finds company hubs and curated sheets when searching", () => {
+    const blind75Results = searchContent("Blind 75");
+    expect(blind75Results.length).toBeGreaterThan(0);
+    expect(blind75Results.some((r) => r.category === "Sheet")).toBe(true);
+
+    const amazonResults = searchContent("Amazon");
+    expect(amazonResults.some((r) => r.category === "Company")).toBe(true);
   });
 
   it("finds Two Sum when searching for 'Two Sum'", () => {

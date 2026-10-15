@@ -14,9 +14,9 @@ import { TableOfContents, TocItem } from "@/components/layout/TableOfContents";
 import { SeoAnswerCapsule } from "@/components/seo/SeoAnswerCapsule";
 import { SeoFaqAccordion } from "@/components/seo/SeoFaqAccordion";
 import { useProgress } from "@/lib/progress/ProgressContext";
-import { getHomePath, getProblemsPath, getDsaTopicPath, getProblemPath } from "@/lib/routes";
+import { getHomePath, getProblemsPath, getDsaTopicPath, getProblemPath, getCompanyPath } from "@/lib/routes";
 import { getCompanyBySlug } from "@/content/companies";
-import { CheckCircle2, Bookmark, Building2 } from "lucide-react";
+import { CheckCircle2, Bookmark, Building2, AlertCircle } from "lucide-react";
 import styles from "./ProblemViewer.module.css";
 
 interface ProblemViewerProps {
@@ -30,6 +30,8 @@ export const ProblemViewer: React.FC<ProblemViewerProps> = ({ problem }) => {
     isBookmarked,
     toggleBookmark,
     recordVisit,
+    isWeakTopic,
+    toggleWeakTopic,
   } = useProgress();
 
   useEffect(() => {
@@ -103,6 +105,15 @@ export const ProblemViewer: React.FC<ProblemViewerProps> = ({ problem }) => {
             <h1 className={styles.title}>{problem.title}</h1>
             <div className={styles.actions}>
               <Button
+                variant={isWeakTopic(problem.topic) ? "primary" : "secondary"}
+                size="sm"
+                onClick={() => toggleWeakTopic(problem.topic)}
+                icon={<AlertCircle size={14} />}
+                title="Flag topic for revision in your student dashboard"
+              >
+                {isWeakTopic(problem.topic) ? "Flagged Weak" : "Flag Topic"}
+              </Button>
+              <Button
                 variant={bookmarked ? "primary" : "secondary"}
                 size="sm"
                 onClick={() => toggleBookmark(problem.id)}
@@ -142,7 +153,7 @@ export const ProblemViewer: React.FC<ProblemViewerProps> = ({ problem }) => {
                 return hasPage ? (
                   <Link
                     key={company}
-                    href={`/companies/${compSlug}`}
+                    href={getCompanyPath(compSlug)}
                     className={styles.companyBadge}
                     style={{ textDecoration: "none" }}
                   >
@@ -345,7 +356,7 @@ export const ProblemViewer: React.FC<ProblemViewerProps> = ({ problem }) => {
                     textDecoration: "none",
                   };
                   return hasPage ? (
-                    <Link key={c} href={`/companies/${compSlug}`} style={pillStyle}>
+                    <Link key={c} href={getCompanyPath(compSlug)} style={pillStyle}>
                       {c}
                     </Link>
                   ) : (

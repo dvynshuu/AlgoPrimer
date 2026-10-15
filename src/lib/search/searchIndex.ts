@@ -6,6 +6,8 @@ import { dsaLessons } from "@/content/dsa/lessons";
 import { dsaTopics } from "@/content/dsa/topics";
 import { problems } from "@/content/problems";
 import { revisionCards } from "@/content/revision";
+import { companiesData } from "@/content/companies";
+import { sheetsData } from "@/content/sheets";
 import {
   getLanguageLessonPath,
   getDsaTopicPath,
@@ -13,6 +15,8 @@ import {
   getProblemPath,
   getRevisionPath,
   getInterviewPath,
+  getCompanyPath,
+  getSheetPath,
 } from "@/lib/routes";
 
 export type SearchCategory =
@@ -21,7 +25,9 @@ export type SearchCategory =
   | "DSA Lesson"
   | "Problem"
   | "Revision"
-  | "Interview";
+  | "Interview"
+  | "Company"
+  | "Sheet";
 
 export interface SearchResultItem {
   id: string;
@@ -170,6 +176,32 @@ export function getSearchIndex(): SearchResultItem[] {
     url: getInterviewPath(),
     tags: ["interview", "placement", "oa", "hr", "rounds", "cs subjects"],
   });
+
+  // 7. Companies
+  for (const company of companiesData) {
+    items.push({
+      id: `company-${company.slug}`,
+      title: `${company.name} Coding Interview Sheet`,
+      description: company.overview,
+      category: "Company",
+      context: `${company.category} • Difficulty: ${company.difficulty}`,
+      url: getCompanyPath(company.slug),
+      tags: [company.name.toLowerCase(), company.slug, "company", "interview", "oa", "faang", ...(company.ticker ? [company.ticker.toLowerCase()] : [])],
+    });
+  }
+
+  // 8. Curated Sheets
+  for (const sheet of sheetsData) {
+    items.push({
+      id: sheet.id,
+      title: sheet.title,
+      description: sheet.tagline || sheet.description,
+      category: "Sheet",
+      context: `Curated Sheet: ${sheet.tagline}`,
+      url: getSheetPath(sheet.slug),
+      tags: [sheet.slug, "sheet", "interview", "practice", "blind 75", "top 50"],
+    });
+  }
 
   // Precompute normalized search fields once to avoid repeated allocations during typing
   for (const item of items) {

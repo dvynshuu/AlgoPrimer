@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { useProgress } from "@/lib/progress/ProgressContext";
-import { problems } from "@/content/problems";
+import type { ProblemSummary } from "@/content/problems";
 import { getHomePath, getProblemPath } from "@/lib/routes";
 import { Search, CheckCircle2, ArrowRight, Building2 } from "lucide-react";
 import styles from "@/app/problems/problems.module.css";
@@ -28,7 +28,11 @@ const FEATURED_COMPANIES = [
   "Flipkart",
 ];
 
-export function ProblemsClient() {
+interface ProblemsClientProps {
+  initialProblems?: ProblemSummary[];
+}
+
+export function ProblemsClient({ initialProblems = [] }: ProblemsClientProps) {
   const { isProblemSolved } = useProgress();
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>("All");
   const [selectedCompany, setSelectedCompany] = useState<string>("All");
@@ -36,25 +40,37 @@ export function ProblemsClient() {
   const [selectedPattern, setSelectedPattern] = useState<string>("All");
   const [searchQuery, setSearchQuery] = useState("");
 
+  const problemList = initialProblems;
+
   const topics = useMemo(() => {
-    const set = new Set(problems.map((p) => p.topic));
+    const set = new Set(problemList.map((p) => p.topic));
     return ["All", ...Array.from(set)];
-  }, []);
+  }, [problemList]);
 
   const patterns = useMemo(() => {
-    const set = new Set(problems.map((p) => p.pattern));
+    const set = new Set(problemList.map((p) => p.pattern));
     return ["All", ...Array.from(set)];
-  }, []);
+  }, [problemList]);
+
+  // Pre-indexed problem summaries for 0ms keystroke filtering
+  const indexedProblems = useMemo(() => {
+    return problemList.map((prob) => ({
+      ...prob,
+      _corpus: `${prob.title} ${prob.pattern} ${prob.topic} ${prob.subtopic} ${prob.companies?.join(" ") || ""}`.toLowerCase(),
+      _companiesLower: prob.companies?.map((c) => c.toLowerCase()) || [],
+    }));
+  }, [problemList]);
 
   const filteredProblems = useMemo(() => {
-    return problems.filter((prob) => {
+    const q = searchQuery.trim().toLowerCase();
+    const selCompLower = selectedCompany !== "All" ? selectedCompany.toLowerCase() : null;
+
+    return indexedProblems.filter((prob) => {
       if (selectedDifficulty !== "All" && prob.difficulty !== selectedDifficulty) {
         return false;
       }
-      if (selectedCompany !== "All") {
-        if (!prob.companies?.some((c) => c.toLowerCase() === selectedCompany.toLowerCase())) {
-          return false;
-        }
+      if (selCompLower && !prob._companiesLower.includes(selCompLower)) {
+        return false;
       }
       if (selectedTopic !== "All" && prob.topic !== selectedTopic) {
         return false;
@@ -62,26 +78,18 @@ export function ProblemsClient() {
       if (selectedPattern !== "All" && prob.pattern !== selectedPattern) {
         return false;
       }
-      if (searchQuery.trim()) {
-        const q = searchQuery.toLowerCase();
-        const matchesTitle = prob.title.toLowerCase().includes(q);
-        const matchesPattern = prob.pattern.toLowerCase().includes(q);
-        const matchesTopic = prob.topic.toLowerCase().includes(q);
-        const matchesSubtopic = prob.subtopic.toLowerCase().includes(q);
-        const matchesCompany = prob.companies?.some((c) => c.toLowerCase().includes(q));
-        if (!matchesTitle && !matchesPattern && !matchesTopic && !matchesSubtopic && !matchesCompany) {
-          return false;
-        }
+      if (q && !prob._corpus.includes(q)) {
+        return false;
       }
       return true;
     });
-  }, [selectedDifficulty, selectedCompany, selectedTopic, selectedPattern, searchQuery]);
+  }, [indexedProblems, selectedDifficulty, selectedCompany, selectedTopic, selectedPattern, searchQuery]);
 
   const solvedCount = useMemo(() => {
-    return problems.filter((p) => isProblemSolved(p.id)).length;
-  }, [isProblemSolved]);
+    return problemList.filter((p) => isProblemSolved(p.id)).length;
+  }, [problemList, isProblemSolved]);
 
-  const percent = Math.round((solvedCount / problems.length) * 100);
+  const percent = problemList.length > 0 ? Math.round((solvedCount / problemList.length) * 100) : 0;
 
   const getDiffBadge = (diff: string): "easy" | "medium" | "hard" => {
     if (diff === "Easy") return "easy";
@@ -98,7 +106,7 @@ export function ProblemsClient() {
           <div style={{ display: "flex", gap: "var(--space-2)", alignItems: "center", marginBottom: "var(--space-2)" }}>
             <Badge variant="level">PEDAGOGICAL PROBLEM BANK</Badge>
             <span style={{ fontSize: "var(--font-size-xs)", color: "var(--text-muted)", fontFamily: "var(--font-mono)" }}>
-              {problems.length} Curated Core Problems
+              {problemList.length} Curated Core Problems
             </span>
           </div>
           <h1 className={styles.title}>Practice Problems</h1>
@@ -114,7 +122,7 @@ export function ProblemsClient() {
               Core Progress
             </span>
             <span style={{ fontSize: "var(--font-size-xs)", fontFamily: "var(--font-mono)", color: "var(--accent-primary)" }}>
-              {solvedCount} / {problems.length} Solved
+              {solvedCount} / {problemList.length} Solved
             </span>
           </div>
           <ProgressBar value={percent} showPercent={false} />

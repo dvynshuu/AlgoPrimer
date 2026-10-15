@@ -44,17 +44,17 @@ export default function RevisionPage() {
     path: getRevisionPath(),
     items: revisionCards.map((c) => ({
       name: c.title,
-      path: `${getRevisionPath()}#${c.id}`,
+      path: getRevisionPath(),
       description: `${c.rememberPoints[0] || ""} (Common trap: ${c.commonMistakes[0] || ""})`,
     })),
   });
 
-  const faqJsonLd = createFaqJsonLd(
-    revisionCards.slice(0, 10).map((c) => ({
-      question: `What are the key points to remember for ${c.title}?`,
-      answer: `${c.rememberPoints.join(" ")} Watch out for common mistake: ${c.commonMistakes[0] || ""}`,
-    }))
-  );
+  const faqItems = revisionCards.slice(0, 8).map((c) => ({
+    question: `What are the key points to remember for ${c.title}?`,
+    answer: `${c.rememberPoints.join(" ")} Common mistake: ${c.commonMistakes[0] || ""}`,
+  }));
+
+  const faqJsonLd = createFaqJsonLd(faqItems);
 
   return (
     <>
@@ -153,10 +153,7 @@ export default function RevisionPage() {
         <SeoFaqAccordion
           title="Rapid Technical Revision FAQs"
           subtitle="Essential conceptual questions asked in technical screens and placement interviews."
-          items={revisionCards.slice(0, 8).map((c) => ({
-            question: `What are the key points to remember for ${c.title}?`,
-            answer: `${c.rememberPoints.join(" ")} Common mistake: ${c.commonMistakes[0] || ""}`,
-          }))}
+          items={faqItems}
         />
       </div>
     </>

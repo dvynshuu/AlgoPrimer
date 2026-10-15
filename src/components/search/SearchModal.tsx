@@ -14,21 +14,11 @@ interface SearchModalProps {
 
 export const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
   const [query, setQuery] = useState("");
-  const [debouncedQuery, setDebouncedQuery] = useState("");
   const [selectedIndex, setSelectedIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
 
   const resultsContainerRef = useRef<HTMLDivElement>(null);
-
-  // Debounce query input to avoid heavy re-renders on keystroke
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedQuery(query);
-      setSelectedIndex(0);
-    }, 120);
-    return () => clearTimeout(timer);
-  }, [query]);
 
   // Focus input on mount
   useEffect(() => {
@@ -44,10 +34,15 @@ export const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => 
   }, [selectedIndex]);
 
   const results = useMemo(() => {
-    const q = debouncedQuery.trim();
+    const q = query.trim();
     if (!q) return [];
     return searchContent(q);
-  }, [debouncedQuery]);
+  }, [query]);
+
+  const handleQueryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setQuery(e.target.value);
+    setSelectedIndex(0);
+  };
 
   // Handle keyboard navigation inside search modal
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -85,7 +80,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => 
             className={styles.input}
             placeholder="Search lessons, problems, patterns, topics (e.g. Two Pointers, BFS, Kadane)..."
             value={query}
-            onChange={(e) => setQuery(e.target.value)}
+            onChange={handleQueryChange}
             onKeyDown={handleKeyDown}
             aria-autocomplete="list"
           />
@@ -116,7 +111,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => 
             ))
           ) : (
             <div className={styles.empty}>
-              No matching lessons, problems, or revision items found for &quot;{debouncedQuery}&quot;.
+              No matching lessons, problems, or revision items found for &quot;{query}&quot;.
             </div>
           )}
         </div>

@@ -23,21 +23,21 @@ AlgoPrimer provides comprehensive curricula without paywalls or ad bloat:
 - [Strings & Pattern Matching](https://algoprimer.vercel.app/dsa/strings): String immutability, ASCII/Unicode representation, anagrams, palindrome patterns, and KMP basics.
 - [Linear & Binary Search](https://algoprimer.vercel.app/dsa/searching): Search space reduction, monotonic functions, lower/upper bounds, and binary search on answer.
 - [Sorting Fundamentals](https://algoprimer.vercel.app/dsa/sorting): Merge Sort, Quick Sort, stability, comparison vs non-comparison sorting.
-- [Hashing & Hash Maps](https://algoprimer.vercel.app/dsa/hashing): Hash functions, collision resolution, load factors, and frequency counting.
-- [Two Pointers Technique](https://algoprimer.vercel.app/dsa/two-pointers): Oppositely directed, same-direction (fast & slow), and cycle detection.
-- [Sliding Window Pattern](https://algoprimer.vercel.app/dsa/sliding-window): Fixed-size windows, dynamically shrinking windows, and substring frequency tracking.
-- [Linked Lists](https://algoprimer.vercel.app/dsa/linked-lists): Singly, doubly, dummy head nodes, pointer reversal, and cycle detection.
-- [Recursion & Backtracking](https://algoprimer.vercel.app/dsa/recursion-backtracking): Call stack frames, base cases, choice-explore-unchoose recursion trees, and pruning.
-- [Stacks & Monotonic Stack](https://algoprimer.vercel.app/dsa/stacks): LIFO discipline, parentheses balancing, evaluation, and next greater element patterns.
-- [Queues, Deques & Monotonic Queue](https://algoprimer.vercel.app/dsa/queues): FIFO queues, circular buffers, double-ended queues, and sliding window maximum.
-- [Trees & Binary Trees](https://algoprimer.vercel.app/dsa/trees): Hierarchical data structures, DFS (inorder, preorder, postorder), BFS level order, height, and diameter.
-- [Binary Search Trees (BST)](https://algoprimer.vercel.app/dsa/binary-search-tree): BST invariant, search, insert, delete, and validation.
-- [Heaps & Priority Queues](https://algoprimer.vercel.app/dsa/heaps): Min-heaps, max-heaps, complete binary trees in arrays, and top-K frequent elements.
+- [Hashing & Hash Tables](https://algoprimer.vercel.app/dsa/hashing): Hash functions, collision resolution, load factors, and frequency counting.
+- [Linked Lists](https://algoprimer.vercel.app/dsa/linked-list): Singly, doubly, dummy head nodes, pointer reversal, and Floyd's cycle detection.
+- [Stack Data Structure](https://algoprimer.vercel.app/dsa/stack): LIFO discipline, parentheses balancing, evaluation, and monotonic stack patterns.
+- [Queue & Deque](https://algoprimer.vercel.app/dsa/queue): FIFO queues, circular buffers, double-ended queues, and sliding window maximum.
+- [Recursion & Call Stack](https://algoprimer.vercel.app/dsa/recursion): Call stack frames, base cases, recursion trees, and divide-and-conquer.
+- [Advanced Binary Search](https://algoprimer.vercel.app/dsa/binary-search): Binary search on rotated arrays, peak elements, 2D matrices, and answer spaces.
+- [Binary Trees](https://algoprimer.vercel.app/dsa/trees): Hierarchical data structures, DFS (inorder, preorder, postorder), BFS level order, height, and diameter.
+- [Binary Search Trees (BST)](https://algoprimer.vercel.app/dsa/bst): BST invariant, search, insert, delete, floor/ceil, and validation.
+- [Heap & Priority Queue](https://algoprimer.vercel.app/dsa/heap): Min-heaps, max-heaps, complete binary trees in arrays, and top-K frequent elements.
+- [Greedy Algorithms](https://algoprimer.vercel.app/dsa/greedy): Locally optimal choices, interval scheduling, and fractional knapsack.
+- [Backtracking](https://algoprimer.vercel.app/dsa/backtracking): Decision trees, state exploration, undoing decisions, N-Queens, and subset generation.
 - [Graphs](https://algoprimer.vercel.app/dsa/graphs): Adjacency matrix vs list, BFS, DFS, cycle detection, topological sort (Kahn's), and Dijkstra.
 - [Dynamic Programming](https://algoprimer.vercel.app/dsa/dynamic-programming): Overlapping subproblems, optimal substructure, memoization vs tabulation, and knapsack variants.
-- [Greedy Algorithms](https://algoprimer.vercel.app/dsa/greedy): Locally optimal choices, interval scheduling, and fractional knapsack.
 - [Bit Manipulation](https://algoprimer.vercel.app/dsa/bit-manipulation): Bitwise operations, two's complement, power of two checks, and XOR cancellation.
-- [Trie (Prefix Tree)](https://algoprimer.vercel.app/dsa/trie): Prefix trees, word dictionary search, and autocomplete patterns.
+- [Advanced Interview Patterns](https://algoprimer.vercel.app/dsa/advanced-patterns): Trie (Prefix Tree), Segment Trees, Fenwick Trees, and multi-concept walkthroughs.
 
 ## Programming Language Tracks
 - [Java Curriculum](https://algoprimer.vercel.app/languages/java): JVM architecture, primitive types vs wrapper classes, Collections Framework, garbage collection.
