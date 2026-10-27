@@ -21,7 +21,7 @@ export const dsaTopics: TopicMetadata[] = [
     estimatedHours: 12,
     levelCount: 5,
     prerequisites: ["Time & Space Complexity"],
-    lessons: ["fundamentals", "two-pointers"],
+    lessons: ["fundamentals", "two-pointers", "sliding-window-and-prefix-sums"],
   },
   {
     id: "dsa-strings",
@@ -76,7 +76,7 @@ export const dsaTopics: TopicMetadata[] = [
     estimatedHours: 10,
     levelCount: 5,
     prerequisites: ["Pointers / Object References"],
-    lessons: ["reversal"],
+    lessons: ["reversal", "fast-slow-pointers-and-lru"],
   },
   {
     id: "dsa-stack",
@@ -131,7 +131,7 @@ export const dsaTopics: TopicMetadata[] = [
     estimatedHours: 14,
     levelCount: 5,
     prerequisites: ["Recursion & Call Stack", "Queue & Deque"],
-    lessons: ["traversals-and-lca"],
+    lessons: ["traversals-and-lca", "views-and-path-sums"],
   },
   {
     id: "dsa-bst",
@@ -186,7 +186,7 @@ export const dsaTopics: TopicMetadata[] = [
     estimatedHours: 16,
     levelCount: 5,
     prerequisites: ["Queue & Deque", "Recursion & Call Stack"],
-    lessons: ["traversals-and-shortest-paths"],
+    lessons: ["traversals-and-shortest-paths", "disjoint-set-and-topological-sort"],
   },
   {
     id: "dsa-dynamic-programming",
@@ -197,7 +197,7 @@ export const dsaTopics: TopicMetadata[] = [
     estimatedHours: 20,
     levelCount: 5,
     prerequisites: ["Recursion & Call Stack"],
-    lessons: ["memoization-and-tabulation"],
+    lessons: ["memoization-and-tabulation", "patterns-and-state-transitions"],
   },
   {
     id: "dsa-bit-manipulation",

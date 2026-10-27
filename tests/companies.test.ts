@@ -30,6 +30,10 @@ describe("High-Intent Company Pages Integrity", () => {
     expect(google).toBeDefined();
     expect(google?.name).toBe("Google");
 
+    const linkedin = getCompanyBySlug("linkedin");
+    expect(linkedin).toBeDefined();
+    expect(linkedin?.name).toBe("LinkedIn");
+
     const nonExistent = getCompanyBySlug("non-existent-corp");
     expect(nonExistent).toBeUndefined();
   });

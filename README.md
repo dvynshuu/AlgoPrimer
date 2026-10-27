@@ -26,17 +26,21 @@ AlgoPrimer is a modern, developer-native educational platform built with Next.js
    - Complete pedagogical progression: Complexity analysis, linear structures, trees, graphs, heaps, greedy, dynamic programming, backtracking, bit manipulation, and advanced patterns.
    - Every topic breaks down the concept into *Why do we need it?*, *Visual intuition*, *How it works step-by-step*, *Common traps*, and *Practical applications*.
 
-3. **Curated Problem Bank (65 High-Frequency Core Problems)**:
+3. **Curated Problem Bank & High-Yield Sheets**:
    - Covers 12 core categories: Arrays, Two Pointers & Sliding Window, Strings, Linked Lists, Binary Search, Stacks & Queues, Trees & Graphs, Heaps, Intervals, Backtracking, Dynamic Programming, and Bit Manipulation.
    - **Quad-lingual solutions**: Every problem includes full implementations in **Java**, **C++**, **Python**, and **JavaScript** across Brute Force, Better, and Optimal approaches.
-   - Verified company tags (**Amazon**, **Microsoft**, **Google**, **Meta**, **TCS**, **Infosys**, **Goldman Sachs**, **Bloomberg**, **Apple**, **Adobe**, **Uber**, **Flipkart**).
+   - Verified company tags (**Amazon**, **Microsoft**, **Google**, **Meta**, **LinkedIn**, **TCS**, **Infosys**, **Goldman Sachs**, **Bloomberg**, **Apple**, **Adobe**, **Uber**, **Flipkart**).
+   - High-impact curated sheets: **Blind 75**, **Top 50 FAANG**, **SDE Core 45**, and **Service-to-Product Transition Sheet**.
    - Interactive company filter pills and visual step-by-step dry-run tables.
 
-4. **Lightweight Client-Side Search Index**:
+4. **25 High-Yield Rapid Revision Cards**:
+   - Comprehensive last-minute cheat sheets covering DSA patterns (Two Pointers, Monotonic Stack, Sliding Window, DSU, Topological Sort, DP Archetypes, Trie) and Core CS fundamentals (OS Memory & Concurrency, DBMS ACID & B+ Trees, Computer Networks TCP/IP & HTTP/3, and FAANG Interview Evaluation Rubrics).
+
+5. **Lightweight Client-Side Search Index**:
    - Precomputed lightweight singleton search index that excludes heavy solution bodies and code blocks.
    - Fast tokenized fuzzy matching with keyboard navigation (Ctrl+K, arrows, Enter, Esc).
 
-5. **Calm, High-Performance UX**:
+6. **Calm, High-Performance UX**:
    - Server-first rendering model with small client islands for progress and interactivity.
    - Pure CSS tokens, sleek dark mode with tailored visual hierarchy.
    - LocalStorage progress sync with bookmarking, visit tracking, and validated schema migrations.
@@ -107,7 +111,7 @@ npm run build
 │   ├── components/             # Reusable UI, layout & content components
 │   ├── content/                # Zod-validated curriculum & problem modules
 │   │   ├── languages/          # Java, C++, Python, JavaScript lessons (108 total)
-│   │   ├── dsa/                # 20 DSA topics and 21 distinct lessons
+│   │   ├── dsa/                # 20 DSA topics and 26 distinct lessons
 │   │   └── problems/           # 65 curated company problems across 12 modules
 │   ├── lib/                    # Routes manifest, SEO helpers, search engine, progress
 │   ├── styles/                 # Global CSS design tokens & utilities

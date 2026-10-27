@@ -46,6 +46,7 @@ interface PageMetadataOptions {
   path: string;
   keywords?: string[];
   noIndex?: boolean;
+  ogType?: "website" | "article";
 }
 
 export function createPageMetadata({
@@ -54,6 +55,7 @@ export function createPageMetadata({
   path,
   keywords,
   noIndex = false,
+  ogType = "website",
 }: PageMetadataOptions): Metadata {
   const canonicalUrl = getCanonicalUrl(path);
   const sanitizedDescription = sanitizeMetaDescription(description);
@@ -107,7 +109,7 @@ export function createPageMetadata({
       url: canonicalUrl,
       siteName: SITE_NAME,
       locale: "en_US",
-      type: "website",
+      type: ogType,
       images: [
         {
           url: `${SITE_URL}/og-image.png`,
@@ -151,6 +153,7 @@ export function createDsaLessonMetadata(topic: TopicMetadata, lesson: Lesson): M
     title: `${lesson.title} — ${topic.title}`,
     description: lesson.oneSentence,
     path,
+    ogType: "article",
     keywords: [
       lesson.title,
       topic.title,
@@ -172,6 +175,7 @@ export function createProblemMetadata(problem: Problem): Metadata {
     title: `${problem.title} Solution (${problem.pattern})`,
     description: `3-tier solution (Brute, Better, Optimal) for ${problem.title} in Java, C++, Python, and JS with dry runs and complexity analysis.`,
     path,
+    ogType: "article",
     keywords: [
       problem.title,
       `${problem.title} solution`,
@@ -217,6 +221,7 @@ export function createLanguageLessonMetadata(
     title: `${lesson.title} — ${langName} Foundations`,
     description: lesson.oneSentence,
     path,
+    ogType: "article",
     keywords: [
       lesson.title,
       langName,

@@ -52,7 +52,7 @@ describe("Curriculum Content Integrity", () => {
   });
 
   it("validates all DSA lessons against LessonSchema with all pedagogical requirements", () => {
-    expect(dsaLessons.length).toBeGreaterThanOrEqual(20);
+    expect(dsaLessons.length).toBeGreaterThanOrEqual(26);
     for (const lesson of dsaLessons) {
       const parsed = LessonSchema.safeParse(lesson);
       expect(parsed.success, `DSA lesson ${lesson.id} failed validation: ${parsed.error?.message}`).toBe(true);
@@ -94,7 +94,7 @@ describe("Curriculum Content Integrity", () => {
   });
 
   it("validates all high-yield revision cards against RevisionCardSchema", () => {
-    expect(revisionCards.length).toBeGreaterThanOrEqual(15);
+    expect(revisionCards.length).toBeGreaterThanOrEqual(25);
     for (const card of revisionCards) {
       const parsed = RevisionCardSchema.safeParse(card);
       expect(parsed.success, `Revision card ${card.id} failed validation: ${parsed.error?.message}`).toBe(true);

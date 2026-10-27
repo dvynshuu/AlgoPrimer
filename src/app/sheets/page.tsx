@@ -16,14 +16,16 @@ import { ArrowRight, BookOpen } from "lucide-react";
 import styles from "./sheets.module.css";
 
 export const metadata: Metadata = createPageMetadata({
-  title: "Curated Coding Interview Sheets — Blind 75 & Top 50 FAANG (2026)",
+  title: "Curated Coding Interview Sheets — Blind 75, Top 50 FAANG & SDE Core 45 (2026)",
   description:
-    "Master high-yield coding interview sheets with canonical 3-tier solutions across Java, C++, Python, and JavaScript. Blind 75, Top 50 FAANG, and core algorithmic pattern sheets.",
+    "Master high-yield coding interview sheets with canonical 3-tier solutions across Java, C++, Python, and JavaScript. Blind 75, Top 50 FAANG, SDE Core 45, and Service-to-Product transition roadmaps.",
   path: getSheetsPath(),
   keywords: [
     "Blind 75 sheet",
     "Blind 75 alternative",
     "Top 50 FAANG problems",
+    "SDE Core 45 placement sheet",
+    "service to product transition sheet",
     "coding interview sheets",
     "best DSA sheet 2026",
     "NeetCode 150 alternative",

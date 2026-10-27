@@ -771,4 +771,410 @@ void dfsSink(char[][] g, int r, int c) {
       "Dijkstra's Algorithm solves shortest paths with non-negative weights in O((V + E) log V) time using a Min-Heap.",
     ],
   },
+  {
+    id: "dsa-trees-views-and-path-sums-lesson",
+    slug: "views-and-path-sums",
+    title: "Binary Tree Views & Maximum Path Sum: Coordinate BFS, Top/Bottom Views & Diameter",
+    track: "dsa",
+    topicSlug: "trees",
+    topicTitle: "Binary Trees",
+    order: 2,
+    estimatedMinutes: 45,
+    oneSentence:
+      "Binary tree views project nodes onto a 2D Cartesian coordinate plane using horizontal distance and depth, while path sum problems leverage post-order subproblem contributions to solve global optima in O(N) time.",
+    whyDoWeNeedIt: {
+      problem:
+        "Problems asking for the 'Top View', 'Bottom View', 'Vertical Order Traversal', or 'Maximum Path Sum' of a binary tree confound naive DFS because standard depth-first recursion traverses along subtrees rather than geometric lines of sight. Without an explicit horizontal distance coordinate system (x-coordinate), calculating what is visible from above or below requires messy global arrays. Similarly, maximum path sum problems cannot be solved with greedy top-down traversal because paths can turn at any arbitrary node and bridge left and right subtrees.",
+      realWorldAnalogy:
+        "Viewing a high-rise city skyline from across a harbor. Even if one building is very tall, a shorter building closer to the harbor front might block your view from ground level, or the taller building blocks shorter buildings behind it. Assigning each building an east-west coordinate (horizontal distance x) and an elevation (depth y) uniquely resolves what is visible from above, below, and the sides.",
+    },
+    visualIntuition: `Cartesian Coordinate System & Maximum Path Sum Turning Invariant:
+-------------------------------------------------------------------------
+1. Tree Coordinate Projection:
+               Root (x = 0, y = 0)
+              /                   \\
+    Left (x = -1, y = 1)      Right (x = +1, y = 1)
+          /        \\                /         \\
+     (-2, 2)      (0, 2)         (0, 2)      (+2, 2)
+
+   - Top View: First node encountered at each unique x-coordinate (Horizontal Distance).
+   - Bottom View: Last node encountered at each unique x-coordinate (or deepest y).
+   - Vertical Order: Group nodes by x-coordinate, sorted by y (depth) and node value.
+   - Right Side View: Last node processed at each unique y-coordinate (Level-order).
+
+2. Maximum Path Sum Turning Invariant:
+               Node A (val = -10)
+              /                  \\
+      Node B (val = 9)       Node C (val = 20)
+                            /                 \\
+                    Node D (val = 15)   Node E (val = 7)
+
+   At Node C:
+   - Left subtree gain = 15
+   - Right subtree gain = 7
+   - TURNING PATH passing through C: 15 + 7 + 20 = 42!  <-- Global Max Path!
+   - BRANCH VALUE returned to parent A: 20 + max(15, 7) = 35.
+   (A path cannot fork in both directions AND go up to parent A!)`,
+    syntax: {
+      verticalCoordinateQueue: `// Coordinate BFS for Tree Views:
+class Pair {
+    TreeNode node;
+    int hd; // Horizontal Distance (x)
+    Pair(TreeNode n, int h) { node = n; hd = h; }
+}
+
+Queue<Pair> q = new ArrayDeque<>();
+Map<Integer, Integer> topViewMap = new TreeMap<>(); // Sorted by HD
+q.offer(new Pair(root, 0));
+
+while (!q.isEmpty()) {
+    Pair p = q.poll();
+    if (!topViewMap.containsKey(p.hd)) {
+        topViewMap.put(p.hd, p.node.val); // First node seen at this HD
+    }
+    if (p.node.left != null) q.offer(new Pair(p.node.left, p.hd - 1));
+    if (p.node.right != null) q.offer(new Pair(p.node.right, p.hd + 1));
+}`,
+      maxPathSumTemplate: `// Post-Order Maximum Path Sum Pattern:
+int maxPathSum = Integer.MIN_VALUE;
+
+int maxGain(TreeNode node) {
+    if (node == null) return 0;
+    // Discard negative branch contributions by clamping to 0
+    int leftGain = Math.max(0, maxGain(node.left));
+    int rightGain = Math.max(0, maxGain(node.right));
+
+    // Price of the complete turning path through current node:
+    int turningPath = node.val + leftGain + rightGain;
+    maxPathSum = Math.max(maxPathSum, turningPath);
+
+    // Return maximum single branch to parent
+    return node.val + Math.max(leftGain, rightGain);
+}`,
+    },
+    example: {
+      title: "Binary Tree Maximum Path Sum (LeetCode 124)",
+      language: "java",
+      code: `public class BinaryTreeMaxPathSum {
+    private int maxSum = Integer.MIN_VALUE;
+
+    public int maxPathSum(TreeNode root) {
+        maxGain(root);
+        return maxSum;
+    }
+
+    private int maxGain(TreeNode node) {
+        if (node == null) return 0;
+
+        // Step 1: Recursively compute max positive contribution from subtrees
+        int leftGain = Math.max(0, maxGain(node.left));
+        int rightGain = Math.max(0, maxGain(node.right));
+
+        // Step 2: Test turning path using current node as the peak
+        int localPath = node.val + leftGain + rightGain;
+        maxSum = Math.max(maxSum, localPath);
+
+        // Step 3: Return single extendable branch to parent caller
+        return node.val + Math.max(leftGain, rightGain);
+    }
+}`,
+      explanation:
+        "A valid path can only branch once: it connects a node in the left subtree through the current node to a node in the right subtree. When returning back up the call stack to the parent, the algorithm must choose ONLY the single heavier branch (either left or right) plus the node's own value.",
+    },
+    howItWorks: [
+      {
+        step: 1,
+        title: "Horizontal Distance (HD) Projection",
+        description:
+          "Assign root coordinate (0, 0). Transition rules: left child gets `(x - 1, y + 1)` and right child gets `(x + 1, y + 1)`. All nodes sharing the same horizontal distance `x` lie along the same vertical slice.",
+      },
+      {
+        step: 2,
+        title: "Level-Order Coordinate BFS",
+        description:
+          "BFS processes nodes from top to bottom (increasing y). The first time an x-coordinate appears in BFS, that node is the Top View. The latest node stored at each x-coordinate becomes the Bottom View.",
+      },
+      {
+        step: 3,
+        title: "Post-Order Subtree Gain Delegation",
+        description:
+          "For path sum and diameter problems, subtrees return their maximum downward branch value. Negative gains are clamped to 0 using `Math.max(0, gain)` to avoid penalizing the parent path.",
+      },
+      {
+        step: 4,
+        title: "Global Invariant Update",
+        description:
+          "At each node, combine left and right branch gains to test if the complete turning path `(left + right + node.val)` beats the global maximum seen so far.",
+      },
+    ],
+    commonMistakes: [
+      {
+        mistake: "Allowing negative branch contributions to propagate up to the parent",
+        why: "If a subtree's total sum is negative (e.g. -5), adding it to the parent reduces the total path sum. A path does not have to include negative branches.",
+        correct:
+          "Always clamp gains with `Math.max(0, maxGain(node.left))`.",
+      },
+      {
+        mistake: "Returning the turning path `left + right + node.val` to the parent",
+        why: "A path in a binary tree cannot split into two branches AND also continue upward to the parent (that would form a 'Y' shape with 3 directions, which is not a simple path).",
+        correct:
+          "Update the global answer with `left + right + node.val`, but return `node.val + Math.max(left, right)` to parent.",
+      },
+      {
+        mistake: "Using DFS for Top View without tracking depth `y`",
+        why: "Standard DFS dives deep into the left subtree first. A deep node at `x = 0` visited early might overwrite or block the shallow root at `x = 0`.",
+        correct:
+          "Use BFS for line-of-sight views, or DFS that strictly compares depth `y` before updating coordinates.",
+      },
+    ],
+    complexity: {
+      time: "Tree Views: O(N log N) with TreeMap (or O(N) with min/max HD bounds) | Max Path Sum: O(N) linear",
+      space: "Tree Views: O(N) for queue and map storage | Max Path Sum: O(H) call stack where H is tree height",
+      explanation:
+        "Every node in the tree is visited exactly once. Post-order recursion executes a constant number of arithmetic operations at each node.",
+    },
+    tryItYourself: {
+      prompt:
+        "Given the root of a binary tree, return the right-side view of the tree (the nodes you can see when standing on the right side of the tree) ordered from top to bottom.",
+      hint: "Use level-order traversal (BFS) with a queue. For each level, loop through all nodes in that level; the last node processed in that loop is the rightmost node visible from the outside.",
+      solutionSnippet: `List<Integer> result = new ArrayList<>();
+if (root == null) return result;
+Queue<TreeNode> queue = new ArrayDeque<>();
+queue.offer(root);
+
+while (!queue.isEmpty()) {
+    int levelSize = queue.size();
+    for (int i = 0; i < levelSize; i++) {
+        TreeNode curr = queue.poll();
+        if (i == levelSize - 1) result.add(curr.val); // Rightmost node
+        if (curr.left != null) queue.offer(curr.left);
+        if (curr.right != null) queue.offer(curr.right);
+    }
+}
+return result;`,
+    },
+    placementConnection:
+      "Tree views and path sums are staples of Meta, Bloomberg, Amazon, and Google technical rounds: Binary Tree Maximum Path Sum (LeetCode 124), Vertical Order Traversal (LeetCode 314), Binary Tree Right Side View (LeetCode 199), Diameter of Binary Tree (LeetCode 543), and Path Sum III.",
+    quickRevision: [
+      "Horizontal Distance (HD): Root = 0, Left = HD - 1, Right = HD + 1.",
+      "Top View is the first node at each HD in BFS; Bottom View is the last node at each HD.",
+      "Right Side View is the last node at each level in standard BFS.",
+      "Max Path Sum clamps branch gains to 0 and evaluates turning paths at each root in post-order.",
+    ],
+  },
+  {
+    id: "dsa-graphs-dsu-and-topological-sort-lesson",
+    slug: "disjoint-set-and-topological-sort",
+    title: "Disjoint Set Union (DSU) & Topological Sort: Path Compression, Union by Rank & DAGs",
+    track: "dsa",
+    topicSlug: "graphs",
+    topicTitle: "Graphs (BFS, DFS, Shortest Path)",
+    order: 2,
+    estimatedMinutes: 45,
+    oneSentence:
+      "Disjoint Set Union manages dynamic connectivity in near O(1) amortized time via path compression, while Topological Sort linearizes Directed Acyclic Graphs (DAGs) to resolve prerequisite and compilation orderings.",
+    whyDoWeNeedIt: {
+      problem:
+        "Given an undirected network of 100,000 servers, checking whether adding a new network cable creates a cycle takes O(V + E) time with standard BFS/DFS. Doing this for E edges results in an O(E * V) quadratic catastrophe. Furthermore, in dependency scheduling (like package managers or task build systems), cyclic dependencies must be detected and tasks executed in valid prerequisite order, which cannot be solved with greedy loops.",
+      realWorldAnalogy:
+        "DSU is like marriage alliances among feudal houses. When Prince A of House Stark marries Lady B of House Tully, the entire Stark alliance merges with the entire Tully alliance. To check if two distant knights are allies, you only ask who their ultimate reigning monarch is. Topological Sort is like getting dressed in the morning: underwear must precede pants, socks must precede shoes; topological sort gives you the valid sequence to put on clothes without creating a deadlock.",
+    },
+    visualIntuition: `Disjoint Set Union (Path Compression) & Kahn's Topological Sort:
+-------------------------------------------------------------------------
+1. DSU Path Compression & Union by Rank:
+   Initial Forest:  (0)   (1)   (2)   (3)   (4)
+   Union(0, 1):    [0] <--- (1)
+   Union(1, 2):    [0] <--- (1), (2)  (Attached under ultimate leader 0)
+
+   Path Compression:
+   Before find(4): (0) <--- (1) <--- (2) <--- (3) <--- (4)  (Linear chain!)
+   During find(4): Every visited node updates its parent directly to (0)!
+   After find(4):  (0) <--- (1), (2), (3), (4)               (Flat tree, depth = 1!)
+   Amortized Time: O(α(N)) <= 4 operations for all practical universe scales!
+
+2. Kahn's Algorithm for Topological Sort (In-Degree BFS):
+   Course Prerequisites:  A ---> B ---> D
+                           \\          ^
+                            v         /
+                             C -------
+   In-Degree Table:
+   Node A: 0 (No incoming prerequisites)
+   Node B: 1 (A)
+   Node C: 1 (A)
+   Node D: 2 (B, C)
+
+   Queue: [ A ]  (Push nodes with inDegree == 0)
+   Pop A: Decrement B (0) and C (0). Push [ B, C ].
+   Pop B: Decrement D (1).
+   Pop C: Decrement D (0). Push [ D ].
+   Pop D: Order = [ A, B, C, D ]. If total processed == V, valid DAG with NO cycles!`,
+    syntax: {
+      dsuImplementation: `// Disjoint Set Union (DSU / Union-Find) with Path Compression & Rank:
+class DSU {
+    int[] parent, rank;
+    DSU(int n) {
+        parent = new int[n];
+        rank = new int[n];
+        for (int i = 0; i < n; i++) parent[i] = i;
+    }
+
+    int find(int i) {
+        if (parent[i] == i) return i;
+        return parent[i] = find(parent[i]); // Path compression
+    }
+
+    boolean union(int i, int j) {
+        int rootI = find(i), rootJ = find(j);
+        if (rootI == rootJ) return false; // Cycle detected!
+        if (rank[rootI] < rank[rootJ]) {
+            parent[rootI] = rootJ;
+        } else if (rank[rootI] > rank[rootJ]) {
+            parent[rootJ] = rootI;
+        } else {
+            parent[rootJ] = rootI;
+            rank[rootI]++;
+        }
+        return true;
+    }
+}`,
+      kahnsTopoSortTemplate: `// Kahn's Algorithm (In-Degree BFS for Topological Sort):
+int[] inDegree = new int[numCourses];
+List<List<Integer>> adj = new ArrayList<>();
+for (int i = 0; i < numCourses; i++) adj.add(new ArrayList<>());
+for (int[] edge : prerequisites) {
+    adj.get(edge[1]).add(edge[0]);
+    inDegree[edge[0]]++;
+}
+
+Queue<Integer> q = new ArrayDeque<>();
+for (int i = 0; i < numCourses; i++) {
+    if (inDegree[i] == 0) q.offer(i);
+}
+
+int count = 0;
+while (!q.isEmpty()) {
+    int curr = q.poll();
+    count++;
+    for (int next : adj.get(curr)) {
+        if (--inDegree[next] == 0) q.offer(next);
+    }
+}
+boolean hasCycle = (count != numCourses);`,
+    },
+    example: {
+      title: "Course Schedule II (Find Valid Course Execution Order)",
+      language: "java",
+      code: `import java.util.*;
+
+public class CourseScheduleII {
+    public static int[] findOrder(int numCourses, int[][] prerequisites) {
+        int[] inDegree = new int[numCourses];
+        List<List<Integer>> adj = new ArrayList<>();
+        for (int i = 0; i < numCourses; i++) adj.add(new ArrayList<>());
+
+        for (int[] pre : prerequisites) {
+            adj.get(pre[1]).add(pre[0]); // pre[1] -> pre[0]
+            inDegree[pre[0]]++;
+        }
+
+        Queue<Integer> q = new ArrayDeque<>();
+        for (int i = 0; i < numCourses; i++) {
+            if (inDegree[i] == 0) q.offer(i);
+        }
+
+        int[] order = new int[numCourses];
+        int idx = 0;
+
+        while (!q.isEmpty()) {
+            int course = q.poll();
+            order[idx++] = course;
+
+            for (int dependent : adj.get(course)) {
+                inDegree[dependent]--;
+                if (inDegree[dependent] == 0) {
+                    q.offer(dependent);
+                }
+            }
+        }
+
+        // If cycle exists, idx will not equal numCourses
+        return (idx == numCourses) ? order : new int[0];
+    }
+}`,
+      explanation:
+        "Kahn's algorithm simulates dependency processing: courses with 0 prerequisites can be taken immediately. As each course is completed, its dependent courses have their in-degrees decremented. If all courses are processed, a valid topological sort is found; if the queue empties before all courses are processed, a circular prerequisite dependency exists.",
+    },
+    howItWorks: [
+      {
+        step: 1,
+        title: "Representative Leader Invariant",
+        description:
+          "Each connected component in DSU is represented by a single root leader (`parent[root] == root`). Two elements belong to the same component if and only if `find(u) == find(v)`.",
+      },
+      {
+        step: 2,
+        title: "Path Compression Tree Flattening",
+        description:
+          "During `find(i)`, the recursion flattens the path by assigning `parent[i] = find(parent[i])`. Future queries for any node along that branch resolve in immediate O(1) time.",
+      },
+      {
+        step: 3,
+        title: "Union by Rank / Size",
+        description:
+          "When merging two sets, attach the tree of lower rank under the root of the tree with higher rank, preventing tall linear chains and guaranteeing logarithmic height even without path compression.",
+      },
+      {
+        step: 4,
+        title: "Topological In-Degree Reduction",
+        description:
+          "In Kahn's algorithm, vertices with in-degree 0 have all prerequisites satisfied. Evicting them and decrementing adjacent in-degrees peelingly discovers the next tier of ready vertices.",
+      },
+    ],
+    commonMistakes: [
+      {
+        mistake: "Checking `parent[u] == parent[v]` instead of `find(u) == find(v)`",
+        why: "`parent[u]` only points to the immediate parent in the tree, not the ultimate root leader of the set.",
+        correct:
+          "Always call `find(u)` and `find(v)` to retrieve canonical set leaders before comparing.",
+      },
+      {
+        mistake: "Forgetting path compression in `find()`",
+        why: "Without path compression (`return find(parent[i])`), the DSU tree can degenerate into a linked list of depth N, degrading operations to O(N).",
+        correct:
+          "Always assign parent during return: `return parent[i] = find(parent[i]);`.",
+      },
+      {
+        mistake: "Not checking for cycle when Kahn's algorithm queue becomes empty",
+        why: "If a cycle exists in the graph, nodes within the cycle never reach in-degree 0 and are never pushed to the queue. The loop terminates prematurely.",
+        correct:
+          "Verify that `count == numCourses` before declaring the order valid.",
+      },
+    ],
+    complexity: {
+      time: "DSU Find/Union: O(α(N)) ≈ O(1) amortized | Kahn's Algorithm: O(V + E) linear",
+      space: "DSU: O(N) for parent and rank arrays | Kahn's: O(V + E) for adjacency list + O(V) for in-degree and queue",
+      explanation:
+        "Combining path compression with union by rank bounds DSU operations by the inverse Ackermann function α(N) <= 4. Kahn's algorithm traverses each vertex and edge exactly once.",
+    },
+    tryItYourself: {
+      prompt:
+        "Given an undirected graph of n nodes represented as an array of edges, return an edge that can be removed so that the resulting graph is a tree with no cycles (Redundant Connection).",
+      hint: "Use DSU. For each edge (u, v), call union(u, v). If union returns false, u and v already belong to the same component, meaning this edge creates a cycle and is redundant!",
+      solutionSnippet: `DSU dsu = new DSU(edges.length + 1);
+for (int[] edge : edges) {
+    if (!dsu.union(edge[0], edge[1])) {
+        return edge; // This edge creates the cycle!
+    }
+}
+return new int[0];`,
+    },
+    placementConnection:
+      "DSU and Topological Sort are quintessential Google, Amazon, Meta, and Uber interview questions: Course Schedule I & II, Alien Dictionary, Redundant Connection, Accounts Merge (DSU), Number of Provinces, and Kruskal's Minimum Spanning Tree.",
+    quickRevision: [
+      "DSU manages dynamic connectivity in near-constant O(α(N)) time using path compression and union by rank.",
+      "If `find(u) == find(v)` before an edge is added, adding that edge forms an undirected cycle.",
+      "Kahn's Algorithm uses in-degree array to compute topological sort of a DAG in O(V + E) time.",
+      "If Kahn's algorithm terminates with processed vertices < V, a directed cycle exists.",
+    ],
+  },
 ];

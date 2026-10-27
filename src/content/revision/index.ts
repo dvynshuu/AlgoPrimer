@@ -557,4 +557,219 @@ while (n != 0) {
 // 4. Implement: Clean, typed, modular code with guards
 // 5. Verify: Step-by-step dry run on custom edge case`,
   },
+  {
+    id: "rev-backtracking",
+    title: "Backtracking & State-Space Pruning",
+    topic: "Backtracking",
+    category: "Problem Solving Patterns",
+    rememberPoints: [
+      "Backtracking is depth-first search on a state-space tree with explicit decision choices and un-choosing (state restoration).",
+      "Pruning is the key to passing TLE: check constraints BEFORE recursing down invalid branches to cut subtrees early.",
+      "Combinations/Subsets take an index parameter `startIndex` to prevent reverse-order duplicates (`[1, 2]` vs `[2, 1]`).",
+      "Permutations do NOT use `startIndex`; they maintain a `boolean[] used` array or swap elements in-place.",
+      "Time complexity is combinatorial: Subsets = O(2^N * N), Permutations = O(N! * N), N-Queens = O(N!).",
+    ],
+    commonMistakes: [
+      "Forgetting to undo state changes (e.g., missing `path.remove(path.size() - 1)` or un-toggling visited flag).",
+      "Adding mutable references to the results list instead of deep copies (`result.add(path)` instead of `result.add(new ArrayList<>(path))`).",
+      "Failing to sort input array when duplicates must be skipped: `if (i > start && nums[i] == nums[i - 1]) continue;`.",
+    ],
+    importantPatterns: [
+      "Subsets Pattern: Choice is to include or exclude current element.",
+      "Combinations with Repetition (Coin Change II / Combination Sum): pass `i` instead of `i + 1` into recursive call.",
+      "Pruning via Sorting: sorting beforehand enables immediate `break` instead of continuing futile iterations.",
+      "Sudoku / Grid Constraint Propagation: validate row, column, and subgrid before calling next cell.",
+    ],
+    codeSnippet: `// Universal Backtracking Template (Combinations / Subsets)
+void backtrack(int[] nums, int start, List<Integer> path, List<List<Integer>> res) {
+    res.add(new ArrayList<>(path)); // Snapshot valid state
+    for (int i = start; i < nums.length; i++) {
+        if (i > start && nums[i] == nums[i - 1]) continue; // Skip duplicates
+        path.add(nums[i]);              // 1. Choose
+        backtrack(nums, i + 1, path, res); // 2. Explore
+        path.remove(path.size() - 1);  // 3. Un-choose
+    }
+}`,
+  },
+  {
+    id: "rev-greedy-intervals",
+    title: "Greedy Interval Scheduling & Invariants",
+    topic: "Greedy & Intervals",
+    category: "Problem Solving Patterns",
+    rememberPoints: [
+      "Interval problems almost universally begin by sorting intervals by either `start` time or `end` time.",
+      "Non-Overlapping Interval Selection: Sort by END time. Greedily pick the interval that finishes earliest to leave maximum room for future intervals.",
+      "Merge Overlapping Intervals: Sort by START time. If `curr.start <= prev.end`, merge by setting `prev.end = max(prev.end, curr.end)`.",
+      "Meeting Rooms II (Min Conference Rooms): Sort starts and ends independently, or use a Min-Heap tracking end times of active meetings.",
+      "Exchange Argument Proof: To prove greedy optimality, prove that swapping the greedy choice with any alternative choice cannot improve the objective function.",
+    ],
+    commonMistakes: [
+      "Sorting by start time when solving Non-Overlapping Intervals (must sort by END time to finish earliest!).",
+      "Writing `prev[1] = curr[1]` when merging intervals instead of `prev[1] = Math.max(prev[1], curr[1])` (misses completely enclosed intervals).",
+      "Confusing strict overlap (`curr.start < prev.end`) with touch-overlap (`curr.start <= prev.end`). Always clarify edge boundaries.",
+    ],
+    importantPatterns: [
+      "Interval Merging: Sort by start time, maintain running merged interval.",
+      "Interval Removal: Sort by end time, greedily track latest valid end time.",
+      "Sweep-Line Algorithm: Separate starts (+1) and ends (-1) into discrete timestamp events, sort and prefix sum.",
+      "Interval Insert: Split problem into 3 phases: before new interval, overlapping merge, and after new interval.",
+    ],
+    codeSnippet: `// Merge Overlapping Intervals Template
+Arrays.sort(intervals, (a, b) -> Integer.compare(a[0], b[0]));
+List<int[]> merged = new ArrayList<>();
+int[] curr = intervals[0];
+merged.add(curr);
+
+for (int i = 1; i < intervals.length; i++) {
+    if (intervals[i][0] <= curr[1]) {
+        curr[1] = Math.max(curr[1], intervals[i][1]); // Overlap: extend end
+    } else {
+        curr = intervals[i]; // Disjoint: start new interval
+        merged.add(curr);
+    }
+}`,
+  },
+  {
+    id: "rev-trie",
+    title: "Trie (Prefix Tree) & Bitwise Trie",
+    topic: "Advanced Data Structures",
+    category: "Advanced Structures",
+    rememberPoints: [
+      "A Trie is a tree where each node represents a character; paths from root to marked nodes spell complete dictionary words.",
+      "Search, Insert, and StartsWith execute in O(L) time, where L is the length of the string, completely independent of total words N in the dataset.",
+      "Bitwise Trie (Binary Trie): Inserts 32-bit integers bit-by-bit from MSB (bit 31) to LSB (bit 0). Enables finding the Maximum XOR pair in strictly O(32 * N) = O(N) time.",
+      "Trie provides enormous prefix compression: words with identical prefixes share common ancestor nodes in memory.",
+    ],
+    commonMistakes: [
+      "Confusing `isEndOfWord` flag with node existence: a node existing only proves a prefix exists; `isEndOfWord == true` proves the exact word was inserted.",
+      "Eager allocation of 26 child references in constructors of millions of nodes, causing memory ballooning.",
+      "Forgetting to check for null child before traversing `curr = curr.children[c - 'a']`.",
+    ],
+    importantPatterns: [
+      "Prefix Autocomplete: Traverse down prefix path, then perform DFS/BFS to collect all downstream words.",
+      "Wildcard Matching / Word Search II: Combine Trie with 2D Grid DFS backtracking for O(Board * WordLen) pruning.",
+      "Bitwise Trie for Maximum XOR: Greedily navigate down the OPPOSITE bit (`1 ^ bit`) at each position to guarantee maximal XOR value.",
+    ],
+    codeSnippet: `// Standard 26-Way TrieNode Structure
+class TrieNode {
+    TrieNode[] children = new TrieNode[26];
+    boolean isEnd = false;
+}
+
+// Bitwise Trie Step: Maximizing XOR
+// Greedily choose opposite bit if present, else fallback
+int maxXor = 0;
+for (int i = 31; i >= 0; i--) {
+    int bit = (num >> i) & 1;
+    int oppBit = 1 - bit;
+    if (curr.children[oppBit] != null) {
+        maxXor |= (1 << i);
+        curr = curr.children[oppBit];
+    } else {
+        curr = curr.children[bit];
+    }
+}`,
+  },
+  {
+    id: "rev-core-os",
+    title: "Operating Systems: Process, Thread & Memory Models",
+    topic: "Operating Systems",
+    category: "Core CS Fundamentals",
+    rememberPoints: [
+      "Process vs Thread: A process is an independent execution unit with its own virtual address space (Code, Data, Heap, Stack). A thread is a lightweight execution stream inside a process sharing Heap and Data, but having its own private Stack and Program Counter (PC).",
+      "Context Switch Overhead: Thread context switch is vastly cheaper than Process context switch because CPU TLB (Translation Lookaside Buffer) cache does not need to be flushed.",
+      "Deadlock: Requires all 4 Coffman conditions simultaneously: 1. Mutual Exclusion; 2. Hold and Wait; 3. No Preemption; 4. Circular Wait. Breaking any ONE condition eliminates deadlock.",
+      "Virtual Memory: MMU maps Virtual Addresses to Physical RAM via Page Tables. Page size is typically 4KB. Page Fault occurs when a page is not resident in physical RAM and must be paged in from disk.",
+      "Concurrency Primitives: Mutex (locking by owner thread), Counting Semaphore (signaling mechanism with capacity K), Spinlock (busy-waiting in user space for low-latency kernel interrupts).",
+    ],
+    commonMistakes: [
+      "Confusing Process Heap with Thread Stack: Heap is shared across all threads of a process; local variables reside on private thread stacks.",
+      "Assuming Semaphore is just a re-entrant Mutex: Mutex has ownership (only locking thread can unlock); Semaphore is a signaling primitive (any thread can call release/signal).",
+      "Thinking CPU Thrashing is fixed by increasing CPU clock: Thrashing occurs when page faults dominate execution time due to insufficient RAM; solution is reducing working set or adding RAM.",
+    ],
+    importantPatterns: [
+      "Deadlock Prevention: Enforce a global hierarchical lock acquisition order (e.g., always acquire Lock A before Lock B) to break Circular Wait.",
+      "Producer-Consumer Pattern: Coordinate bounded buffer using 2 Semaphores (`emptySlots`, `fullSlots`) and 1 Mutex.",
+      "Page Replacement Algorithms: FIFO, LRU (Least Recently Used), Clock / Second-Chance algorithm.",
+    ],
+    codeSnippet: `// 4 Coffman Conditions for Deadlock:
+// 1. Mutual Exclusion: Resource held exclusively
+// 2. Hold and Wait: Process holds resource while waiting for another
+// 3. No Preemption: Resources cannot be forcibly seized
+// 4. Circular Wait: P1 waits for P2 ... Pk waits for P1
+
+// Producer-Consumer Coordination:
+// Semaphore empty = new Semaphore(BUFFER_SIZE);
+// Semaphore full = new Semaphore(0);
+// Mutex mutex = new Mutex();`,
+  },
+  {
+    id: "rev-core-dbms",
+    title: "DBMS & SQL: ACID, Indexing & Transaction Isolation",
+    topic: "Database Systems",
+    category: "Core CS Fundamentals",
+    rememberPoints: [
+      "ACID Guarantees: Atomicity (all-or-nothing via WAL rollback), Consistency (invariants/foreign keys hold), Isolation (concurrent transactions don't interfere), Durability (committed writes persist on non-volatile disk via fsync).",
+      "B+ Tree Indexing: Leaves form a doubly linked list for lightning-fast range queries `BETWEEN X AND Y`. Interior nodes store only search keys, giving massive fan-out (thousands of keys per node) and tree height <= 3-4 for millions of rows.",
+      "Hash Index vs B+ Tree: Hash Index is O(1) for equality (`WHERE id = 5`), but completely useless for range queries (`WHERE age > 21`), sorting, or prefix matching.",
+      "Clustered vs Secondary Index: Clustered index defines the physical order of table rows (InnoDB uses Primary Key). Secondary indices store the indexed column plus the primary key pointer (causes index lookup + bookmark lookup).",
+      "Normalization: 1NF (atomic columns), 2NF (1NF + no partial key dependencies), 3NF (2NF + no transitive non-key dependencies), BCNF (every determinant is a candidate key).",
+    ],
+    commonMistakes: [
+      "Creating indexes on every single column: while indexes speed up SELECT queries, every INSERT, UPDATE, and DELETE must update all B+ tree indices, drastically degrading write throughput.",
+      "Not understanding the Leftmost Prefix Rule in composite indexes `(A, B, C)`: a query on `(B, C)` CANNOT utilize index `(A, B, C)` because the leading column `A` is absent.",
+      "Assuming Read Committed prevents Non-Repeatable Reads: Read Committed only prevents Dirty Reads; preventing Non-Repeatable Reads requires Repeatable Read isolation.",
+    ],
+    importantPatterns: [
+      "4 SQL Isolation Levels (Weakest to Strongest):",
+      "1. Read Uncommitted: Dirty reads allowed.",
+      "2. Read Committed: Prevents dirty reads; allows non-repeatable reads.",
+      "3. Repeatable Read (MySQL InnoDB Default): Prevents dirty & non-repeatable reads via MVCC (Multi-Version Concurrency Control).",
+      "4. Serializable: Strict serial execution via Two-Phase Locking (2PL) or SSI.",
+    ],
+    codeSnippet: `// SQL Isolation Anomaly Matrix:
+// Isolation Level  | Dirty Read | Non-Repeatable Read | Phantom Read
+// -------------------------------------------------------------------
+// Read Uncommitted |    YES     |        YES          |     YES
+// Read Committed   |    NO      |        YES          |     YES
+// Repeatable Read  |    NO      |        NO           |     MVCC fixes
+// Serializable     |    NO      |        NO           |     NO
+
+// Composite Index Rule: Index on (A, B, C)
+// Matches: WHERE A = ? | WHERE A = ? AND B = ? | WHERE A = ? AND B = ? AND C = ?
+// Fails:   WHERE B = ? | WHERE C = ? | WHERE B = ? AND C = ?`,
+  },
+  {
+    id: "rev-core-networks",
+    title: "Computer Networks: TCP/IP, Handshakes & HTTP/3",
+    topic: "Computer Networks",
+    category: "Core CS Fundamentals",
+    rememberPoints: [
+      "TCP vs UDP: TCP is connection-oriented, reliable, ordered, byte-stream with congestion control and flow control (sliding window). UDP is connectionless, unreliable, unordered datagram protocol with minimal header (8 bytes vs 20-60 bytes in TCP) and zero handshake latency.",
+      "TCP 3-Way Handshake: SYN -> SYN-ACK -> ACK. Establishes Initial Sequence Numbers (ISN) and buffer sizes before data transmission.",
+      "TCP 4-Way Teardown: FIN -> ACK -> FIN -> ACK. Client enters TIME_WAIT (2 * MSL) to ensure the final ACK reached server and delayed packets die out.",
+      "DNS Resolution: Browser Cache -> OS Cache -> Local DNS Resolver -> Root Server ('.') -> TLD Server ('.com') -> Authoritative Name Server ('example.com').",
+      "HTTP Evolution: HTTP/1.1 (persistent TCP connection, Head-of-Line blocking at application layer), HTTP/2 (binary framing, multiplexing multiple streams over 1 TCP connection, header compression HPACK), HTTP/3 (runs over UDP-based QUIC, eliminating TCP Head-of-Line blocking on packet loss).",
+    ],
+    commonMistakes: [
+      "Thinking HTTPS encrypts the IP address or domain name: IP is in IP layer; SNI (Server Name Indication) in TLS can reveal host domain unless ESNI/ECH is used.",
+      "Believing HTTP/2 completely eliminates Head-of-Line (HoL) blocking: HTTP/2 eliminates application HoL blocking, but if a single TCP packet drops, TCP layer stalls ALL streams until the dropped packet is retransmitted. HTTP/3 QUIC fixes this over UDP.",
+      "Confusing Flow Control with Congestion Control: Flow Control protects the receiver buffer (advertised window); Congestion Control protects the intermediate network router links (cwnd).",
+    ],
+    importantPatterns: [
+      "TLS 1.3 Handshake: Combines cryptographic key exchange with TCP handshake in just 1-RTT (or 0-RTT resumption), down from 2-RTT in TLS 1.2.",
+      "OSI vs TCP/IP: OSI 7 Layers (Physical, Data Link, Network, Transport, Session, Presentation, Application) vs TCP/IP 4 Layers (Link, Internet, Transport, Application).",
+      "Subnetting & CIDR: `/24` gives $2^{32-24} = 256$ IPs (254 usable, excluding network ID .0 and broadcast .255).",
+    ],
+    codeSnippet: `// TCP 3-Way Handshake:
+// Client               Server
+//   | --- SYN (seq=x) ----> |
+//   | <-- SYN-ACK (seq=y, ack=x+1) - |
+//   | --- ACK (ack=y+1) --> |  (Connection ESTABLISHED!)
+
+// HTTP Generations:
+// HTTP/1.1 : 1 request per TCP connection at a time (Pipelining flawed)
+// HTTP/2   : Multiplexed streams over 1 TCP connection (Binary frames)
+// HTTP/3   : QUIC over UDP (0-RTT reconnect, stream-isolated packet loss)`,
+  },
 ];

@@ -766,4 +766,191 @@ class DSU {
       "Bitwise Tries solve Maximum XOR problems in linear O(32 * N) = O(N) time.",
     ],
   },
+  {
+    id: "dsa-dp-patterns-and-transitions-lesson",
+    slug: "patterns-and-state-transitions",
+    title: "The 5 Canonical DP Archetypes: 0/1 Knapsack, LCS, LIS, Grid Paths & State Compression",
+    track: "dsa",
+    topicSlug: "dynamic-programming",
+    topicTitle: "Dynamic Programming (DP)",
+    order: 2,
+    estimatedMinutes: 50,
+    oneSentence:
+      "Dynamic programming problems decompose into five canonical state archetypes, where identifying the optimal subproblem recurrence and compressing state space from 2D to 1D achieves minimal asymptotic complexity.",
+    whyDoWeNeedIt: {
+      problem:
+        "Most candidates memorize specific DP problems like 'Climbing Stairs' or 'Coin Change' in isolation, but immediately freeze when given a slightly modified interview variation. Without recognizing that virtually 90% of all interview DP questions map directly onto one of 5 canonical archetypes (0/1 Knapsack, Longest Common Subsequence, Longest Increasing Subsequence, 2D Grid Traversal, or Finite State Machines), candidates attempt ad-hoc recursions that either miss overlapping subproblems or trigger catastrophic exponential O(2^N) time limits.",
+      realWorldAnalogy:
+        "A master chess player recognizing pawn structures (e.g. isolated pawn, pawn chain, fianchetto). Instead of evaluating all 10^40 possible moves from scratch in every match, the grandmaster immediately classifies the position into a known strategic structure and applies the canonical optimal principles.",
+    },
+    visualIntuition: `The 5 Canonical Dynamic Programming Archetypes:
+-------------------------------------------------------------------------
+1. Archetype 1: 0/1 Knapsack & Subset Sum (Pick vs Don't Pick)
+   Choice at item i with remaining capacity w:
+   dp[i][w] = max(dp[i-1][w], dp[i-1][w - weight[i]] + val[i])
+   Space Compression: Loop w in REVERSE (W down to weight[i]) -> 1D array dp[w]!
+
+2. Archetype 2: Longest Common Subsequence (LCS) (Two-Sequence Alignment)
+   Comparing s1[i-1] and s2[j-1]:
+   - If chars match: dp[i][j] = 1 + dp[i-1][j-1] (Diagonal transition)
+   - If chars differ: dp[i][j] = max(dp[i-1][j], dp[i][j-1]) (Top vs Left)
+   Variants: Edit Distance, Longest Palindromic Subsequence, Interleaving String.
+
+3. Archetype 3: Longest Increasing Subsequence (LIS) (Monotonic Tail Tracking)
+   Standard DP: dp[i] = 1 + max(dp[j]) for j < i where arr[j] < arr[i] -> O(N^2)
+   Optimal Patience Sorting: Maintain array tails[] of minimum tail of active subsequences.
+   Binary Search (lower_bound) to replace or extend tails -> O(N log N) runtime!
+
+4. Archetype 4: 2D Grid / Matrix Path (DAG Traversal)
+   Moving Down or Right: dp[r][c] = cost[r][c] + min(dp[r-1][c], dp[r][c-1])
+   Space Compression: Only need current row and previous row -> O(Cols) auxiliary space.
+
+5. Archetype 5: Finite State Machine DP (Discrete State Transitions)
+   E.g., Stock Trading with Cooldown:
+   - State 0: Held (bought stock)
+   - State 1: Sold (cooling down)
+   - State 2: Reset (ready to buy)`,
+    syntax: {
+      knapsack1DTemplate: `// 0/1 Knapsack with 1D Rolling Array Space Optimization:
+int[] dp = new int[capacity + 1];
+
+for (int i = 0; i < n; i++) {
+    int w = weights[i], v = values[i];
+    // Traverse backwards so previous items are not overwritten in the same step!
+    for (int j = capacity; j >= w; j--) {
+        dp[j] = Math.max(dp[j], dp[j - w] + v);
+    }
+}`,
+      lcsTemplate: `// Longest Common Subsequence (LCS) 2D Grid:
+int[][] dp = new int[m + 1][n + 1];
+for (int i = 1; i <= m; i++) {
+    for (int j = 1; j <= n; j++) {
+        if (s1.charAt(i - 1) == s2.charAt(j - 1)) {
+            dp[i][j] = 1 + dp[i - 1][j - 1];
+        } else {
+            dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
+        }
+    }
+}`,
+      lisBinarySearchTemplate: `// LIS in O(N log N) using Patience Sorting / Binary Search:
+List<Integer> tails = new ArrayList<>();
+for (int x : nums) {
+    int idx = Collections.binarySearch(tails, x);
+    if (idx < 0) idx = -(idx + 1); // Insertion point
+    if (idx == tails.size()) tails.add(x);
+    else tails.set(idx, x); // Greedily minimize tail for future growth
+}
+int lisLength = tails.size();`,
+    },
+    example: {
+      title: "Longest Common Subsequence with 1D Rolling Array (LeetCode 1143)",
+      language: "java",
+      code: `public class LongestCommonSubsequenceOptimal {
+    public static int longestCommonSubsequence(String text1, String text2) {
+        // Optimize space: Ensure text2 is the shorter string
+        if (text1.length() < text2.length()) {
+            return longestCommonSubsequence(text2, text1);
+        }
+
+        int m = text1.length();
+        int n = text2.length();
+        int[] prev = new int[n + 1];
+        int[] curr = new int[n + 1];
+
+        for (int i = 1; i <= m; i++) {
+            char c1 = text1.charAt(i - 1);
+            for (int j = 1; j <= n; j++) {
+                char c2 = text2.charAt(j - 1);
+                if (c1 == c2) {
+                    curr[j] = 1 + prev[j - 1]; // Diagonal match
+                } else {
+                    curr[j] = Math.max(prev[j], curr[j - 1]); // Skip char
+                }
+            }
+            // Swap buffers for next row
+            int[] temp = prev;
+            prev = curr;
+            curr = temp;
+        }
+
+        return prev[n];
+    }
+}`,
+      explanation:
+        "Because each cell `dp[i][j]` only depends on the current row and the row directly above it (`prev[j-1]` and `prev[j]`), allocating a full (M x N) matrix is wasteful. Keeping only two 1D rows reduces memory consumption from O(M * N) down to strictly O(min(M, N)).",
+    },
+    howItWorks: [
+      {
+        step: 1,
+        title: "Identify the DP Archetype",
+        description:
+          "Analyze the problem signature: Knapsack (resource capacity budget), LCS (matching or transforming sequences), LIS (ordered subsets), Grid (2D paths), or State Machine (discrete state transitions).",
+      },
+      {
+        step: 2,
+        title: "Define Exact State Semantics",
+        description:
+          "Formulate precise verbal definitions: e.g. `dp[i][w]` is the maximum value achievable considering only the first i items with at most w weight capacity.",
+      },
+      {
+        step: 3,
+        title: "Determine Direction of Computation",
+        description:
+          "Ensure states are computed in an order such that all required subproblem dependencies are already calculated before the current state is queried.",
+      },
+      {
+        step: 4,
+        title: "Compress State Space (Dimension Collapse)",
+        description:
+          "Inspect the recurrence indices. If state `i` only reads from `i - 1`, collapse the 2D matrix into a 1D array using reverse iteration or two alternating row buffers.",
+      },
+    ],
+    commonMistakes: [
+      {
+        mistake: "Looping forward instead of backward in 1D 0/1 Knapsack",
+        why: "Forward iteration (`for j = w to capacity`) reuses updated values from the same item in the same step, turning 0/1 Knapsack into Unbounded Knapsack where items are duplicated.",
+        correct:
+          "Always iterate backwards (`for j = capacity down to w`) in 0/1 Knapsack.",
+      },
+      {
+        mistake: "Misaligning 1-based DP table indices with 0-based string indices in LCS",
+        why: "`dp[i][j]` represents prefixes of length `i` and `j`. Accessing `s.charAt(i)` instead of `s.charAt(i - 1)` causes StringIndexOutOfBoundsException.",
+        correct:
+          "Always compare `s1.charAt(i - 1) == s2.charAt(j - 1)` when table size is (M + 1) x (N + 1).",
+      },
+      {
+        mistake: "Initializing min-cost DP arrays with 0 instead of infinity",
+        why: "In minimization problems (like Coin Change), 0 is treated as a valid zero-cost solution rather than an unreachable state.",
+        correct:
+          "Initialize arrays with `Arrays.fill(dp, capacity + 1)` or large sentinel values.",
+      },
+    ],
+    complexity: {
+      time: "0/1 Knapsack: O(N * W) | LCS: O(N * M) | LIS: O(N log N) | Grid: O(R * C)",
+      space: "Optimized 1D auxiliary space: O(W) for Knapsack, O(min(N, M)) for LCS, O(N) for LIS tails",
+      explanation:
+        "By avoiding recomputation of overlapping subproblems, asymptotic time equals the number of unique states multiplied by the O(1) transition cost.",
+    },
+    tryItYourself: {
+      prompt:
+        "Given an integer array nums, return the length of the longest strictly increasing subsequence (LIS) using the O(N log N) patience sorting approach.",
+      hint: "Maintain an array tails. For each num, binary search the first index idx in tails where tails[idx] >= num. If idx == tails.size(), append num; else update tails[idx] = num.",
+      solutionSnippet: `List<Integer> tails = new ArrayList<>();
+for (int x : nums) {
+    int idx = Collections.binarySearch(tails, x);
+    if (idx < 0) idx = -(idx + 1);
+    if (idx == tails.size()) tails.add(x);
+    else tails.set(idx, x);
+}
+return tails.size();`,
+    },
+    placementConnection:
+      "Dynamic Programming is the definitive bar-raiser round across Google, Meta, Amazon, and Bloomberg: Coin Change, Longest Increasing Subsequence, Edit Distance, Word Break, Partition Equal Subset Sum, Best Time to Buy and Sell Stock with Cooldown, and Target Sum.",
+    quickRevision: [
+      "0/1 Knapsack uses backward 1D loop `for (int j = cap; j >= w; j--)` to prevent duplicate item reuse.",
+      "LCS matches characters on diagonals `1 + dp[i-1][j-1]` or skips via `max(top, left)`.",
+      "LIS can be solved in O(N log N) using patience sorting and binary search `lower_bound`.",
+      "If DP state only depends on the previous row, compress 2D memory down to O(Cols) with two rolling rows.",
+    ],
+  },
 ];

@@ -48,9 +48,23 @@ describe("High-Intent Curated Sheets Integrity", () => {
     expect(faang?.totalProblems).toBe(50);
   });
 
+  it("verifies SDE Core 45 and Service-to-Product sheets resolve correctly", () => {
+    const sdeCore = getSheetBySlug("sde-core-45");
+    expect(sdeCore).toBeDefined();
+    expect(sdeCore?.title).toContain("SDE Core 45");
+    expect(sdeCore?.totalProblems).toBe(45);
+
+    const s2p = getSheetBySlug("service-to-product");
+    expect(s2p).toBeDefined();
+    expect(s2p?.title).toContain("Service-to-Product");
+    expect(s2p?.totalProblems).toBe(40);
+  });
+
   it("verifies route helpers return canonical paths", () => {
     expect(getSheetsPath()).toBe("/sheets");
     expect(getSheetPath("blind-75")).toBe("/sheets/blind-75");
     expect(getSheetPath("top-50-faang")).toBe("/sheets/top-50-faang");
+    expect(getSheetPath("sde-core-45")).toBe("/sheets/sde-core-45");
+    expect(getSheetPath("service-to-product")).toBe("/sheets/service-to-product");
   });
 });

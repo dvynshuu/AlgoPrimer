@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import {
   getHomePath,
+  getLearnPath,
   getLanguagePath,
   getDsaPath,
 } from "@/lib/routes";
@@ -11,7 +12,7 @@ import {
   getLanguageLessonCount,
   getDsaLessonCount,
 } from "@/lib/contentCounts";
-import { createPageMetadata, createBreadcrumbJsonLd } from "@/lib/seo";
+import { createPageMetadata, createBreadcrumbJsonLd, createItemListJsonLd } from "@/lib/seo";
 import { ArrowRight } from "lucide-react";
 import styles from "./learn.module.css";
 
@@ -19,7 +20,7 @@ export const metadata = createPageMetadata({
   title: "The Learning Model — From First Principles to Placement Readiness",
   description:
     "AlgoPrimer is organized around a 7-stage learning hierarchy designed to build deep mental models, language mastery, and technical interview readiness.",
-  path: "/learn",
+  path: getLearnPath(),
 });
 
 export default function LearnPage() {
@@ -74,12 +75,26 @@ export default function LearnPage() {
 
   const breadcrumbs = [{ label: "Home", href: getHomePath() }, { label: "Learn" }];
   const breadcrumbJsonLd = createBreadcrumbJsonLd(breadcrumbs);
+  const itemListJsonLd = createItemListJsonLd({
+    name: "AlgoPrimer Learning Tracks",
+    description: "Structured learning tracks for programming languages and Data Structures & Algorithms.",
+    path: getLearnPath(),
+    items: tracks.map((t) => ({
+      name: t.title,
+      path: t.href,
+      description: `${t.desc} (${t.lessonCount} lessons)`,
+    })),
+  });
 
   return (
     <div className={styles.container}>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }}
       />
       <Breadcrumbs items={breadcrumbs} />
 

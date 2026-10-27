@@ -432,6 +432,53 @@ export const companiesData: CompanyInfo[] = [
       "State time and auxiliary space complexity clearly before coding optimal solutions.",
     ],
   },
+  {
+    name: "LinkedIn",
+    slug: "linkedin",
+    ticker: "MSFT",
+    category: "FAANG / Big Tech",
+    difficulty: "High",
+    overview:
+      "LinkedIn technical interviews emphasize clean modular code design, thorough edge-case handling, and the rigorous 'Craft' coding evaluation where code readability, maintainability, and concurrency are explicitly scored.",
+    hiringProcess: {
+      rounds: [
+        {
+          name: "Round 1: Online Assessment / Phone Screen",
+          description: "60-minute technical phone screen on HackerRank CodePair with a LinkedIn software engineer.",
+          focus: "Data Structures, Strings, Hash Maps, Sliding Window, and two algorithmic problems.",
+        },
+        {
+          name: "Round 2-3: Virtual Onsite Coding (Craft & Algorithms)",
+          description: "Two 45-60 min coding rounds evaluating algorithms, clean architecture, and modular function decomposition.",
+          focus: "Trees, Graphs (BFS/DFS, Topological Sort), Backtracking, and Interval scheduling.",
+        },
+        {
+          name: "Round 4: Systems & Architecture / Concurrency",
+          description: "Evaluating low-level design, multithreading, or high-scale distributed systems architecture.",
+          focus: "Thread safety, caching mechanisms, locking paradigms, and API contract design.",
+        },
+        {
+          name: "Round 5: Host Manager & Cultural Leadership",
+          description: "Deep dive into past engineering leadership, conflict resolution, ownership, and LinkedIn culture.",
+          focus: "Transformation, collaboration, integrity, and behavioral alignment.",
+        },
+      ],
+      barRaiserNote:
+        "LinkedIn interviewers place heavy emphasis on the 'Craft' rubric: code must be well-structured with descriptive variable names, separated helper functions, and zero hacky workarounds.",
+    },
+    keyPatterns: [
+      "Hash Tables & Frequency Counting",
+      "Sliding Window & Two Pointers",
+      "Intervals & Scheduling",
+      "Graph BFS & Shortest Path",
+      "Backtracking & Combinatorial Search",
+    ],
+    tips: [
+      "Write modular, clean code: decompose your solution into clear helper functions rather than writing a single monolithic block.",
+      "Communicate edge cases upfront: null inputs, empty lists, single elements, negative values, and integer overflow.",
+      "Explain your thought process aloud before writing code, and run a clean trace table before declaring completion.",
+    ],
+  },
 ];
 
 export function getAllCompanies(): CompanyInfo[] {

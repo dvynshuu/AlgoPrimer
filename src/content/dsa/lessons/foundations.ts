@@ -605,4 +605,177 @@ return true;`,
       "Rabin-Karp uses polynomial rolling hash `H = (H * BASE + char) % MOD` in sliding windows.",
     ],
   },
+  {
+    id: "dsa-arrays-sliding-window-lesson",
+    slug: "sliding-window-and-prefix-sums",
+    title: "Sliding Window & Prefix Sums: Fixed, Dynamic Windows & Range Invariants",
+    track: "dsa",
+    topicSlug: "arrays",
+    topicTitle: "Arrays & Dynamic Arrays",
+    order: 3,
+    estimatedMinutes: 40,
+    oneSentence:
+      "The sliding window and prefix sum paradigms transform expensive O(N^2) contiguous subarray evaluations into optimal O(N) linear time by maintaining incremental state invariants across window transitions.",
+    whyDoWeNeedIt: {
+      problem:
+        "Problems asking for the 'maximum sum subarray of size K', 'longest substring without repeating characters', or 'count of subarrays summing to K' naively test all possible subarray boundaries [i, j]. Testing all subarrays requires evaluating O(N^2) pairs, and computing the sum of each takes O(N), yielding a disastrous O(N^3) or O(N^2) runtime that immediately triggers Time Limit Exceeded (TLE) in Online Assessments.",
+      realWorldAnalogy:
+        "Calculating a vehicle's average speed over the last 10 seconds. Instead of re-adding all 10 odometer measurements from scratch every second, you keep a running sum, add the newest reading entering the window from the right, and subtract the oldest reading exiting from the left. That is O(1) continuous window maintenance.",
+    },
+    visualIntuition: `Fixed vs Dynamic Sliding Window & Prefix Sum Mechanics:
+-------------------------------------------------------------------------
+1. Fixed-Size Sliding Window (Window Size = K = 3):
+   Array: [ 2,   1,   5,   1,   3,   2 ]
+   Initial: [ 2 + 1 + 5 ] = 8
+   Slide 1:  8 - 2 + 1 = 7   [ 1, 5, 1 ]
+   Slide 2:  7 - 1 + 3 = 9   [ 5, 1, 3 ]  <-- Max sum found in O(1) per step!
+   Slide 3:  9 - 5 + 2 = 6   [ 1, 3, 2 ]
+
+2. Dynamic (Variable-Size) Sliding Window (e.g., Sum <= S):
+   [ L . . . . . . . . R ]  ---> Expand R to absorb elements
+   If window violates constraint:
+   Advance L to shrink window from left until constraint holds again.
+   Window length at any valid state: (R - L + 1).
+
+3. Prefix Sum + Hash Map (Handles NEGATIVE numbers where Window is not monotonic):
+   prefixSum[i] = nums[0] + nums[1] + ... + nums[i]
+   Subarray Sum (from i to j) = prefixSum[j] - prefixSum[i - 1]
+   To find if Subarray Sum == K:
+   prefixSum[j] - prefixSum[i - 1] = K  ==>  prefixSum[i - 1] = prefixSum[j] - K
+   Storing prefix frequencies in a HashMap answers 'how many subarrays sum to K' in O(1)!`,
+    syntax: {
+      fixedWindowTemplate: `// Fixed Window of size K:
+int windowSum = 0;
+for (int i = 0; i < k; i++) windowSum += arr[i];
+int maxSum = windowSum;
+
+for (int i = k; i < arr.length; i++) {
+    windowSum += arr[i] - arr[i - k]; // Slide: add incoming, drop outgoing
+    maxSum = Math.max(maxSum, windowSum);
+}`,
+      dynamicWindowTemplate: `// Dynamic Window (Two Pointers L and R):
+int left = 0, currentSum = 0, maxLen = 0;
+for (int right = 0; right < arr.length; right++) {
+    currentSum += arr[right]; // Expand window rightward
+    while (currentSum > target) { // Contract window leftward
+        currentSum -= arr[left++];
+    }
+    maxLen = Math.max(maxLen, right - left + 1);
+}`,
+      prefixSumHashMapTemplate: `// Prefix Sum + HashMap (Subarray Sum Equals K):
+Map<Integer, Integer> map = new HashMap<>();
+map.put(0, 1); // Base case: prefix sum of 0 appears once before index 0
+int runningSum = 0, count = 0;
+
+for (int num : nums) {
+    runningSum += num;
+    if (map.containsKey(runningSum - k)) {
+        count += map.get(runningSum - k);
+    }
+    map.put(runningSum, map.getOrDefault(runningSum, 0) + 1);
+}`,
+    },
+    example: {
+      title: "Longest Substring Without Repeating Characters (Dynamic Window)",
+      language: "java",
+      code: `public class LongestSubstringNonRepeating {
+    public static int lengthOfLongestSubstring(String s) {
+        // Map stores: character -> latest seen 1-based index (for O(1) jump)
+        int[] lastSeen = new int[128];
+        int maxLen = 0;
+        int left = 0;
+
+        for (int right = 0; right < s.length(); right++) {
+            char c = s.charAt(right);
+
+            // If character was seen inside current window, jump left pointer
+            if (lastSeen[c] > left) {
+                left = lastSeen[c];
+            }
+
+            maxLen = Math.max(maxLen, right - left + 1);
+            lastSeen[c] = right + 1; // Store 1-based index
+        }
+
+        return maxLen;
+    }
+}`,
+      explanation:
+        "Rather than shrinking the window one step at a time, storing the latest seen index of each character allows the left pointer to immediately leap past the previous occurrence, guaranteeing that each character is inspected at most twice in strictly O(N) runtime.",
+    },
+    howItWorks: [
+      {
+        step: 1,
+        title: "Classify Window Monotonicity",
+        description:
+          "If all elements are non-negative, expanding the window increases the sum and shrinking decreases it (monotonicity holds -> use Sliding Window). If elements can be negative, monotonicity is broken -> use Prefix Sum + HashMap.",
+      },
+      {
+        step: 2,
+        title: "Window Expansion (Right Pointer)",
+        description:
+          "Advance the right pointer `r` one element at a time, adding `arr[r]` into the accumulated window state (sum, character frequency table, or bitmask).",
+      },
+      {
+        step: 3,
+        title: "Window Contraction (Left Pointer Invariant)",
+        description:
+          "If the window condition is violated (e.g. duplicate character found, window sum exceeds limit), advance the left pointer `l` to purge outgoing elements until the window is valid again.",
+      },
+      {
+        step: 4,
+        title: "Optimal Metric Update",
+        description:
+          "At every valid state, update the answer with current window length `(r - l + 1)` or aggregate property before proceeding to the next right pointer increment.",
+      },
+    ],
+    commonMistakes: [
+      {
+        mistake: "Using sliding window when numbers can be negative",
+        why: "Sliding window relies on the invariant that advancing left decreases the sum. If numbers are negative, shrinking left might actually INCREASE the sum, causing incorrect answers.",
+        correct:
+          "Use Prefix Sum + HashMap (`prefixSum - target == previousPrefix`) when array contains negative numbers.",
+      },
+      {
+        mistake: "Contracting dynamic windows with `if` instead of `while`",
+        why: "Adding a single element might require dropping multiple elements from the left before the window becomes valid again.",
+        correct:
+          "Always use `while (conditionViolated) { removeLeft(); left++; }` in standard dynamic window templates.",
+      },
+      {
+        mistake: "Off-by-one errors in window length calculation",
+        why: "Writing `right - left` instead of `right - left + 1` misses the inclusive count of elements.",
+        correct:
+          "Inclusive subarray [left, right] always has length `right - left + 1`.",
+      },
+    ],
+    complexity: {
+      time: "O(N) amortized linear time across all pointer steps",
+      space: "O(1) auxiliary space for numeric windows; O(min(N, AlphabetSize)) for string windows",
+      explanation:
+        "Although the inner loop shrinks the window, the left pointer only increments and never resets. Each element enters the window once and exits at most once, bounding total operations to 2N = O(N).",
+    },
+    tryItYourself: {
+      prompt:
+        "Given an array of positive integers nums and a positive integer target, return the minimal length of a contiguous subarray of which the sum is greater than or equal to target. If there is no such subarray, return 0.",
+      hint: "Use a dynamic sliding window: expand right adding to sum, and whenever sum >= target, record minLen = Math.min(minLen, r - l + 1) and contract left until sum < target.",
+      solutionSnippet: `int left = 0, sum = 0, minLen = Integer.MAX_VALUE;
+for (int right = 0; right < nums.length; right++) {
+    sum += nums[right];
+    while (sum >= target) {
+        minLen = Math.min(minLen, right - left + 1);
+        sum -= nums[left++];
+    }
+}
+return minLen == Integer.MAX_VALUE ? 0 : minLen;`,
+    },
+    placementConnection:
+      "Sliding window and prefix sums are universally asked across Amazon, Meta, Google, Microsoft, and Uber: Minimum Window Substring, Longest Substring Without Repeating Characters, Subarray Sum Equals K, Fruit Into Baskets, and Continuous Subarray Sum.",
+    quickRevision: [
+      "Fixed window slides by adding `arr[r]` and subtracting `arr[r - k]` in O(1) time.",
+      "Dynamic window expands `r` and contracts `l` with `while (invalid) { l++; }`.",
+      "Window length between indices `l` and `r` is `r - l + 1`.",
+      "Prefix Sum + HashMap is required when elements can be negative (breaks sliding window monotonicity).",
+    ],
+  },
 ];

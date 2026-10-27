@@ -4,38 +4,43 @@
 AlgoPrimer provides comprehensive curricula without paywalls or ad bloat:
 - **Canonical 20-Topic DSA Roadmap**: Sequenced from time complexity analysis to dynamic programming and advanced patterns.
 - **Curated Problem Bank (65 High-Frequency Problems)**: Full quad-lingual implementations in Java, C++, Python, and JavaScript across Brute Force, Better, and Optimal approaches with dry runs and complexity bounds.
-- **Language Tracks (108 Lessons)**: Deep language mechanics, memory layouts, and standard collections for Java, C++, Python, and JavaScript.
-- **Rapid Revision Cards**: High-yield 5-minute technical review cards with complexity tables and beginner pitfalls.
+- **Language Tracks (107 Lessons)**: Deep language mechanics, memory layouts, and standard collections for Java, C++, Python, and JavaScript.
+- **Canonical 20-Topic DSA Roadmap (26 In-Depth Lessons)**: Sequenced from asymptotic analysis to dynamic programming and advanced patterns.
+- **25 High-Yield Rapid Revision Cards**: Fast technical review cards with complexity tables, beginner pitfalls, and Core CS (OS, DBMS, Computer Networks).
+- **Curated Placement Sheets**: Targeted sheets including Blind 75, Top 50 FAANG, SDE Core 45, and Service-to-Product Transition Sheet.
+- **13 Verified Company Guides**: Deep hiring loops, Bar Raiser insights, and curated sheets for Amazon, Google, Microsoft, Meta, Apple, LinkedIn, Bloomberg, Goldman Sachs, Uber, Adobe, Flipkart, TCS, and Infosys.
 
 ## Core Hubs & Roadmaps
 - [DSA Roadmap](https://algoprimer.vercel.app/dsa): Sequenced 20-topic curriculum covering linear structures, trees, graphs, heaps, dynamic programming, and interview patterns.
-- [Curated Interview Sheets](https://algoprimer.vercel.app/sheets): High-yield practice sheets including Blind 75 and Top 50 FAANG with 3-tier solutions.
-- [Company Coding Sheets](https://algoprimer.vercel.app/companies): Verified hiring processes and interview problem sheets for Amazon, Google, Microsoft, Meta, Apple, Bloomberg, and Goldman Sachs.
+- [Curated Interview Sheets](https://algoprimer.vercel.app/sheets): High-yield practice sheets including Blind 75, Top 50 FAANG, SDE Core 45, and Service-to-Product Transition Sheet with 3-tier solutions.
+- [Company Coding Sheets](https://algoprimer.vercel.app/companies): Verified hiring processes and interview problem sheets for Amazon, Google, Microsoft, Meta, Apple, LinkedIn, Bloomberg, Goldman Sachs, Uber, Adobe, Flipkart, TCS, and Infosys.
 - [Engineering Progression Roadmap](https://algoprimer.vercel.app/roadmap): 8-stage progression roadmap from zero coding fundamentals to senior technical interview readiness.
 - [Curated Problem Bank](https://algoprimer.vercel.app/problems): 65 high-frequency placement problems with 3-tier solutions, complexity tables, and dry runs.
 - [Programming Language Tracks](https://algoprimer.vercel.app/languages): First-principles language curricula for Java, C++, Python, and JavaScript.
-- [Rapid Revision Cards](https://algoprimer.vercel.app/revision): High-yield revision cards covering Big-O boundaries, memory layouts, and core idioms.
+- [Rapid Revision Cards](https://algoprimer.vercel.app/revision): 25 high-yield revision cards covering Big-O boundaries, memory layouts, and core CS fundamentals.
 - [Technical Interview Guide](https://algoprimer.vercel.app/interview): In-depth guide to Online Assessments (OA), Live Coding rubrics, and Core CS (OS, DBMS, CN).
 
 ## 20-Topic Canonical DSA Curriculum
 - [Time & Space Complexity](https://algoprimer.vercel.app/dsa/complexity): Big-O notation, asymptotic analysis, worst vs average case, and the 10^8 operations rule.
-- [Arrays & Dynamic Arrays](https://algoprimer.vercel.app/dsa/arrays): Contiguous memory layout, two pointers, prefix sums, sliding window, and Kadane's algorithm.
+- [Arrays & Dynamic Arrays](https://algoprimer.vercel.app/dsa/arrays): Contiguous memory layout, two pointers, prefix sums, sliding window, and Kadane's algorithm. Deep dive: [Sliding Window & Prefix Sums](https://algoprimer.vercel.app/dsa/arrays/sliding-window-and-prefix-sums).
 - [Strings & Pattern Matching](https://algoprimer.vercel.app/dsa/strings): String immutability, ASCII/Unicode representation, anagrams, palindrome patterns, and KMP basics.
 - [Linear & Binary Search](https://algoprimer.vercel.app/dsa/searching): Search space reduction, monotonic functions, lower/upper bounds, and binary search on answer.
 - [Sorting Fundamentals](https://algoprimer.vercel.app/dsa/sorting): Merge Sort, Quick Sort, stability, comparison vs non-comparison sorting.
 - [Hashing & Hash Tables](https://algoprimer.vercel.app/dsa/hashing): Hash functions, collision resolution, load factors, and frequency counting.
-- [Linked Lists](https://algoprimer.vercel.app/dsa/linked-list): Singly, doubly, dummy head nodes, pointer reversal, and Floyd's cycle detection.
+- [Linked Lists](https://algoprimer.vercel.app/dsa/linked-list): Singly, doubly, dummy head nodes, pointer reversal, and Floyd's cycle detection. Deep dive: [Fast-Slow Pointers & LRU Cache](https://algoprimer.vercel.app/dsa/linked-list/fast-slow-pointers-and-lru).
 - [Stack Data Structure](https://algoprimer.vercel.app/dsa/stack): LIFO discipline, parentheses balancing, evaluation, and monotonic stack patterns.
 - [Queue & Deque](https://algoprimer.vercel.app/dsa/queue): FIFO queues, circular buffers, double-ended queues, and sliding window maximum.
 - [Recursion & Call Stack](https://algoprimer.vercel.app/dsa/recursion): Call stack frames, base cases, recursion trees, and divide-and-conquer.
 - [Advanced Binary Search](https://algoprimer.vercel.app/dsa/binary-search): Binary search on rotated arrays, peak elements, 2D matrices, and answer spaces.
-- [Binary Trees](https://algoprimer.vercel.app/dsa/trees): Hierarchical data structures, DFS (inorder, preorder, postorder), BFS level order, height, and diameter.
+- [Binary Trees](https://algoprimer.vercel.app/dsa/trees): Hierarchical data structures, DFS, BFS level order, height, and diameter. Deep dive: [Tree Views & Path Sums](https://algoprimer.vercel.app/dsa/trees/views-and-path-sums).
 - [Binary Search Trees (BST)](https://algoprimer.vercel.app/dsa/bst): BST invariant, search, insert, delete, floor/ceil, and validation.
 - [Heap & Priority Queue](https://algoprimer.vercel.app/dsa/heap): Min-heaps, max-heaps, complete binary trees in arrays, and top-K frequent elements.
 - [Greedy Algorithms](https://algoprimer.vercel.app/dsa/greedy): Locally optimal choices, interval scheduling, and fractional knapsack.
 - [Backtracking](https://algoprimer.vercel.app/dsa/backtracking): Decision trees, state exploration, undoing decisions, N-Queens, and subset generation.
-- [Graphs](https://algoprimer.vercel.app/dsa/graphs): Adjacency matrix vs list, BFS, DFS, cycle detection, topological sort (Kahn's), and Dijkstra.
-- [Dynamic Programming](https://algoprimer.vercel.app/dsa/dynamic-programming): Overlapping subproblems, optimal substructure, memoization vs tabulation, and knapsack variants.
+- [Graphs](https://algoprimer.vercel.app/dsa/graphs): Adjacency matrix vs list, BFS, DFS, cycle detection, and Dijkstra. Deep dive: [DSU & Topological Sort](https://algoprimer.vercel.app/dsa/graphs/disjoint-set-and-topological-sort).
+- [Dynamic Programming](https://algoprimer.vercel.app/dsa/dynamic-programming): Overlapping subproblems, optimal substructure, memoization vs tabulation. Deep dive: [5 Canonical DP Archetypes](https://algoprimer.vercel.app/dsa/dynamic-programming/patterns-and-state-transitions).
+- [Bit Manipulation](https://algoprimer.vercel.app/dsa/bit-manipulation): Bitwise operations, two's complement, power of two checks, and XOR cancellation.
+- [Advanced Interview Patterns](https://algoprimer.vercel.app/dsa/advanced-patterns): Trie (Prefix Tree), Segment Trees, Fenwick Trees, and multi-concept walkthroughs.
 - [Bit Manipulation](https://algoprimer.vercel.app/dsa/bit-manipulation): Bitwise operations, two's complement, power of two checks, and XOR cancellation.
 - [Advanced Interview Patterns](https://algoprimer.vercel.app/dsa/advanced-patterns): Trie (Prefix Tree), Segment Trees, Fenwick Trees, and multi-concept walkthroughs.
 

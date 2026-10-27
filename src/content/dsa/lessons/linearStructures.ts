@@ -593,4 +593,221 @@ public int showFirstUnique() {
       "Monotonic Deque solves Sliding Window Maximum in O(N) time by storing candidate indices in decreasing order.",
     ],
   },
+  {
+    id: "dsa-linked-list-fast-slow-lru-lesson",
+    slug: "fast-slow-pointers-and-lru",
+    title: "Fast & Slow Pointers & LRU Cache: Cycle Detection, Midpoints & Node Architecture",
+    track: "dsa",
+    topicSlug: "linked-list",
+    topicTitle: "Linked Lists",
+    order: 2,
+    estimatedMinutes: 45,
+    oneSentence:
+      "Fast and slow pointers exploit relative velocity to detect cycles and locate midpoints in O(1) space, while combining hash tables with doubly linked lists creates the foundational O(1) LRU Cache architecture.",
+    whyDoWeNeedIt: {
+      problem:
+        "Detecting whether a linked list contains a cycle naively requires storing visited node references in a HashSet, consuming O(N) auxiliary memory. For a linked list with 10^7 nodes, this consumes hundreds of megabytes of RAM. Furthermore, implementing an eviction cache that supports get() and put() in strict O(1) time is impossible with single arrays or simple maps alone because maintaining access order requires continuous reordering without O(N) shifts.",
+      realWorldAnalogy:
+        "Two runners on a circular track. The faster runner moves at 2x the speed of the slower runner. Even if the track is huge, the faster runner will eventually lap the slower runner and collide at the exact same point on the loop. For an LRU Cache, imagine a stack of reference books on a researcher's desk: whenever a book is read, it moves to the top; if the desk becomes cluttered, the book at the very bottom is returned to the shelf.",
+    },
+    visualIntuition: `Floyd's Cycle Detection Proof & LRU Cache Node Topology:
+-------------------------------------------------------------------------
+1. Floyd's Tortoise and Hare Cycle Proof:
+   [ Head ] -----> [ Cycle Entrance ] -----> [ Meeting Node M ]
+     |---- F steps -----|------- a steps -------|
+                         |                      |
+                         |---- (C - a) steps ---|
+
+   Distance traveled by Slow: d_slow = F + a
+   Distance traveled by Fast: d_fast = 2 * (F + a)
+   Since Fast enters the cycle and laps Slow:
+   2 * (F + a) = F + a + n * C  ===>  F + a = n * C  ===>  F = n * C - a = (n - 1) * C + (C - a)
+
+   CONCLUSION:
+   Distance from Head to Cycle Entrance (F) EXACTLY EQUALS
+   Distance from Meeting Node M to Cycle Entrance (C - a)!
+   Therefore: Reset one pointer to Head and advance both 1 step at a time;
+   They are mathematically guaranteed to meet at the CYCLE ENTRANCE!
+
+2. LRU Cache Architecture (O(1) Get and Put):
+   HashMap:  [ Key ] ---> [ Pointer to DNode ]   (Instant O(1) Key Lookup)
+                                |
+   Doubly Linked List (Ordering):
+   [ Dummy Head ] <===> [ Most Recent ] <===> ... <===> [ Least Recent ] <===> [ Dummy Tail ]
+
+   Operations:
+   - get(key): Lookup DNode in map, detach from DLL, splice right after Dummy Head. O(1)!
+   - put(key, val): If exists, update val and move to head. If full, evict node before Dummy Tail. O(1)!`,
+    syntax: {
+      floydsCycleDetection: `// Floyd's Cycle Detection & Cycle Entrance Locator:
+public ListNode detectCycle(ListNode head) {
+    ListNode slow = head, fast = head;
+    while (fast != null && fast.next != null) {
+        slow = slow.next;
+        fast = fast.next.next;
+        if (slow == fast) { // Cycle detected!
+            ListNode p1 = head, p2 = slow;
+            while (p1 != p2) {
+                p1 = p1.next;
+                p2 = p2.next;
+            }
+            return p1; // Cycle entrance node
+        }
+    }
+    return null; // No cycle
+}`,
+      lruNodeStructure: `// Doubly Linked List Node for LRU Cache:
+class DNode {
+    int key, val;
+    DNode prev, next;
+    DNode(int key, int val) {
+        this.key = key;
+        this.val = val;
+    }
+}`,
+    },
+    example: {
+      title: "Complete Production-Grade LRU Cache Implementation",
+      language: "java",
+      code: `import java.util.*;
+
+public class LRUCache {
+    private static class Node {
+        int key, value;
+        Node prev, next;
+        Node(int k, int v) { key = k; value = v; }
+    }
+
+    private final int capacity;
+    private final Map<Integer, Node> map;
+    private final Node head, tail; // Sentinel dummy bounds
+
+    public LRUCache(int capacity) {
+        this.capacity = capacity;
+        this.map = new HashMap<>();
+        this.head = new Node(0, 0);
+        this.tail = new Node(0, 0);
+        head.next = tail;
+        tail.prev = head;
+    }
+
+    public int get(int key) {
+        Node node = map.get(key);
+        if (node == null) return -1;
+        moveToHead(node); // Mark as most recently used
+        return node.value;
+    }
+
+    public void put(int key, int value) {
+        Node node = map.get(key);
+        if (node != null) {
+            node.value = value;
+            moveToHead(node);
+        } else {
+            if (map.size() >= capacity) {
+                // Evict least recently used (node before tail)
+                Node lru = tail.prev;
+                removeNode(lru);
+                map.remove(lru.key);
+            }
+            Node newNode = new Node(key, value);
+            map.put(key, newNode);
+            addToHead(newNode);
+        }
+    }
+
+    private void removeNode(Node node) {
+        node.prev.next = node.next;
+        node.next.prev = node.prev;
+    }
+
+    private void addToHead(Node node) {
+        node.next = head.next;
+        node.prev = head;
+        head.next.prev = node;
+        head.next = node;
+    }
+
+    private void moveToHead(Node node) {
+        removeNode(node);
+        addToHead(node);
+    }
+}`,
+      explanation:
+        "Using dummy head and tail sentinel nodes eliminates null-pointer checks during node insertion and deletion. Splicing a node in and out of a doubly linked list requires updating 4 pointers in strict O(1) time.",
+    },
+    howItWorks: [
+      {
+        step: 1,
+        title: "Relative Velocity Invariant",
+        description:
+          "Fast pointer advances 2 nodes while slow pointer advances 1 node. Within a cycle of length C, their relative distance decreases by 1 node per iteration, guaranteeing a collision without an infinite loop.",
+      },
+      {
+        step: 2,
+        title: "Cycle Entrance Mathematical Deduction",
+        description:
+          "From the derivation `F = n*C - a`, the distance from Head to the entrance equals the distance from the collision point to the entrance. Resetting one pointer to Head aligns their meeting at the entrance.",
+      },
+      {
+        step: 3,
+        title: "Midpoint Detection Invariant",
+        description:
+          "When fast reaches the end of an un-cycled list (`fast == null` or `fast.next == null`), slow is positioned precisely at the middle node, dividing the list for Merge Sort or Palindrome checking.",
+      },
+      {
+        step: 4,
+        title: "Composite Structure Synergy (Hash Map + Doubly Linked List)",
+        description:
+          "HashMap provides O(1) key-to-node lookup. Doubly Linked List provides O(1) node relocation without shifting array elements.",
+      },
+    ],
+    commonMistakes: [
+      {
+        mistake: "Checking `fast.next != null` without checking `fast != null`",
+        why: "In lists with an even number of nodes, `fast` becomes `null`. Accessing `fast.next` without checking `fast != null` throws a NullPointerException.",
+        correct:
+          "Always write `while (fast != null && fast.next != null)`.",
+      },
+      {
+        mistake: "Evicting from DLL without removing key from HashMap in LRU Cache",
+        why: "If you remove the DLL node but leave the key in the HashMap, subsequent lookups return stale references to disconnected nodes, causing memory leaks and incorrect cache hits.",
+        correct:
+          "Always execute `map.remove(lru.key)` whenever `removeNode(lru)` is invoked on eviction.",
+      },
+      {
+        mistake: "Failing to update both `prev` and `next` pointers in Doubly Linked List",
+        why: "Updating only one pointer breaks bidirectional traversal and leaves orphaned references.",
+        correct:
+          "Always modify all 4 link connections: `node.prev.next = node.next; node.next.prev = node.prev;`.",
+      },
+    ],
+    complexity: {
+      time: "Cycle Detection: O(N) | LRU Get/Put: O(1) strictly",
+      space: "Cycle Detection: O(1) auxiliary memory | LRU Cache: O(Capacity) auxiliary memory",
+      explanation:
+        "Floyd's algorithm traverses at most 2N nodes before collision, requiring zero extra memory allocations. LRU Cache operations modify a constant number of memory references per invocation.",
+    },
+    tryItYourself: {
+      prompt:
+        "Given the head of a linked list, return the middle node of the linked list. If there are two middle nodes, return the second middle node.",
+      hint: "Initialize slow = head and fast = head. While fast != null && fast.next != null, advance slow by 1 and fast by 2. When loop ends, slow is at the middle node.",
+      solutionSnippet: `public ListNode middleNode(ListNode head) {
+    ListNode slow = head, fast = head;
+    while (fast != null && fast.next != null) {
+        slow = slow.next;
+        fast = fast.next.next;
+    }
+    return slow;
+}`,
+    },
+    placementConnection:
+      "LRU Cache is the most celebrated system/coding interview question at Amazon, Meta, Google, Microsoft, and Uber. Fast & Slow pointers are tested in Linked List Cycle I & II, Middle of the Linked List, Palindrome Linked List, Reorder List, and Find the Duplicate Number.",
+    quickRevision: [
+      "Floyd's algorithm detects cycles in O(N) time and O(1) auxiliary space.",
+      "Resetting one pointer to Head after collision locates the cycle entrance node.",
+      "When fast reaches the end, slow is positioned at the middle node.",
+      "LRU Cache combines a HashMap for O(1) search with a Doubly Linked List for O(1) eviction.",
+    ],
+  },
 ];

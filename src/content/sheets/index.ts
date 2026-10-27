@@ -175,6 +175,150 @@ export const sheetsData: SheetInfo[] = [
       },
     ],
   },
+  {
+    id: "sheet-sde-core-45",
+    slug: "sde-core-45",
+    title: "SDE Core 45 Placement Sheet",
+    tagline: "Essential 45-problem curriculum for campus placement drives & SDE-1 off-campus hiring",
+    description:
+      "A razor-sharp 45-problem curriculum covering the most frequent data structures and algorithmic patterns tested during technical rounds, designed for complete mastery within 4 weeks.",
+    targetAudience:
+      "Pre-final and final year college students, freshers, and early-career software engineers targeting SDE-1 roles.",
+    estimatedWeeks: 4,
+    featured: true,
+    totalProblems: 45,
+    categories: [
+      {
+        title: "Arrays & Two Pointers Core",
+        description: "Contiguous arrays, convergence pointers, and Kadane's maximum subarray algorithm.",
+        problems: problems
+          .filter((p) => p.topicSlug === "arrays" && !p.pattern.toLowerCase().includes("interval"))
+          .slice(0, 8),
+      },
+      {
+        title: "Strings & Sliding Window",
+        description: "Dynamic window expansion, frequency tracking, and substring invariants.",
+        problems: problems
+          .filter((p) => p.topicSlug === "strings" || p.pattern.toLowerCase().includes("sliding window"))
+          .slice(0, 8),
+      },
+      {
+        title: "Linked Lists & Fast-Slow Pointers",
+        description: "In-place pointer reversal, cycle detection, and composite cache architectures.",
+        problems: problems.filter((p) => p.topicSlug === "linked-list").slice(0, 7),
+      },
+      {
+        title: "Binary Trees & BST Essentials",
+        description: "Subtree recursion, post-order aggregations, and bounded range BST validations.",
+        problems: problems
+          .filter((p) => p.topicSlug === "trees" || p.topicSlug === "bst")
+          .slice(0, 8),
+      },
+      {
+        title: "Graphs & Topological Sort",
+        description: "Adjacency traversals, cycle detection, and prerequisite compilation.",
+        problems: problems.filter((p) => p.topicSlug === "graphs").slice(0, 7),
+      },
+      {
+        title: "Dynamic Programming & Optimization",
+        description: "State transition formulas, memoization, and 1D rolling array space compression.",
+        problems: problems.filter((p) => p.topicSlug === "dynamic-programming").slice(0, 7),
+      },
+    ],
+    faqs: [
+      {
+        question: "How is the SDE Core 45 sheet tailored for campus placements?",
+        answer:
+          "Campus placement drives (both on-campus and off-campus) typically feature 2-3 standard-to-medium problems per test. The SDE Core 45 focuses strictly on high-yield archetypes that recur across 85% of company screening tests, stripping away low-probability obscure puzzles.",
+      },
+      {
+        question: "What is the recommended weekly pace for this sheet?",
+        answer:
+          "Complete 11-12 problems per week: spend 2 days on linear structures (Arrays/Strings/LinkedLists), 2 days on hierarchical structures (Trees/Graphs), and 2 days on optimization (DP/Greedy), reserving the 7th day for mock tests and dry-run reviews.",
+      },
+      {
+        question: "Should I memorize code templates before the interview?",
+        answer:
+          "Never memorize raw code syntax blindly. Instead, memorize the fundamental state invariants: e.g., how the left pointer moves in a dynamic sliding window, or why Floyd's fast pointer catches slow in at most C steps. Derive the syntax from these first principles.",
+      },
+    ],
+  },
+  {
+    id: "sheet-service-to-product",
+    slug: "service-to-product",
+    title: "Service-to-Product Transition Sheet",
+    tagline: "Structured high-ROI bridge roadmap from IT services (TCS, Infosys, Wipro) to Product MNCs",
+    description:
+      "Calibrated specifically for engineers at IT services, system integrators, and consulting firms who want to break into product-based engineering teams like Amazon, Microsoft, Flipkart, and Uber.",
+    targetAudience:
+      "Engineers with 1-5 years of experience in service companies transitioning to product engineering roles.",
+    estimatedWeeks: 6,
+    featured: true,
+    totalProblems: 40,
+    categories: [
+      {
+        title: "Fundamental Arrays & Hash Lookups",
+        description: "Eliminating nested O(N^2) loops using HashMap lookups and prefix arrays.",
+        problems: problems
+          .filter(
+            (p) =>
+              (p.topicSlug === "arrays" || p.topicSlug === "strings") &&
+              ["Easy", "Medium"].includes(p.difficulty)
+          )
+          .slice(0, 8),
+      },
+      {
+        title: "Linear Data Structures & Cache Mechanics",
+        description: "Reversals, monotonic stacks, and foundational LRU cache architectures.",
+        problems: problems
+          .filter((p) => p.topicSlug === "linked-list" || p.topicSlug === "stack")
+          .slice(0, 8),
+      },
+      {
+        title: "Tree Recursion & Traversals",
+        description: "Overcoming fear of recursion with post-order traversal and binary search spaces.",
+        problems: problems
+          .filter((p) => p.topicSlug === "trees" || p.topicSlug === "binary-search")
+          .slice(0, 8),
+      },
+      {
+        title: "Standard Graph Traversal & Matrix BFS",
+        description: "Grid connectivity, level-order shortest path, and island counting.",
+        problems: problems
+          .filter((p) => p.topicSlug === "graphs" || p.topicSlug === "backtracking")
+          .slice(0, 8),
+      },
+      {
+        title: "High-Yield Dynamic Programming & Greedy",
+        description: "Transforming exponential recursion into polynomial runtime via memoization.",
+        problems: problems
+          .filter(
+            (p) =>
+              p.topicSlug === "dynamic-programming" ||
+              p.topicSlug === "greedy" ||
+              p.pattern.toLowerCase().includes("interval")
+          )
+          .slice(0, 8),
+      },
+    ],
+    faqs: [
+      {
+        question: "How do I overcome the 90-day notice period barrier in Indian IT service companies?",
+        answer:
+          "Target tier-1 product companies and startups that routinely buy out notice periods or actively hire engineers serving their notice period. Begin interviewing in the second month of your notice period when you have 30-45 days remaining.",
+      },
+      {
+        question: "What is the biggest difference in expectations between Service and Product interviews?",
+        answer:
+          "Service interviews often focus on language syntax trivia (e.g., 'What is final vs finally in Java?'). Product companies evaluate problem-solving ability from first principles: deriving time and space complexity, handling edge cases, writing clean modular code, and explaining architectural trade-offs.",
+      },
+      {
+        question: "How should I position client project experience on my resume for product companies?",
+        answer:
+          "Reframe client maintenance bullets around engineering impact: quantify performance optimizations (e.g. 'reduced API latency by 40%'), highlight architectural choices (concurrency, database indexing, caching), and showcase high code quality rather than generic maintenance tasks.",
+      },
+    ],
+  },
 ];
 
 export function getAllSheets(): SheetInfo[] {

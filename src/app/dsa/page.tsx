@@ -4,7 +4,13 @@ import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { dsaTopics } from "@/content/dsa/topics";
 import { getHomePath, getDsaPath, getDsaTopicPath } from "@/lib/routes";
-import { createPageMetadata, createBreadcrumbJsonLd } from "@/lib/seo";
+import {
+  createPageMetadata,
+  createBreadcrumbJsonLd,
+  createItemListJsonLd,
+  createFaqJsonLd,
+} from "@/lib/seo";
+import { SeoFaqAccordion } from "@/components/seo/SeoFaqAccordion";
 import { ArrowRight, Clock } from "lucide-react";
 import styles from "./dsa.module.css";
 
@@ -26,11 +32,50 @@ export default function DSARoadmapPage() {
   const breadcrumbs = [{ label: "Home", href: getHomePath() }, { label: "DSA Roadmap" }];
   const breadcrumbJsonLd = createBreadcrumbJsonLd(breadcrumbs);
 
+  const itemListJsonLd = createItemListJsonLd({
+    name: "20-Topic Data Structures & Algorithms Roadmap",
+    description: "Sequenced curriculum from asymptotic complexity to advanced interview patterns.",
+    path: getDsaPath(),
+    items: dsaTopics.map((t) => ({
+      name: `Topic #${t.order}: ${t.title}`,
+      path: getDsaTopicPath(t.slug),
+      description: t.description,
+    })),
+  });
+
+  const dsaFaqs = [
+    {
+      question: "What is the recommended sequence to learn Data Structures and Algorithms?",
+      answer:
+        "Follow our 20-topic roadmap in order: begin with Time & Space Complexity and Arrays, progress through Linear Structures (Strings, Linked Lists, Stacks, Queues), move to Trees, BSTs, and Graphs, and conclude with Optimization paradigms (Greedy, Backtracking, Dynamic Programming).",
+    },
+    {
+      question: "How long does it take to complete the entire AlgoPrimer DSA curriculum?",
+      answer:
+        "The curriculum spans approximately 180 estimated hours across all 20 topics. Studying 10-15 hours per week enables candidates to thoroughly complete the roadmap in 12 to 16 weeks.",
+    },
+    {
+      question: "Which programming language should I use while learning DSA?",
+      answer:
+        "AlgoPrimer supports Java, C++, Python, and JavaScript. Java and C++ provide strong static typing and clear memory layout visibility; Python offers faster prototyping during timed interviews; JavaScript is optimal for full-stack engineering roles.",
+    },
+  ];
+
+  const faqJsonLd = createFaqJsonLd(dsaFaqs);
+
   return (
     <div className={styles.container}>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
       />
       <Breadcrumbs items={breadcrumbs} />
 
@@ -78,6 +123,10 @@ export default function DSARoadmapPage() {
             </div>
           </div>
         ))}
+      </div>
+
+      <div style={{ marginTop: "var(--space-8)" }}>
+        <SeoFaqAccordion items={dsaFaqs} title="DSA Roadmap FAQs" />
       </div>
     </div>
   );

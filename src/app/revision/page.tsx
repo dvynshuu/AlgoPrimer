@@ -44,7 +44,7 @@ export default function RevisionPage() {
     path: getRevisionPath(),
     items: revisionCards.map((c) => ({
       name: c.title,
-      path: getRevisionPath(),
+      path: getRevisionPath(c.id),
       description: `${c.rememberPoints[0] || ""} (Common trap: ${c.commonMistakes[0] || ""})`,
     })),
   });

@@ -15,7 +15,7 @@ import {
   getLanguagePath,
   getLanguageLessonPath,
 } from "@/lib/routes";
-import { createPageMetadata, createBreadcrumbJsonLd } from "@/lib/seo";
+import { createPageMetadata, createBreadcrumbJsonLd, createItemListJsonLd } from "@/lib/seo";
 
 export const metadata = createPageMetadata({
   title: "Programming Language Tracks — Java, C++, Python, JavaScript",
@@ -36,11 +36,43 @@ export default function LanguagesPage() {
   const breadcrumbs = [{ label: "Home", href: getHomePath() }, { label: "Languages" }];
   const breadcrumbJsonLd = createBreadcrumbJsonLd(breadcrumbs);
 
+  const itemListJsonLd = createItemListJsonLd({
+    name: "Programming Language Curricula for Technical Interviews",
+    description: "Deep computer science language tracks covering execution models, memory layouts, and standard collections.",
+    path: getLanguagesPath(),
+    items: [
+      {
+        name: "Java Programming Track",
+        path: getLanguagePath("java"),
+        description: `JVM internals, memory models, OOP invariants, and Collections Framework (${javaLessons.length} lessons).`,
+      },
+      {
+        name: "C++ Programming Track",
+        path: getLanguagePath("cpp"),
+        description: `Direct memory layout, pointers, references, RAII, and Standard Template Library (${cppLessons.length} lessons).`,
+      },
+      {
+        name: "Python Programming Track",
+        path: getLanguagePath("python"),
+        description: `Dynamic typing, object references, list comprehensions, and placement standard library (${pythonLessons.length} lessons).`,
+      },
+      {
+        name: "JavaScript Track",
+        path: getLanguagePath("javascript"),
+        description: `V8 engine internals, closures, event loop, Promises, and prototypal inheritance (${javascriptLessons.length} lessons).`,
+      },
+    ],
+  });
+
   return (
     <div className={styles.container}>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }}
       />
       <Breadcrumbs items={breadcrumbs} />
 
